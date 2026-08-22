@@ -22,7 +22,7 @@
       "type": "表白",
       "content": "1",
       "time": 1787433147,
-      "likes": 0,
+      "likes": 1,
       "status": "pending",
       "images": [],
       "authorEmail": "1813704268@qq.com",
@@ -86,7 +86,9 @@
       "isAnonymous": false,
       "following": [],
       "followers": [],
-      "likedPosts": [],
+      "likedPosts": [
+        "p_1787433147990"
+      ],
       "vBadge": null,
       "createdAt": 1787433112994
     }
