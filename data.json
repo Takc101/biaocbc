@@ -10,7 +10,10 @@
       "following": [],
       "followers": [],
       "likedPosts": [],
-      "vBadge": null,
+      "vBadge": {
+        "type": "red",
+        "text": "表白墙官方号"
+      },
       "createdAt": 1787426594785
     }
   ],
