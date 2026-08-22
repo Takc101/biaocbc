@@ -24,8 +24,12 @@
       "nickname": "ৡৢ҉҉҈鬼҉҉҈ৡৢ",
       "avatar": "https://raw.githubusercontent.com/Takc101/biaocbc/main/avatars/avatars_1787427147665_xvi3e1.jpg",
       "isAnonymous": false,
-      "following": [],
-      "followers": [],
+      "following": [
+        "2051392957@qq.com"
+      ],
+      "followers": [
+        "2051392957@qq.com"
+      ],
       "likedPosts": [
         "p_1787427067310"
       ],
