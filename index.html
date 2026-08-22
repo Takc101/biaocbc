@@ -320,12 +320,23 @@ async function sendVerificationEmail(email, code) {
   const ready = initEmailJS();
   if (!ready) return { ok: true, debug: true, code: code };
   try {
-    await emailjs.send(CONFIG.emailjsServiceId, CONFIG.emailjsTemplateId, {
-      to_email: email, code: code, name: "表白墙", email: email
+    const response = await emailjs.send(CONFIG.emailjsServiceId, CONFIG.emailjsTemplateId, {
+      to_email: email,
+      code: code,
+      name: "表白墙",
+      email: email
     });
+    console.log("EmailJS响应:", response);
     return { ok: true, debug: false };
   } catch (e) {
-    return { ok: false, msg: "邮件发送失败：" + e.message };
+    let errMsg = "未知错误";
+    if (e && e.message) errMsg = e.message;
+    else if (e && e.text) errMsg = e.text;
+    else if (e && e.status) errMsg = "HTTP " + e.status + " " + (e.text || "");
+    else if (typeof e === "string") errMsg = e;
+    else errMsg = JSON.stringify(e);
+    console.error("EmailJS错误对象:", e);
+    return { ok: false, msg: "邮件发送失败：" + errMsg };
   }
 }
 
