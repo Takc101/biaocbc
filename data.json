@@ -73,6 +73,15 @@
       "type": "text",
       "time": 1787429624,
       "read": true
+    },
+    {
+      "id": "m_1787430436636",
+      "fromEmail": "3445964753@qq.com",
+      "toEmail": "2051392957@qq.com",
+      "content": "牛逼",
+      "type": "text",
+      "time": 1787430436,
+      "read": false
     }
   ]
 }
