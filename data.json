@@ -1,6 +1,23 @@
 {
   "adminPassword": "cbcnb5201bzcbc",
-  "posts": [],
+  "posts": [
+    {
+      "id": "p_1787428553560",
+      "type": "其他",
+      "content": "网站也是在今天的凌晨3点三十分创建完毕所有功能运行正常今天也是加班完成了后面的工作日",
+      "time": 1787428553,
+      "likes": 0,
+      "status": "pending",
+      "images": [],
+      "authorEmail": "2051392957@qq.com",
+      "authorName": "ৡৢ҉҉҈鬼҉҉҈ৡৢ",
+      "authorAvatar": "https://raw.githubusercontent.com/Takc101/biaocbc/main/avatars/avatars_1787427147665_xvi3e1.jpg",
+      "vBadge": {
+        "type": "gold",
+        "text": "网站开发者创始人"
+      }
+    }
+  ],
   "users": [
     {
       "email": "2051392957@qq.com",
