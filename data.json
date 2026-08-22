@@ -6,7 +6,7 @@
       "type": "其他",
       "content": "网站也是在今天的凌晨3点三十分超级好",
       "time": 1787427067,
-      "likes": 0,
+      "likes": 1,
       "status": "pending",
       "images": [],
       "authorEmail": "2051392957@qq.com",
@@ -26,7 +26,9 @@
       "isAnonymous": false,
       "following": [],
       "followers": [],
-      "likedPosts": [],
+      "likedPosts": [
+        "p_1787427067310"
+      ],
       "vBadge": {
         "type": "gold",
         "text": "网站开发者创始人"
