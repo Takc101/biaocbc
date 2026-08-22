@@ -1,23 +1,6 @@
 {
   "adminPassword": "cbcnb5201bzcbc",
-  "posts": [
-    {
-      "id": "p_1787427067310",
-      "type": "其他",
-      "content": "网站也是在今天的凌晨3点三十分超级好",
-      "time": 1787427067,
-      "likes": 1,
-      "status": "pending",
-      "images": [],
-      "authorEmail": "2051392957@qq.com",
-      "authorName": "2051392957",
-      "authorAvatar": "",
-      "vBadge": {
-        "type": "gold",
-        "text": "网站开发者创始人"
-      }
-    }
-  ],
+  "posts": [],
   "users": [
     {
       "email": "2051392957@qq.com",
