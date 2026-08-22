@@ -1,6 +1,23 @@
 {
   "adminPassword": "cbcnb5201bzcbc",
-  "posts": [],
+  "posts": [
+    {
+      "id": "p_1787429909181",
+      "type": "其他",
+      "content": "4:17网站表白墙正式发布已知问题全部修复",
+      "time": 1787429909,
+      "likes": 0,
+      "status": "pending",
+      "images": [],
+      "authorEmail": "2051392957@qq.com",
+      "authorName": "ৡৢ҉҉҈鬼҉҉҈ৡৢ",
+      "authorAvatar": "https://raw.githubusercontent.com/Takc101/biaocbc/main/avatars/avatars_1787427147665_xvi3e1.jpg",
+      "vBadge": {
+        "type": "gold",
+        "text": "网站开发者创始人"
+      }
+    }
+  ],
   "users": [
     {
       "email": "2051392957@qq.com",
