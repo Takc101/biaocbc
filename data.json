@@ -1,6 +1,18 @@
 {
   "adminPassword": "cbcnb5201bzcbc",
   "posts": [],
-  "users": [],
+  "users": [
+    {
+      "email": "2051392957@qq.com",
+      "nickname": "2051392957",
+      "avatar": "",
+      "isAnonymous": false,
+      "following": [],
+      "followers": [],
+      "likedPosts": [],
+      "vBadge": null,
+      "createdAt": 1787426594785
+    }
+  ],
   "messages": []
 }
