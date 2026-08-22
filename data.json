@@ -42,5 +42,15 @@
       "secondPassword": "cbcnb1bz"
     }
   ],
-  "messages": []
+  "messages": [
+    {
+      "id": "m_1787429624265",
+      "fromEmail": "2051392957@qq.com",
+      "toEmail": "2051392957@qq.com",
+      "content": "666",
+      "type": "text",
+      "time": 1787429624,
+      "read": false
+    }
+  ]
 }
