@@ -25,7 +25,8 @@
       "avatar": "https://raw.githubusercontent.com/Takc101/biaocbc/main/avatars/avatars_1787427147665_xvi3e1.jpg",
       "isAnonymous": true,
       "following": [
-        "2051392957@qq.com"
+        "2051392957@qq.com",
+        "2516159850@qq.com"
       ],
       "followers": [
         "2051392957@qq.com",
@@ -93,7 +94,9 @@
       "following": [
         "2051392957@qq.com"
       ],
-      "followers": [],
+      "followers": [
+        "2051392957@qq.com"
+      ],
       "likedPosts": [
         "p_1787429909181"
       ],
