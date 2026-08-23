@@ -100,7 +100,10 @@
       "likedPosts": [
         "p_1787429909181"
       ],
-      "vBadge": null,
+      "vBadge": {
+        "type": "red",
+        "text": "表白墙官方号"
+      },
       "createdAt": 1787446107446
     }
   ],
