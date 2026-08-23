@@ -6,7 +6,7 @@
       "type": "其他",
       "content": "4:17网站表白墙正式发布已知问题全部修复",
       "time": 1787429909,
-      "likes": 2,
+      "likes": 3,
       "status": "approved",
       "images": [],
       "authorEmail": "2051392957@qq.com",
@@ -91,7 +91,9 @@
       "isAnonymous": false,
       "following": [],
       "followers": [],
-      "likedPosts": [],
+      "likedPosts": [
+        "p_1787429909181"
+      ],
       "vBadge": null,
       "createdAt": 1787446107446
     }
