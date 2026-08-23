@@ -16,6 +16,21 @@
         "type": "gold",
         "text": "网站开发者创始人"
       }
+    },
+    {
+      "id": "p_1787462566490",
+      "type": "表白",
+      "content": "华中第一丑女",
+      "time": 1787462566,
+      "likes": 0,
+      "status": "pending",
+      "images": [
+        "https://raw.githubusercontent.com/Takc101/biaocbc/main/images/images_1787462563653_yu1brn.jpg"
+      ],
+      "authorEmail": "2516159850@qq.com",
+      "authorName": "匿名",
+      "authorAvatar": "",
+      "vBadge": null
     }
   ],
   "users": [
