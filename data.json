@@ -186,7 +186,7 @@
       "content": "你脑子有问题啊？",
       "type": "text",
       "time": 1787486885,
-      "read": false
+      "read": true
     },
     {
       "id": "m_1787511262519",
@@ -204,7 +204,7 @@
       "content": "https://raw.githubusercontent.com/Takc101/biaocbc/main/images/images_1787512001328_cdqgjk.jpg",
       "type": "image",
       "time": 1787512004,
-      "read": false
+      "read": true
     },
     {
       "id": "m_1787512025783",
@@ -213,7 +213,7 @@
       "content": "快给我打款两块",
       "type": "text",
       "time": 1787512025,
-      "read": false
+      "read": true
     }
   ]
 }
