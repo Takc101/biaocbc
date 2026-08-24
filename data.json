@@ -339,19 +339,6 @@
       "time": 1787585935,
       "replyTo": null,
       "isAnonymous": false
-    },
-    {
-      "id": "c_1787586056395",
-      "postId": "p_1787429909181",
-      "authorEmail": null,
-      "authorPhone": "15629142155",
-      "authorName": "15629142155",
-      "authorAvatar": "",
-      "vBadge": null,
-      "content": "牛逼牛逼",
-      "time": 1787586056,
-      "replyTo": "c_1787585935264",
-      "isAnonymous": false
     }
   ],
   "invites": [
@@ -385,7 +372,7 @@
       "postId": "p_1787429909181",
       "reporter": "15629142155",
       "time": 1787588706,
-      "status": "ignored"
+      "status": "handled"
     }
   ],
   "pendingRegistrations": []
