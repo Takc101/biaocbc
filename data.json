@@ -59,7 +59,8 @@
       "followers": [
         "2051392957@qq.com",
         "3445964753@qq.com",
-        "2516159850@qq.com"
+        "2516159850@qq.com",
+        "3643443670@qq.com"
       ],
       "likedPosts": [
         "p_1787427067310",
@@ -156,7 +157,9 @@
       "password": "20110710",
       "secondPassword": "159357",
       "isAnonymous": true,
-      "following": [],
+      "following": [
+        "2051392957@qq.com"
+      ],
       "followers": [],
       "likedPosts": [],
       "vBadge": null,
