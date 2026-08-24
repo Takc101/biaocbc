@@ -199,6 +199,23 @@
       "createdAt": 1787585513235,
       "isDeleted": false,
       "bannedUntil": 0
+    },
+    {
+      "email": null,
+      "phone": "15697106398",
+      "nickname": "15697106398",
+      "avatar": "",
+      "password": "zxy123456",
+      "secondPassword": "zxy123456",
+      "isAnonymous": false,
+      "following": [],
+      "followers": [],
+      "likedPosts": [],
+      "vBadge": null,
+      "isDeleted": false,
+      "bannedUntil": 0,
+      "banReason": "",
+      "createdAt": 1787591850636
     }
   ],
   "messages": [
@@ -346,8 +363,8 @@
     },
     {
       "code": "2BZWQGQR",
-      "usedBy": null,
-      "usedAt": null,
+      "usedBy": "15697106398",
+      "usedAt": 1787591850636,
       "createdAt": 1787591105355
     }
   ],
