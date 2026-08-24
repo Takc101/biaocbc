@@ -209,7 +209,7 @@
       "avatar": "",
       "password": "zxy123456",
       "secondPassword": "zxy123456",
-      "isAnonymous": false,
+      "isAnonymous": true,
       "following": [
         "3643443670@qq.com"
       ],
