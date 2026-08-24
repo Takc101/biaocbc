@@ -88,6 +88,158 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
 .chat-bubble{max-width:70%;padding:10px 14px;border-radius:16px;margin:6px 0;word-break:break-word}
 .chat-me{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
 .chat-other{background:var(--card-bg);border:1px solid var(--border);margin-right:auto;border-bottom-left-radius:4px}
+
+/* 私信会话列表 */
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--card-bg);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.session-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+.session-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.session-info { flex: 1; min-width: 0; }
+.session-name {
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.session-preview {
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.session-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+.session-time { font-size: 11px; color: var(--muted); }
+.unread-dot {
+  display: inline-block;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  line-height: 18px;
+  padding: 0 5px;
+  margin-top: 4px;
+}
+
+/* 全屏私信界面 */
+.chat-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 400;
+  display: none;
+  flex-direction: column;
+}
+.chat-page.open { display: flex; }
+.chat-header {
+  height: 56px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+.chat-back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.chat-header-info {
+  flex: 1;
+  min-width: 0;
+}
+.chat-header-name {
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+.chat-header-status {
+  font-size: 11px;
+  color: var(--muted);
+}
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+.chat-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--nav-bg);
+  flex-shrink: 0;
+}
+.chat-footer input {
+  flex: 1;
+  margin-bottom: 0;
+}
+.chat-footer button {
+  width: auto;
+  white-space: nowrap;
+}
+.chat-img-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
 </style>
 </head>
 <body class="theme-flow">
@@ -179,6 +331,11 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
       <div class="card">
         <div style="font-weight:800;margin-bottom:10px;">我的关注</div>
         <div id="myFollowingList"><p class="hint">暂无关注</p></div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">我的粉丝</div>
+        <div id="myFollowersList"><p class="hint">暂无粉丝</p></div>
       </div>
 
       <div class="card">
@@ -293,22 +450,21 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
   </div>
 </div>
 
-<!-- 私信弹窗 -->
-<div class="modal-overlay" id="chatModal" style="display:none;">
-  <div class="modal-box" style="max-width:500px;text-align:left;max-height:80vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <b id="chatTitle"></b>
-      <button class="ghost" id="chatCloseBtn" style="width:auto;">关闭</button>
+<!-- 全屏私信界面 -->
+<div class="chat-page" id="chatPage">
+  <div class="chat-header">
+    <button class="chat-back-btn" id="chatBackBtn">←</button>
+    <div class="chat-header-info">
+      <div class="chat-header-name" id="chatHeaderName"></div>
+      <div class="chat-header-status">在线</div>
     </div>
-    <div id="chatMessages" style="min-height:200px;max-height:50vh;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <input id="chatInput" placeholder="消息..." style="flex:1;margin-bottom:0;">
-      <button id="chatSendBtn" style="width:auto;">发送</button>
-    </div>
-    <div style="margin-top:8px;">
-      <button class="ghost" id="chatImageBtn" style="width:auto;">发图片</button>
-      <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
-    </div>
+  </div>
+  <div class="chat-body" id="chatMessages"></div>
+  <div class="chat-footer">
+    <button class="chat-img-btn" id="chatImageBtn">＋</button>
+    <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+    <input id="chatInput" placeholder="发消息...">
+    <button id="chatSendBtn">发送</button>
   </div>
 </div>
 
@@ -422,6 +578,15 @@ async function uploadImage(base64, folder) {
 }
 
 function getUserByEmail(d, e) { return d.users.find(u => u.email === e); }
+function getFollowBtnText(targetUser, meEmail) {
+  if (!targetUser) return "关注";
+  const me = cachedData ? getUserByEmail(cachedData, meEmail) : null;
+  if (!me) return "关注";
+  if (!me.following) me.following = [];
+  if (me.following.includes(targetUser.email)) return "私信";
+  if (targetUser.followers && targetUser.followers.includes(meEmail)) return "回关";
+  return "关注";
+}
 function getVBadgeHtml(v) {
   if (!v || !v.type) return "";
   const cls = v.type === "gold" ? "v-gold" : v.type === "red" ? "v-red" : "v-blue";
@@ -491,6 +656,8 @@ function renderPosts(posts, containerId, opts = {}) {
     const liked = currentUser ? (getUserByEmail(cachedData || { users: [] }, currentUser.email)?.likedPosts || []).includes(p.id) : false;
     const following = currentUser ? (getUserByEmail(cachedData || { users: [] }, currentUser.email)?.following || []).includes(p.authorEmail) : false;
     const isSelf = currentUser && p.authorEmail === currentUser.email;
+    const targetUser = getUserByEmail(cachedData || { users: [] }, p.authorEmail);
+    const followBtnText = getFollowBtnText(targetUser, currentUser ? currentUser.email : "");
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
@@ -505,7 +672,7 @@ function renderPosts(posts, containerId, opts = {}) {
       ${p.images && p.images.length ? `<div class="post-images">${p.images.map(u => `<img src="${escapeHtml(u)}" onclick="showLightbox('${escapeHtml(u)}')">`).join("")}</div>` : ""}
       <div class="post-actions">
         <button class="${liked ? "liked" : ""}" data-action="like" data-id="${p.id}">${liked ? "已赞" : "点赞"} ${p.likes}</button>
-        ${!isSelf && currentUser ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail)}">${following ? "私信" : "关注"}</button>` : ""}
+        ${!isSelf && currentUser ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail)}">${followBtnText}</button>` : ""}
         ${isSelf ? `<button style="background:var(--danger);color:#fff;border:none;" data-action="delete" data-id="${p.id}">删除</button>
                     <button style="background:var(--primary);color:#fff;border:none;" data-action="edit" data-id="${p.id}">修改重发</button>` : ""}
         ${opts.showApprove ? `<button data-action="approve" data-id="${p.id}" style="background:var(--ok);color:#fff;border:none;">通过</button><button data-action="reject" data-id="${p.id}" style="background:var(--danger);color:#fff;border:none;">拒绝</button>` : ""}
@@ -588,6 +755,7 @@ async function followOrChat(email) {
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
   const me = getUserByEmail(d, currentUser.email);
+  if (!me) return;
   if (!me.following) me.following = [];
   if (me.following.includes(email)) { openChat(email); return; }
   me.following.push(email);
@@ -596,6 +764,7 @@ async function followOrChat(email) {
   await saveData(d);
   cachedData = d;
   renderAllPosts();
+  renderMe();
 }
 
 async function renderHot() {
@@ -639,6 +808,7 @@ async function globalSearch() {
     userRes.innerHTML = '<div style="font-weight:800;margin:12px 0;">相关账号</div>';
     users.forEach(u => {
       const following = currentUser ? (getUserByEmail(d, currentUser.email)?.following || []).includes(u.email) : false;
+      const followBtnText = getFollowBtnText(u, currentUser ? currentUser.email : "");
       const div = document.createElement("div");
       div.className = "card";
       div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
@@ -648,7 +818,7 @@ async function globalSearch() {
           <b>${escapeHtml(u.nickname || u.email.split("@")[0])}</b>${getVBadgeHtml(u.vBadge)}
           <div class="hint">${escapeHtml(u.email)}</div>
         </div>
-        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${following ? "私信" : "关注"}</button>
+        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${followBtnText}</button>
       `;
       userRes.appendChild(div);
     });
@@ -875,7 +1045,6 @@ document.getElementById("registerBtn").onclick = async () => {
     const d = await loadData();
     const existing = getUserByEmail(d, email);
 
-    // 老用户升级：已存在但没密码，补设密码
     if (existing && !existing.password) {
       existing.password = password;
       existing.secondPassword = secondPassword;
@@ -966,15 +1135,61 @@ async function renderMe() {
   const fl = document.getElementById("myFollowingList");
   fl.innerHTML = (me.following || []).length ? me.following.map(f => {
     const u = getUserByEmail(d, f);
-    return u ? `<div class="card" style="display:flex;align-items:center;gap:10px;"><div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b></div><button class="ghost" style="width:auto;" onclick="openChat('${escapeHtml(u.email)}')">私信</button></div>` : "";
+    return u ? `<div class="card" style="display:flex;align-items:center;gap:10px;"><div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div><button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${getFollowBtnText(u, me.email)}</button></div>` : "";
   }).join("") : '<p class="hint">暂无关注</p>';
+
+  // 我的粉丝列表
+  const followersList = document.getElementById("myFollowersList");
+  const followers = (me.followers || []).map(f => getUserByEmail(d, f)).filter(Boolean);
+  followersList.innerHTML = followers.length ? followers.map(u => {
+    const btnText = getFollowBtnText(u, me.email);
+    return `<div class="card" style="display:flex;align-items:center;gap:10px;">
+      <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div>
+      <div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div>
+      <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${btnText}</button>
+    </div>`;
+  }).join("") : '<p class="hint">暂无粉丝</p>';
+
   const msgs = d.messages.filter(m => m.toEmail === me.email || m.fromEmail === me.email);
-  document.getElementById("msgList").innerHTML = msgs.length ? msgs.slice(-10).reverse().map(m => {
-    const other = m.fromEmail === me.email ? m.toEmail : m.fromEmail;
-    const unread = m.toEmail === me.email && !m.read;
-    return `<div class="msg-item ${unread ? "unread" : ""}"><b>${escapeHtml(other)}</b>: ${escapeHtml(m.content)} <span class="hint">${unread ? "未读" : "已读"}</span></div>`;
-  }).join("") : '<p class="hint">暂无消息</p>';
+  const msgContainer = document.getElementById("msgList");
+  if (!msgs.length) {
+    msgContainer.innerHTML = '<p class="hint">暂无消息</p>';
+  } else {
+    const sessions = {};
+    msgs.forEach(m => {
+      const other = m.fromEmail === me.email ? m.toEmail : m.fromEmail;
+      if (!sessions[other]) sessions[other] = [];
+      sessions[other].push(m);
+    });
+    msgContainer.innerHTML = Object.keys(sessions).map(otherEmail => {
+      const list = sessions[otherEmail].sort((a, b) => a.time - b.time);
+      const lastMsg = list[list.length - 1];
+      const otherUser = getUserByEmail(d, otherEmail);
+      const otherName = otherUser ? (otherUser.nickname || otherEmail.split("@")[0]) : otherEmail.split("@")[0];
+      const otherAvatar = otherUser ? otherUser.avatar : "";
+      const otherV = otherUser ? otherUser.vBadge : null;
+      const unreadCount = list.filter(m => m.toEmail === me.email && !m.read).length;
+      const previewText = lastMsg.type === "image" ? "[图片]" : escapeHtml(lastMsg.content);
+      return `
+        <div class="session-item" onclick="openChat('${escapeHtml(otherEmail)}')">
+          <div class="session-avatar">
+            ${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}">` : escapeHtml(otherName[0])}
+            ${getMiniV(otherV)}
+          </div>
+          <div class="session-info">
+            <div class="session-name">${escapeHtml(otherName)}${getVBadgeHtml(otherV)}</div>
+            <div class="session-preview">${previewText}</div>
+          </div>
+          <div class="session-right">
+            <div class="session-time">${formatTime(lastMsg.time)}</div>
+            ${unreadCount > 0 ? `<span class="unread-dot">${unreadCount}</span>` : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 }
+
 document.getElementById("editNameBtn").onclick = async () => {
   const name = prompt("请输入新用户名：", currentUser.nickname || "");
   if (!name || !name.trim()) return;
@@ -1024,23 +1239,59 @@ document.getElementById("avatarFileInput").onchange = async e => {
 
 function openChat(email) {
   chatTarget = email;
-  document.getElementById("chatModal").style.display = "flex";
-  document.getElementById("chatTitle").textContent = "与 " + email + " 聊天";
+  const d = cachedData || null;
+  let otherName = email.split("@")[0];
+  let otherV = null;
+  if (d) {
+    const otherUser = getUserByEmail(d, email);
+    if (otherUser) {
+      otherName = otherUser.nickname || otherName;
+      otherV = otherUser.vBadge || null;
+    }
+  }
+  document.getElementById("chatHeaderName").innerHTML = escapeHtml(otherName) + getVBadgeHtml(otherV);
+  document.getElementById("chatPage").classList.add("open");
   renderChat();
 }
 async function renderChat() {
   const d = await loadData();
+  cachedData = d;
   const msgs = d.messages.filter(m => (m.fromEmail === currentUser.email && m.toEmail === chatTarget) || (m.fromEmail === chatTarget && m.toEmail === currentUser.email)).sort((a, b) => a.time - b.time);
-  document.getElementById("chatMessages").innerHTML = msgs.map(m => {
+  const chatBody = document.getElementById("chatMessages");
+  const otherUser = getUserByEmail(d, chatTarget);
+  let otherAvatarHtml = "";
+  if (otherUser && otherUser.avatar) {
+    otherAvatarHtml = `<img src="${escapeHtml(otherUser.avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">`;
+  } else {
+    const name = otherUser ? (otherUser.nickname || chatTarget.split("@")[0]) : chatTarget.split("@")[0];
+    otherAvatarHtml = `<div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${escapeHtml(name[0])}</div>`;
+  }
+  chatBody.innerHTML = msgs.map(m => {
     const isMe = m.fromEmail === currentUser.email;
-    return `<div class="chat-bubble ${isMe ? "chat-me" : "chat-other"}">
-      ${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:100%;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}
-      <div class="hint" style="font-size:10px;margin-top:4px;">${formatTime(m.time)} ${m.read ? "已读" : "未读"}</div>
-    </div>`;
+    if (isMe) {
+      return `
+        <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-bottom:12px;">
+          <div class="chat-bubble chat-me">
+            ${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}
+            <div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)} ${m.read ? "已读" : "未读"}</div>
+          </div>
+        </div>
+      `;
+    } else {
+      return `
+        <div style="display:flex;justify-content:flex-start;align-items:flex-end;gap:8px;margin-bottom:12px;">
+          ${otherAvatarHtml}
+          <div class="chat-bubble chat-other">
+            ${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}
+            <div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)}</div>
+          </div>
+        </div>
+      `;
+    }
   }).join("");
   msgs.filter(m => m.toEmail === currentUser.email && !m.read).forEach(m => m.read = true);
   await saveData(d);
-  document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
 document.getElementById("chatSendBtn").onclick = async () => {
   const v = document.getElementById("chatInput").value.trim();
@@ -1064,7 +1315,10 @@ document.getElementById("chatImageInput").onchange = async e => {
     renderChat();
   });
 };
-document.getElementById("chatCloseBtn").onclick = () => { document.getElementById("chatModal").style.display = "none"; };
+document.getElementById("chatBackBtn").onclick = () => {
+  document.getElementById("chatPage").classList.remove("open");
+  renderMe();
+};
 
 function renderAdmin() {
   if (!adminLoggedIn) {
@@ -1106,7 +1360,6 @@ async function renderAdminReview() {
     document.getElementById("adminReviewList").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
   }
 }
-
 async function renderAdminManage() {
   try {
     const d = await loadData();
@@ -1118,7 +1371,6 @@ async function renderAdminManage() {
     document.getElementById("adminManageList").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
   }
 }
-
 async function renderAdminUserList() {
   const d = await loadData();
   const c = document.getElementById("adminUserList");
@@ -1196,6 +1448,12 @@ document.getElementById("adminEntry").onclick = e => {
 renderHot();
 updatePublishUI();
 updateNavActive();
+
+if (currentUser) {
+  renderMe();
+  updatePublishUI();
+}
+
 if (!sessionStorage.getItem("welcome_shown")) {
   document.getElementById("welcomeModal").style.display = "flex";
 }
