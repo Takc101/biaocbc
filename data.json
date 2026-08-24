@@ -15,7 +15,8 @@
       "vBadge": {
         "type": "gold",
         "text": "网站开发者创始人"
-      }
+      },
+      "isAnonymous": false
     },
     {
       "id": "p_1787462715289",
@@ -30,7 +31,8 @@
       "authorEmail": "2516159850@qq.com",
       "authorName": "匿名",
       "authorAvatar": "",
-      "vBadge": null
+      "vBadge": null,
+      "isAnonymous": false
     },
     {
       "id": "p_1787571451257",
@@ -43,7 +45,8 @@
       "authorEmail": "3584804121@qq.com",
       "authorName": "小坤本坤没坤",
       "authorAvatar": "",
-      "vBadge": null
+      "vBadge": null,
+      "isAnonymous": false
     }
   ],
   "users": [
@@ -181,6 +184,20 @@
       ],
       "vBadge": null,
       "createdAt": 1787571312053
+    },
+    {
+      "email": null,
+      "phone": "15629142155",
+      "nickname": "15629142155",
+      "avatar": "",
+      "password": "15629142155",
+      "secondPassword": "1562321",
+      "isAnonymous": false,
+      "following": [],
+      "followers": [],
+      "likedPosts": [],
+      "vBadge": null,
+      "createdAt": 1787585513235
     }
   ],
   "messages": [
@@ -297,10 +314,9 @@
   "invites": [
     {
       "code": "JDF3KB5N",
-      "usedBy": null,
-      "usedAt": null,
+      "usedBy": "15629142155",
+      "usedAt": 1787585513235,
       "createdAt": 1787585454860
     }
-  ],
-  "sha": "507b7958d3024adbd5e8a846f3dd6bc1555c85f7"
+  ]
 }
