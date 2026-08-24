@@ -39,6 +39,9 @@ input,textarea,select,button{font-family:inherit;font-size:14px}
 input,textarea,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:8px;outline:none}
 button{padding:11px 16px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
 button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+button.danger{background:var(--danger)}
+button.ok{background:var(--ok)}
+button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin:0}
 .hint{font-size:13px;color:var(--muted)}
 .status{font-size:13px;margin-top:6px;white-space:pre-wrap}
 .success{color:var(--ok)}.error{color:var(--danger)}
@@ -57,6 +60,32 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
 .post-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .post-actions button{padding:6px 12px;font-size:13px;border-radius:8px;background:var(--bg);color:var(--text);border:1px solid var(--border);width:auto}
 .post-actions button.liked,.post-actions button.followed{background:var(--primary);color:#fff;border-color:var(--primary)}
+.comment-entry{display:flex;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);cursor:pointer;gap:8px}
+.comment-entry-text{font-size:14px;font-weight:700}
+.comment-entry-count{font-size:13px;color:var(--muted)}
+.comment-entry-arrow{margin-left:auto;font-size:16px;color:var(--muted)}
+.comment-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:450;display:none;flex-direction:column}
+.comment-page.open{display:flex}
+.comment-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0}
+.comment-back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.comment-header-title{font-weight:700;font-size:16px}
+.comment-body{flex:1;overflow-y:auto;padding:16px}
+.comment-original-post{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px;margin-bottom:16px}
+.comment-original-post .post-top{margin-bottom:6px}
+.comment-original-post .post-content{margin-bottom:0}
+.comment-original-post .post-images{margin-bottom:0}
+.comment-original-post .post-images img{width:70px;height:70px}
+.comment-item{display:flex;gap:10px;margin-bottom:14px}
+.comment-item .avatar{width:32px;height:32px;font-size:13px;flex-shrink:0}
+.comment-item-content{flex:1;min-width:0}
+.comment-item-name{font-weight:700;font-size:13px;display:flex;align-items:center}
+.comment-item-text{font-size:14px;line-height:1.5;margin-top:2px;word-break:break-word}
+.comment-item-time{font-size:11px;color:var(--muted);margin-top:2px}
+.comment-item-reply-btn{font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none;padding:2px 0;width:auto;margin-top:2px}
+.comment-item-more-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0;line-height:1}
+.comment-footer{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--nav-bg);flex-shrink:0}
+.comment-footer input{flex:1;margin-bottom:0}
+.comment-footer button{width:auto;white-space:nowrap}
 .rank-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
 .rank-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
 .r1{background:#f5a623;color:#fff}.r2{background:#a0a8b3;color:#fff}.r3{background:#cd7f32;color:#fff}.rx{background:var(--bg);color:var(--muted)}
@@ -88,158 +117,27 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
 .chat-bubble{max-width:70%;padding:10px 14px;border-radius:16px;margin:6px 0;word-break:break-word}
 .chat-me{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
 .chat-other{background:var(--card-bg);border:1px solid var(--border);margin-right:auto;border-bottom-left-radius:4px}
-
-/* 私信会话列表 */
-.session-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  background: var(--card-bg);
-  border-radius: 12px;
-  margin-bottom: 8px;
-}
-.session-avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
-  overflow: hidden;
-  flex-shrink: 0;
-  position: relative;
-}
-.session-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.session-info { flex: 1; min-width: 0; }
-.session-name {
-  font-weight: 700;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-}
-.session-preview {
-  font-size: 12px;
-  color: var(--muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-.session-right {
-  text-align: right;
-  flex-shrink: 0;
-}
-.session-time { font-size: 11px; color: var(--muted); }
-.unread-dot {
-  display: inline-block;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 11px;
-  text-align: center;
-  line-height: 18px;
-  padding: 0 5px;
-  margin-top: 4px;
-}
-
-/* 全屏私信界面 */
-.chat-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg);
-  z-index: 400;
-  display: none;
-  flex-direction: column;
-}
-.chat-page.open { display: flex; }
-.chat-header {
-  height: 56px;
-  background: var(--nav-bg);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  flex-shrink: 0;
-}
-.chat-back-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-.chat-header-info {
-  flex: 1;
-  min-width: 0;
-}
-.chat-header-name {
-  font-weight: 700;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-}
-.chat-header-status {
-  font-size: 11px;
-  color: var(--muted);
-}
-.chat-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-}
-.chat-footer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-top: 1px solid var(--border);
-  background: var(--nav-bg);
-  flex-shrink: 0;
-}
-.chat-footer input {
-  flex: 1;
-  margin-bottom: 0;
-}
-.chat-footer button {
-  width: auto;
-  white-space: nowrap;
-}
-.chat-img-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
+.session-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--card-bg);border-radius:12px;margin-bottom:8px}
+.session-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;overflow:hidden;flex-shrink:0;position:relative}
+.session-avatar img{width:100%;height:100%;object-fit:cover}
+.session-info{flex:1;min-width:0}
+.session-name{font-weight:700;font-size:14px;display:flex;align-items:center}
+.session-preview{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.session-right{text-align:right;flex-shrink:0}
+.session-time{font-size:11px;color:var(--muted)}
+.unread-dot{display:inline-block;min-width:18px;height:18px;border-radius:9px;background:var(--danger);color:#fff;font-size:11px;text-align:center;line-height:18px;padding:0 5px;margin-top:4px}
+.chat-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:400;display:none;flex-direction:column}
+.chat-page.open{display:flex}
+.chat-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0}
+.chat-back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.chat-header-info{flex:1;min-width:0}
+.chat-header-name{font-weight:700;font-size:15px;display:flex;align-items:center}
+.chat-header-status{font-size:11px;color:var(--muted)}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column}
+.chat-footer{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--nav-bg);flex-shrink:0}
+.chat-footer input{flex:1;margin-bottom:0}
+.chat-footer button{width:auto;white-space:nowrap}
+.chat-img-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 </style>
 </head>
 <body class="theme-flow">
@@ -374,7 +272,7 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
       </div>
 
       <div class="card">
-        <div style="font-weight:800;margin-bottom:10px;">设置V标</div>
+        <div style="font-weight:800;margin-bottom:10px;">设置V标 / 封禁 / 删除账号</div>
         <div id="adminUserList"></div>
       </div>
 
@@ -384,6 +282,22 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
         <input id="goldEmail" placeholder="网站创造者电子邮箱">
         <input id="goldIdCard" placeholder="网站创造者身份证">
         <button id="goldVerifyBtn">确认设置金色V标</button>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">生成邀请码</div>
+        <button id="generateInviteBtn">生成新邀请码</button>
+        <div id="adminInviteList" style="margin-top:10px;"><p class="hint">暂无邀请码</p></div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">举报处理</div>
+        <div id="adminReportList"><p class="hint">暂无举报</p></div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">注册审核</div>
+        <div id="adminPendingRegList"><p class="hint">暂无待审核注册</p></div>
       </div>
 
       <button class="ghost" id="adminLogoutBtn" style="width:100%;">退出管理员</button>
@@ -413,7 +327,7 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
     </div>
 
     <div id="loginForm">
-      <input id="loginEmail" type="email" placeholder="邮箱">
+      <input id="loginAccount" type="text" placeholder="邮箱或手机号">
       <input id="loginPassword" type="password" placeholder="密码">
       <input id="loginSecondPassword" type="password" placeholder="二级密码">
       <button id="loginBtn">登录</button>
@@ -421,11 +335,25 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
     </div>
 
     <div id="registerForm" style="display:none;">
-      <input id="regEmail" type="email" placeholder="邮箱">
-      <div style="display:flex;gap:8px;">
-        <input id="regCode" placeholder="验证码" maxlength="6" style="flex:1;">
-        <button id="sendCodeBtn" style="width:auto;white-space:nowrap;">发送验证码</button>
+      <select id="regType" style="margin-bottom:10px;">
+        <option value="email">邮箱注册</option>
+        <option value="phone">手机号注册</option>
+        <option value="both">邮箱 + 手机号绑定</option>
+      </select>
+
+      <div id="regEmailBox">
+        <input id="regEmail" type="email" placeholder="邮箱">
+        <div style="display:flex;gap:8px;">
+          <input id="regCode" placeholder="邮箱验证码" maxlength="6" style="flex:1;">
+          <button id="sendCodeBtn" style="width:auto;white-space:nowrap;">发送验证码</button>
+        </div>
       </div>
+
+      <div id="regPhoneBox" style="display:none;">
+        <input id="regPhone" type="tel" placeholder="手机号">
+        <input id="regInviteCode" placeholder="邀请码">
+      </div>
+
       <input id="regPassword" type="password" placeholder="密码">
       <input id="regSecondPassword" type="password" placeholder="二级密码">
       <button id="registerBtn">注册</button>
@@ -436,14 +364,33 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
   </div>
 </div>
 
+<!-- 邀请码复制弹窗 -->
+<div class="modal-overlay" id="inviteModal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">邀请码已生成</div>
+    <div style="font-size:26px;font-weight:800;color:var(--primary);letter-spacing:3px;margin:14px 0;" id="newInviteCode"></div>
+    <button id="copyInviteBtn">复制邀请码</button>
+    <button class="ghost" id="closeInviteModalBtn" style="margin-top:8px;">关闭</button>
+  </div>
+</div>
+
+<!-- 举报评论弹窗 -->
+<div class="modal-overlay" id="reportModal" style="display:none;z-index:600;">
+  <div class="modal-box">
+    <div class="modal-title">举报评论</div>
+    <div class="modal-sub">确定举报这条评论给管理员吗？</div>
+    <button id="reportConfirmBtn">确定</button>
+    <button class="ghost" id="reportCancelBtn" style="margin-top:8px;">取消</button>
+  </div>
+</div>
+
 <!-- 欢迎弹窗 -->
 <div class="modal-overlay" id="welcomeModal" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">制作不易</div>
-    <div class="modal-sub">本网站所有功能免费不存在付费功能</div>
+    <div class="modal-sub">感谢支持，可以加我微信交流</div>
     <img class="modal-wx-img" src="wechat.png" alt="微信二维码">
     <div style="font-size:13px;color:var(--muted);margin-bottom:14px;text-align:left;line-height:1.6;">
-      ↑给此网站捐款,可以捐，也可以不捐,其他学校表白墙要红V标在QQ搜索2051392957这个是我的QQ号
       匿名发布设置：<br>登录后点击底部「我的」→「设置」→ 勾选「匿名发布」即可隐藏你的信息。
     </div>
     <button id="welcomeCloseBtn">关闭</button>
@@ -468,6 +415,18 @@ button.ghost{background:var(--bg);color:var(--text);border:1px solid var(--borde
   </div>
 </div>
 
+<!-- 评论详情页 -->
+<div class="comment-page" id="commentPage">
+  <div class="comment-header">
+    <button class="comment-back-btn" id="commentBackBtn">←</button>
+    <div class="comment-header-title">评论</div>
+  </div>
+  <div class="comment-body" id="commentBody"></div>
+  <div class="comment-footer">
+    <input id="commentInput" placeholder="写下你的评论...">
+    <button id="commentSendBtn">发送</button>
+  </div>
+</div>
 <script>
 const CONFIG = {
   owner: "Takc101",
@@ -495,6 +454,9 @@ let adminLoggedIn = false;
 let loginCode = "";
 let codeExpireTime = 0;
 let codeTimer = null;
+let commentTargetPostId = null;
+let replyToCommentId = null;
+let reportTargetCommentId = null;
 
 const nowTs = () => Math.floor(Date.now() / 1000);
 
@@ -529,7 +491,7 @@ async function loadData() {
   const res = await fetch(CONFIG.apiUrl, {
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
-  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], sha: null };
+  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], comments: [], invites: [], reports: [], pendingRegistrations: [], sha: null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
   let c = "";
@@ -539,10 +501,15 @@ async function loadData() {
   if (!Array.isArray(d.posts)) d.posts = [];
   if (!Array.isArray(d.users)) d.users = [];
   if (!Array.isArray(d.messages)) d.messages = [];
+  if (!Array.isArray(d.comments)) d.comments = [];
+  if (!Array.isArray(d.invites)) d.invites = [];
+  if (!Array.isArray(d.reports)) d.reports = [];
+  if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
   d.posts.forEach(p => {
     if (typeof p.likes !== "number") p.likes = 0;
     if (!p.status) p.status = "approved";
     if (!Array.isArray(p.images)) p.images = [];
+    if (typeof p.isAnonymous !== "boolean") p.isAnonymous = false;
   });
   d.users.forEach(u => {
     if (!u.password) u.password = "";
@@ -550,12 +517,14 @@ async function loadData() {
     if (!Array.isArray(u.following)) u.following = [];
     if (!Array.isArray(u.followers)) u.followers = [];
     if (!Array.isArray(u.likedPosts)) u.likedPosts = [];
+    if (typeof u.isDeleted !== "boolean") u.isDeleted = false;
+    if (!u.bannedUntil) u.bannedUntil = 0;
   });
   d.sha = j.sha;
   return d;
 }
 async function saveData(d) {
-  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages }, null, 2);
+  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages, comments: d.comments, invites: d.invites, reports: d.reports, pendingRegistrations: d.pendingRegistrations }, null, 2);
   const b64 = btoa(unescape(encodeURIComponent(json)));
   const body = { message: "update data", content: b64, branch: CONFIG.branch };
   if (d.sha) body.sha = d.sha;
@@ -577,14 +546,17 @@ async function uploadImage(base64, folder) {
   return `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${folder}/${name}`;
 }
 
-function getUserByEmail(d, e) { return d.users.find(u => u.email === e); }
-function getFollowBtnText(targetUser, meEmail) {
-  if (!targetUser) return "关注";
-  const me = cachedData ? getUserByEmail(cachedData, meEmail) : null;
+function getUserByIdentifier(d, id) {
+  if (!id) return null;
+  return d.users.find(u => u.email === id || u.phone === id) || null;
+}
+function getFollowBtnText(targetUser, meId) {
+  if (!targetUser || !meId) return "关注";
+  const me = getUserByIdentifier(cachedData || { users: [] }, meId);
   if (!me) return "关注";
   if (!me.following) me.following = [];
-  if (me.following.includes(targetUser.email)) return "私信";
-  if (targetUser.followers && targetUser.followers.includes(meEmail)) return "回关";
+  if (me.following.includes(targetUser.email || targetUser.phone)) return "私信";
+  if (targetUser.followers && targetUser.followers.includes(meId)) return "回关";
   return "关注";
 }
 function getVBadgeHtml(v) {
@@ -653,11 +625,14 @@ function renderPosts(posts, containerId, opts = {}) {
   if (!posts.length && !opts.append) { c.innerHTML = '<p class="hint">暂无投稿</p>'; return; }
   posts.sort((a, b) => b.time - a.time);
   posts.forEach(p => {
-    const liked = currentUser ? (getUserByEmail(cachedData || { users: [] }, currentUser.email)?.likedPosts || []).includes(p.id) : false;
-    const following = currentUser ? (getUserByEmail(cachedData || { users: [] }, currentUser.email)?.following || []).includes(p.authorEmail) : false;
-    const isSelf = currentUser && p.authorEmail === currentUser.email;
-    const targetUser = getUserByEmail(cachedData || { users: [] }, p.authorEmail);
-    const followBtnText = getFollowBtnText(targetUser, currentUser ? currentUser.email : "");
+    const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
+    const me = meId ? getUserByIdentifier(cachedData || { users: [] }, meId) : null;
+    const liked = me ? (me.likedPosts || []).includes(p.id) : false;
+    const following = me ? (me.following || []).includes(p.authorEmail || p.authorPhone) : false;
+    const isSelf = currentUser && (p.authorEmail === currentUser.email || p.authorPhone === currentUser.phone);
+    const targetUser = getUserByIdentifier(cachedData || { users: [] }, p.authorEmail || p.authorPhone);
+    const followBtnText = getFollowBtnText(targetUser, meId || "");
+    const commentCount = (cachedData?.comments || []).filter(cm => cm.postId === p.id).length;
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
@@ -672,11 +647,16 @@ function renderPosts(posts, containerId, opts = {}) {
       ${p.images && p.images.length ? `<div class="post-images">${p.images.map(u => `<img src="${escapeHtml(u)}" onclick="showLightbox('${escapeHtml(u)}')">`).join("")}</div>` : ""}
       <div class="post-actions">
         <button class="${liked ? "liked" : ""}" data-action="like" data-id="${p.id}">${liked ? "已赞" : "点赞"} ${p.likes}</button>
-        ${!isSelf && currentUser ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail)}">${followBtnText}</button>` : ""}
+        ${!isSelf && currentUser && !p.isAnonymous ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail || p.authorPhone)}">${followBtnText}</button>` : ""}
         ${isSelf ? `<button style="background:var(--danger);color:#fff;border:none;" data-action="delete" data-id="${p.id}">删除</button>
                     <button style="background:var(--primary);color:#fff;border:none;" data-action="edit" data-id="${p.id}">修改重发</button>` : ""}
         ${opts.showApprove ? `<button data-action="approve" data-id="${p.id}" style="background:var(--ok);color:#fff;border:none;">通过</button><button data-action="reject" data-id="${p.id}" style="background:var(--danger);color:#fff;border:none;">拒绝</button>` : ""}
         ${opts.showDelete ? `<button data-action="delete" data-id="${p.id}" style="background:var(--danger);color:#fff;border:none;">删除</button>` : ""}
+      </div>
+      <div class="comment-entry" data-comment-post-id="${p.id}">
+        <span class="comment-entry-text">评论</span>
+        <span class="comment-entry-count">${commentCount}</span>
+        <span class="comment-entry-arrow">›</span>
       </div>
     `;
     c.appendChild(div);
@@ -701,6 +681,7 @@ function renderPosts(posts, containerId, opts = {}) {
       if (a === "reject") {
         const d = await loadData();
         d.posts = d.posts.filter(x => x.id !== id);
+        d.comments = d.comments.filter(cm => cm.postId !== id);
         await saveData(d);
         cachedData = d;
         renderAllPosts();
@@ -711,6 +692,7 @@ function renderPosts(posts, containerId, opts = {}) {
         if (!confirm("确定删除？")) return;
         const d = await loadData();
         d.posts = d.posts.filter(x => x.id !== id);
+        d.comments = d.comments.filter(cm => cm.postId !== id);
         await saveData(d);
         cachedData = d;
         renderAllPosts();
@@ -724,6 +706,7 @@ function renderPosts(posts, containerId, opts = {}) {
         if (!p) return;
         document.getElementById("content").value = p.content || "";
         d.posts = d.posts.filter(x => x.id !== id);
+        d.comments = d.comments.filter(cm => cm.postId !== id);
         await saveData(d);
         cachedData = d;
         document.querySelectorAll(".page").forEach(pg => pg.classList.remove("active"));
@@ -734,12 +717,19 @@ function renderPosts(posts, containerId, opts = {}) {
       }
     };
   });
+
+  c.querySelectorAll(".comment-entry").forEach(el => {
+    el.onclick = () => {
+      openCommentPage(el.dataset.commentPostId);
+    };
+  });
 }
 
 async function like(id) {
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
-  const u = getUserByEmail(d, currentUser.email);
+  const meId = currentUser.email || currentUser.phone;
+  const u = getUserByIdentifier(d, meId);
   if (!u) return alert("用户不存在");
   if (!u.likedPosts) u.likedPosts = [];
   if (u.likedPosts.includes(id)) return alert("已经赞过了");
@@ -751,16 +741,17 @@ async function like(id) {
   renderAllPosts();
 }
 
-async function followOrChat(email) {
+async function followOrChat(identifier) {
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
-  const me = getUserByEmail(d, currentUser.email);
+  const meId = currentUser.email || currentUser.phone;
+  const me = getUserByIdentifier(d, meId);
   if (!me) return;
   if (!me.following) me.following = [];
-  if (me.following.includes(email)) { openChat(email); return; }
-  me.following.push(email);
-  const t = getUserByEmail(d, email);
-  if (t) { if (!t.followers) t.followers = []; t.followers.push(currentUser.email); }
+  if (me.following.includes(identifier)) { openChat(identifier); return; }
+  me.following.push(identifier);
+  const t = getUserByIdentifier(d, identifier);
+  if (t) { if (!t.followers) t.followers = []; t.followers.push(meId); }
   await saveData(d);
   cachedData = d;
   renderAllPosts();
@@ -803,22 +794,23 @@ async function globalSearch() {
     postRes.innerHTML = '<div style="font-weight:800;margin:12px 0;">相关投稿</div>';
     renderPosts(posts, "searchPostResults", { append: true });
   }
-  const users = d.users.filter(u => (u.nickname || "").toLowerCase().includes(kw) || (u.email || "").toLowerCase().includes(kw));
+  const users = d.users.filter(u => !u.isDeleted && ((u.nickname || "").toLowerCase().includes(kw) || (u.email || "").toLowerCase().includes(kw) || (u.phone || "").toLowerCase().includes(kw)));
   if (users.length) {
     userRes.innerHTML = '<div style="font-weight:800;margin:12px 0;">相关账号</div>';
     users.forEach(u => {
-      const following = currentUser ? (getUserByEmail(d, currentUser.email)?.following || []).includes(u.email) : false;
-      const followBtnText = getFollowBtnText(u, currentUser ? currentUser.email : "");
+      const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
+      const following = meId ? (getUserByIdentifier(d, meId)?.following || []).includes(u.email || u.phone) : false;
+      const followBtnText = getFollowBtnText(u, meId || "");
       const div = document.createElement("div");
       div.className = "card";
       div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
       div.innerHTML = `
-        <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || u.email[0])[0])}${getMiniV(u.vBadge)}</div>
+        <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
         <div style="flex:1;">
-          <b>${escapeHtml(u.nickname || u.email.split("@")[0])}</b>${getVBadgeHtml(u.vBadge)}
-          <div class="hint">${escapeHtml(u.email)}</div>
+          <b>${escapeHtml(u.nickname || u.email?.split("@")[0] || u.phone)}</b>${getVBadgeHtml(u.vBadge)}
+          <div class="hint">用户</div>
         </div>
-        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${followBtnText}</button>
+        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${followBtnText}</button>
       `;
       userRes.appendChild(div);
     });
@@ -861,7 +853,7 @@ function updatePublishUI() {
     tip.textContent = "请先登录（点底部「我的」登录）";
     tip.style.color = "var(--danger)";
   } else {
-    tip.textContent = "已登录：" + currentUser.email;
+    tip.textContent = "已登录：" + (currentUser.email || currentUser.phone);
     tip.style.color = "var(--ok)";
   }
 }
@@ -879,7 +871,7 @@ document.getElementById("publishBtn").onclick = async () => {
     const imageUrls = [];
     for (const img of selectedImages) imageUrls.push(await uploadImage(img, "images"));
     const d = await loadData();
-    const u = getUserByEmail(d, currentUser.email) || {};
+    const u = getUserByIdentifier(d, currentUser.email || currentUser.phone) || {};
     const isAnon = u.isAnonymous || false;
     d.posts.push({
       id: "p_" + Date.now(),
@@ -889,10 +881,12 @@ document.getElementById("publishBtn").onclick = async () => {
       likes: 0,
       status: "pending",
       images: imageUrls,
-      authorEmail: currentUser.email,
-      authorName: isAnon ? "匿名" : u.nickname || currentUser.email.split("@")[0],
+      authorEmail: currentUser.email || null,
+      authorPhone: currentUser.phone || null,
+      authorName: isAnon ? "匿名" : u.nickname || (currentUser.email || currentUser.phone || "").split("@")[0],
       authorAvatar: isAnon ? "" : u.avatar || "",
-      vBadge: isAnon ? null : u.vBadge || null
+      vBadge: isAnon ? null : u.vBadge || null,
+      isAnonymous: isAnon
     });
     await saveData(d);
     status.textContent = "发布成功，等待管理员审核";
@@ -977,6 +971,22 @@ function switchAuthTab(tab) {
 document.getElementById("loginTabBtn").onclick = () => switchAuthTab("login");
 document.getElementById("registerTabBtn").onclick = () => switchAuthTab("register");
 
+document.getElementById("regType").onchange = () => {
+  const type = document.getElementById("regType").value;
+  const emailBox = document.getElementById("regEmailBox");
+  const phoneBox = document.getElementById("regPhoneBox");
+  if (type === "email") {
+    emailBox.style.display = "block";
+    phoneBox.style.display = "none";
+  } else if (type === "phone") {
+    emailBox.style.display = "none";
+    phoneBox.style.display = "block";
+  } else {
+    emailBox.style.display = "block";
+    phoneBox.style.display = "block";
+  }
+};
+
 document.getElementById("sendCodeBtn").onclick = async () => {
   const email = document.getElementById("regEmail").value.trim();
   const status = document.getElementById("registerStatus");
@@ -1003,19 +1013,25 @@ document.getElementById("sendCodeBtn").onclick = async () => {
 };
 
 document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("loginEmail").value.trim();
+  const account = document.getElementById("loginAccount").value.trim();
   const password = document.getElementById("loginPassword").value;
   const secondPassword = document.getElementById("loginSecondPassword").value;
   const status = document.getElementById("loginStatus");
   status.className = "status"; status.textContent = "";
-  if (!email || !password || !secondPassword) { status.textContent = "请填写邮箱、密码和二级密码"; status.classList.add("error"); return; }
+  if (!account || !password || !secondPassword) { status.textContent = "请填写账号、密码和二级密码"; status.classList.add("error"); return; }
   try {
     const d = await loadData();
-    const u = getUserByEmail(d, email);
+    const u = getUserByIdentifier(d, account);
     if (!u) { status.textContent = "账号不存在，请先注册"; status.classList.add("error"); return; }
+    if (u.isDeleted) { status.textContent = "账号已被删除，请重新注册并等待审核"; status.classList.add("error"); return; }
+    if (u.bannedUntil && u.bannedUntil > nowTs()) {
+      status.textContent = "账号已被封禁至 " + new Date(u.bannedUntil * 1000).toLocaleString() + "\n原因：" + (u.banReason || "违规操作");
+      status.classList.add("error");
+      return;
+    }
     if (!u.password || !u.secondPassword) { status.textContent = "账号未设置密码，请通过注册补设"; status.classList.add("error"); return; }
     if (u.password !== password || u.secondPassword !== secondPassword) { status.textContent = "密码或二级密码错误"; status.classList.add("error"); return; }
-    currentUser = { email: u.email, nickname: u.nickname, avatar: u.avatar };
+    currentUser = { email: u.email || null, phone: u.phone || null, nickname: u.nickname, avatar: u.avatar };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
     status.textContent = "登录成功";
     status.classList.add("success");
@@ -1031,46 +1047,103 @@ document.getElementById("loginBtn").onclick = async () => {
 };
 
 document.getElementById("registerBtn").onclick = async () => {
+  const regType = document.getElementById("regType").value;
   const email = document.getElementById("regEmail").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
+  const inviteCode = document.getElementById("regInviteCode").value.trim();
   const code = document.getElementById("regCode").value.trim();
   const password = document.getElementById("regPassword").value;
   const secondPassword = document.getElementById("regSecondPassword").value;
   const status = document.getElementById("registerStatus");
-  status.className = "status"; status.textContent = "";
-  if (!email || !code || !password || !secondPassword) { status.textContent = "请填写完整信息"; status.classList.add("error"); return; }
-  if (Date.now() > codeExpireTime) { status.textContent = "验证码已过期"; status.classList.add("error"); return; }
-  if (code !== loginCode) { status.textContent = "验证码错误"; status.classList.add("error"); return; }
+  status.className = "status";
+  status.textContent = "";
+
+  if (!password || !secondPassword) { status.textContent = "请填写密码和二级密码"; status.classList.add("error"); return; }
   if (password.length < 6 || secondPassword.length < 6) { status.textContent = "密码和二级密码至少6位"; status.classList.add("error"); return; }
+
+  if (regType === "email" || regType === "both") {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { status.textContent = "请输入正确邮箱"; status.classList.add("error"); return; }
+    if (!code) { status.textContent = "请输入邮箱验证码"; status.classList.add("error"); return; }
+    if (Date.now() > codeExpireTime) { status.textContent = "验证码已过期"; status.classList.add("error"); return; }
+    if (code !== loginCode) { status.textContent = "验证码错误"; status.classList.add("error"); return; }
+  }
+
+  if (regType === "phone" || regType === "both") {
+    if (!phone || !/^1\d{10}$/.test(phone)) { status.textContent = "请输入正确手机号"; status.classList.add("error"); return; }
+    if (!inviteCode) { status.textContent = "请输入邀请码"; status.classList.add("error"); return; }
+  }
+
   try {
     const d = await loadData();
-    const existing = getUserByEmail(d, email);
 
-    if (existing && !existing.password) {
-      existing.password = password;
-      existing.secondPassword = secondPassword;
-      await saveData(d);
-      currentUser = { email: existing.email, nickname: existing.nickname, avatar: existing.avatar };
-      localStorage.setItem("email_user", JSON.stringify(currentUser));
-      status.textContent = "密码设置成功，已自动登录";
-      status.classList.add("success");
-      setTimeout(() => {
-        document.getElementById("loginModal").style.display = "none";
-        clearAuthFields();
-        renderMe();
-        updatePublishUI();
-      }, 600);
-      return;
+    if (email) {
+      const existingEmailUser = d.users.find(u => u.email === email);
+      if (existingEmailUser) {
+        if (!existingEmailUser.isDeleted) {
+          status.textContent = "该邮箱已注册，请直接登录";
+          status.classList.add("error");
+          return;
+        }
+        if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
+        d.pendingRegistrations.push({
+          id: "pr_" + Date.now(),
+          email: email,
+          phone: phone || null,
+          password: password,
+          secondPassword: secondPassword,
+          time: nowTs()
+        });
+        await saveData(d);
+        status.textContent = "该账号曾被删除，注册申请已提交管理员审核";
+        status.classList.add("success");
+        return;
+      }
     }
 
-    if (existing && existing.password) {
-      status.textContent = "该邮箱已注册，请直接登录";
-      status.classList.add("error");
-      return;
+    if (phone) {
+      const existingPhoneUser = d.users.find(u => u.phone === phone);
+      if (existingPhoneUser) {
+        if (!existingPhoneUser.isDeleted) {
+          status.textContent = "该手机号已注册";
+          status.classList.add("error");
+          return;
+        }
+        if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
+        d.pendingRegistrations.push({
+          id: "pr_" + Date.now(),
+          email: email || null,
+          phone: phone,
+          password: password,
+          secondPassword: secondPassword,
+          time: nowTs()
+        });
+        await saveData(d);
+        status.textContent = "该账号曾被删除，注册申请已提交管理员审核";
+        status.classList.add("success");
+        return;
+      }
+    }
+
+    let inviteIndex = -1;
+    if (inviteCode) {
+      if (!Array.isArray(d.invites)) d.invites = [];
+      inviteIndex = d.invites.findIndex(inv => inv.code === inviteCode);
+      if (inviteIndex === -1) {
+        status.textContent = "邀请码不存在";
+        status.classList.add("error");
+        return;
+      }
+      if (d.invites[inviteIndex].usedBy) {
+        status.textContent = "此码已被使用，已报废";
+        status.classList.add("error");
+        return;
+      }
     }
 
     const newUser = {
-      email: email,
-      nickname: email.split("@")[0],
+      email: email || null,
+      phone: phone || null,
+      nickname: email ? email.split("@")[0] : phone,
       avatar: "",
       password: password,
       secondPassword: secondPassword,
@@ -1079,11 +1152,21 @@ document.getElementById("registerBtn").onclick = async () => {
       followers: [],
       likedPosts: [],
       vBadge: null,
+      isDeleted: false,
+      bannedUntil: 0,
+      banReason: "",
       createdAt: Date.now()
     };
     d.users.push(newUser);
+
+    if (inviteIndex !== -1) {
+      d.invites[inviteIndex].usedBy = email || phone;
+      d.invites[inviteIndex].usedAt = Date.now();
+    }
+
     await saveData(d);
-    currentUser = { email: newUser.email, nickname: newUser.nickname, avatar: newUser.avatar };
+
+    currentUser = { email: newUser.email, phone: newUser.phone, nickname: newUser.nickname, avatar: "" };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
     status.textContent = "注册成功，已自动登录";
     status.classList.add("success");
@@ -1094,15 +1177,18 @@ document.getElementById("registerBtn").onclick = async () => {
       updatePublishUI();
     }, 600);
   } catch (e) {
-    status.textContent = e.message; status.classList.add("error");
+    status.textContent = e.message;
+    status.classList.add("error");
   }
 };
 
 function clearAuthFields() {
-  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginAccount").value = "";
   document.getElementById("loginPassword").value = "";
   document.getElementById("loginSecondPassword").value = "";
   document.getElementById("regEmail").value = "";
+  document.getElementById("regPhone").value = "";
+  document.getElementById("regInviteCode").value = "";
   document.getElementById("regCode").value = "";
   document.getElementById("regPassword").value = "";
   document.getElementById("regSecondPassword").value = "";
@@ -1120,58 +1206,57 @@ async function renderMe() {
   document.getElementById("loggedIn").style.display = "block";
   const d = await loadData();
   cachedData = d;
-  const me = getUserByEmail(d, currentUser.email);
+  const me = getUserByIdentifier(d, currentUser.email || currentUser.phone);
   if (!me) return;
   document.getElementById("myNickname").textContent = me.nickname;
-  document.getElementById("myEmail").textContent = me.email;
+  document.getElementById("myEmail").textContent = me.email || me.phone || "";
   document.getElementById("myAvatar").innerHTML = me.avatar ? `<img src="${escapeHtml(me.avatar)}">` : (me.nickname || "我")[0];
   document.getElementById("myVBadge").innerHTML = getVBadgeHtml(me.vBadge);
   document.getElementById("myFollowing").querySelector(".stat-num").textContent = (me.following || []).length;
   document.getElementById("myFollowers").querySelector(".stat-num").textContent = (me.followers || []).length;
-  document.getElementById("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => p.authorEmail === me.email).reduce((s, p) => s + (p.likes || 0), 0);
+  document.getElementById("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => p.authorEmail === me.email || p.authorPhone === me.phone).reduce((s, p) => s + (p.likes || 0), 0);
   document.getElementById("anonSetting").checked = me.isAnonymous || false;
-  const myPosts = d.posts.filter(p => p.authorEmail === me.email);
+  const myPosts = d.posts.filter(p => p.authorEmail === me.email || p.authorPhone === me.phone);
   renderPosts(myPosts, "myPostsList");
   const fl = document.getElementById("myFollowingList");
   fl.innerHTML = (me.following || []).length ? me.following.map(f => {
-    const u = getUserByEmail(d, f);
-    return u ? `<div class="card" style="display:flex;align-items:center;gap:10px;"><div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div><button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${getFollowBtnText(u, me.email)}</button></div>` : "";
+    const u = getUserByIdentifier(d, f);
+    return u ? `<div class="card" style="display:flex;align-items:center;gap:10px;"><div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div><button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${getFollowBtnText(u, me.email || me.phone)}</button></div>` : "";
   }).join("") : '<p class="hint">暂无关注</p>';
 
-  // 我的粉丝列表
   const followersList = document.getElementById("myFollowersList");
-  const followers = (me.followers || []).map(f => getUserByEmail(d, f)).filter(Boolean);
+  const followers = (me.followers || []).map(f => getUserByIdentifier(d, f)).filter(Boolean);
   followersList.innerHTML = followers.length ? followers.map(u => {
-    const btnText = getFollowBtnText(u, me.email);
+    const btnText = getFollowBtnText(u, me.email || me.phone);
     return `<div class="card" style="display:flex;align-items:center;gap:10px;">
       <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div>
       <div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div>
-      <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email)}')">${btnText}</button>
+      <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${btnText}</button>
     </div>`;
   }).join("") : '<p class="hint">暂无粉丝</p>';
 
-  const msgs = d.messages.filter(m => m.toEmail === me.email || m.fromEmail === me.email);
+  const msgs = d.messages.filter(m => m.toEmail === me.email || m.fromEmail === me.email || m.toPhone === me.phone || m.fromPhone === me.phone);
   const msgContainer = document.getElementById("msgList");
   if (!msgs.length) {
     msgContainer.innerHTML = '<p class="hint">暂无消息</p>';
   } else {
     const sessions = {};
     msgs.forEach(m => {
-      const other = m.fromEmail === me.email ? m.toEmail : m.fromEmail;
+      const other = m.fromEmail === me.email || m.fromPhone === me.phone ? (m.toEmail || m.toPhone) : (m.fromEmail || m.fromPhone);
       if (!sessions[other]) sessions[other] = [];
       sessions[other].push(m);
     });
-    msgContainer.innerHTML = Object.keys(sessions).map(otherEmail => {
-      const list = sessions[otherEmail].sort((a, b) => a.time - b.time);
+    msgContainer.innerHTML = Object.keys(sessions).map(otherId => {
+      const list = sessions[otherId].sort((a, b) => a.time - b.time);
       const lastMsg = list[list.length - 1];
-      const otherUser = getUserByEmail(d, otherEmail);
-      const otherName = otherUser ? (otherUser.nickname || otherEmail.split("@")[0]) : otherEmail.split("@")[0];
+      const otherUser = getUserByIdentifier(d, otherId);
+      const otherName = otherUser ? (otherUser.nickname || otherId.split("@")[0]) : otherId.split("@")[0];
       const otherAvatar = otherUser ? otherUser.avatar : "";
       const otherV = otherUser ? otherUser.vBadge : null;
-      const unreadCount = list.filter(m => m.toEmail === me.email && !m.read).length;
+      const unreadCount = list.filter(m => (m.toEmail === me.email || m.toPhone === me.phone) && !m.read).length;
       const previewText = lastMsg.type === "image" ? "[图片]" : escapeHtml(lastMsg.content);
       return `
-        <div class="session-item" onclick="openChat('${escapeHtml(otherEmail)}')">
+        <div class="session-item" onclick="openChat('${escapeHtml(otherId)}')">
           <div class="session-avatar">
             ${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}">` : escapeHtml(otherName[0])}
             ${getMiniV(otherV)}
@@ -1189,12 +1274,11 @@ async function renderMe() {
     }).join("");
   }
 }
-
 document.getElementById("editNameBtn").onclick = async () => {
   const name = prompt("请输入新用户名：", currentUser.nickname || "");
   if (!name || !name.trim()) return;
   const d = await loadData();
-  const u = getUserByEmail(d, currentUser.email);
+  const u = getUserByIdentifier(d, currentUser.email || currentUser.phone);
   if (u) u.nickname = name.trim();
   await saveData(d);
   currentUser.nickname = name.trim();
@@ -1203,7 +1287,7 @@ document.getElementById("editNameBtn").onclick = async () => {
 };
 document.getElementById("saveSettingBtn").onclick = async () => {
   const d = await loadData();
-  const u = getUserByEmail(d, currentUser.email);
+  const u = getUserByIdentifier(d, currentUser.email || currentUser.phone);
   if (!u) return;
   u.isAnonymous = document.getElementById("anonSetting").checked;
   await saveData(d);
@@ -1226,7 +1310,7 @@ document.getElementById("avatarFileInput").onchange = async e => {
     try {
       const url = await uploadImage(b64, "avatars");
       const d = await loadData();
-      const u = getUserByEmail(d, currentUser.email);
+      const u = getUserByIdentifier(d, currentUser.email || currentUser.phone);
       if (u) u.avatar = url;
       await saveData(d);
       currentUser.avatar = url;
@@ -1237,13 +1321,13 @@ document.getElementById("avatarFileInput").onchange = async e => {
   });
 };
 
-function openChat(email) {
-  chatTarget = email;
+function openChat(identifier) {
+  chatTarget = identifier;
   const d = cachedData || null;
-  let otherName = email.split("@")[0];
+  let otherName = identifier.includes("@") ? identifier.split("@")[0] : identifier;
   let otherV = null;
   if (d) {
-    const otherUser = getUserByEmail(d, email);
+    const otherUser = getUserByIdentifier(d, identifier);
     if (otherUser) {
       otherName = otherUser.nickname || otherName;
       otherV = otherUser.vBadge || null;
@@ -1256,9 +1340,10 @@ function openChat(email) {
 async function renderChat() {
   const d = await loadData();
   cachedData = d;
-  const msgs = d.messages.filter(m => (m.fromEmail === currentUser.email && m.toEmail === chatTarget) || (m.fromEmail === chatTarget && m.toEmail === currentUser.email)).sort((a, b) => a.time - b.time);
+  const myId = currentUser.email || currentUser.phone;
+  const msgs = d.messages.filter(m => (m.fromEmail === myId && m.toEmail === chatTarget) || (m.fromEmail === chatTarget && m.toEmail === myId) || (m.fromPhone === myId && m.toPhone === chatTarget) || (m.fromPhone === chatTarget && m.toPhone === myId)).sort((a, b) => a.time - b.time);
   const chatBody = document.getElementById("chatMessages");
-  const otherUser = getUserByEmail(d, chatTarget);
+  const otherUser = getUserByIdentifier(d, chatTarget);
   let otherAvatarHtml = "";
   if (otherUser && otherUser.avatar) {
     otherAvatarHtml = `<img src="${escapeHtml(otherUser.avatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">`;
@@ -1267,7 +1352,7 @@ async function renderChat() {
     otherAvatarHtml = `<div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${escapeHtml(name[0])}</div>`;
   }
   chatBody.innerHTML = msgs.map(m => {
-    const isMe = m.fromEmail === currentUser.email;
+    const isMe = m.fromEmail === myId || m.fromPhone === myId;
     if (isMe) {
       return `
         <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-bottom:12px;">
@@ -1289,7 +1374,7 @@ async function renderChat() {
       `;
     }
   }).join("");
-  msgs.filter(m => m.toEmail === currentUser.email && !m.read).forEach(m => m.read = true);
+  msgs.filter(m => (m.toEmail === myId || m.toPhone === myId) && !m.read).forEach(m => m.read = true);
   await saveData(d);
   chatBody.scrollTop = chatBody.scrollHeight;
 }
@@ -1297,7 +1382,7 @@ document.getElementById("chatSendBtn").onclick = async () => {
   const v = document.getElementById("chatInput").value.trim();
   if (!v || !chatTarget) return;
   const d = await loadData();
-  d.messages.push({ id: "m_" + Date.now(), fromEmail: currentUser.email, toEmail: chatTarget, content: v, type: "text", time: nowTs(), read: false });
+  d.messages.push({ id: "m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, toEmail: chatTarget.includes("@") ? chatTarget : null, toPhone: chatTarget.includes("@") ? null : chatTarget, content: v, type: "text", time: nowTs(), read: false });
   await saveData(d);
   document.getElementById("chatInput").value = "";
   renderChat();
@@ -1310,7 +1395,7 @@ document.getElementById("chatImageInput").onchange = async e => {
   compressImage(f, 800, 0.8, async b64 => {
     const url = await uploadImage(b64, "images");
     const d = await loadData();
-    d.messages.push({ id: "m_" + Date.now(), fromEmail: currentUser.email, toEmail: chatTarget, content: url, type: "image", time: nowTs(), read: false });
+    d.messages.push({ id: "m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, toEmail: chatTarget.includes("@") ? chatTarget : null, toPhone: chatTarget.includes("@") ? null : chatTarget, content: url, type: "image", time: nowTs(), read: false });
     await saveData(d);
     renderChat();
   });
@@ -1318,6 +1403,172 @@ document.getElementById("chatImageInput").onchange = async e => {
 document.getElementById("chatBackBtn").onclick = () => {
   document.getElementById("chatPage").classList.remove("open");
   renderMe();
+};
+
+function openCommentPage(postId) {
+  commentTargetPostId = postId;
+  replyToCommentId = null;
+  document.getElementById("commentInput").placeholder = "写下你的评论...";
+  document.getElementById("commentPage").classList.add("open");
+  renderCommentPage();
+}
+
+async function renderCommentPage() {
+  if (!commentTargetPostId) return;
+  const d = await loadData();
+  cachedData = d;
+  const post = d.posts.find(p => p.id === commentTargetPostId);
+  const comments = d.comments.filter(cm => cm.postId === commentTargetPostId).sort((a, b) => a.time - b.time);
+  const body = document.getElementById("commentBody");
+
+  if (!post) {
+    body.innerHTML = '<p class="hint">投稿不存在或已删除</p>';
+    return;
+  }
+
+  let html = '';
+  html += '<div class="comment-original-post">';
+  html += `
+    <div class="post-top">
+      <div class="avatar">${post.authorAvatar ? `<img src="${escapeHtml(post.authorAvatar)}">` : escapeHtml((post.authorName || "匿")[0])}${getMiniV(post.vBadge)}</div>
+      <div style="flex:1;">
+        <div class="post-name">${escapeHtml(post.authorName || "匿名")}${getVBadgeHtml(post.vBadge)}</div>
+        <div class="post-time">${formatTime(post.time)}</div>
+      </div>
+    </div>
+    <div class="post-content">${escapeHtml(post.content)}</div>
+  `;
+  if (post.images && post.images.length) {
+    html += '<div class="post-images">';
+    post.images.forEach(u => { html += `<img src="${escapeHtml(u)}" onclick="showLightbox('${escapeHtml(u)}')">`; });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  if (!comments.length) {
+    html += '<p class="hint">暂无评论，来抢沙发吧</p>';
+  } else {
+    html += comments.map(cm => {
+      const u = getUserByIdentifier(d, cm.authorEmail || cm.authorPhone);
+      const name = u ? (u.nickname || (cm.authorEmail || cm.authorPhone || "").split("@")[0]) : (cm.authorEmail || cm.authorPhone || "匿名");
+      const avatar = u ? u.avatar : "";
+      const vBadge = u ? u.vBadge : null;
+      let replyInfo = "";
+      if (cm.replyTo) {
+        const replied = comments.find(x => x.id === cm.replyTo);
+        if (replied) {
+          const ru = getUserByIdentifier(d, replied.authorEmail || replied.authorPhone);
+          const rname = ru ? (ru.nickname || (replied.authorEmail || replied.authorPhone || "").split("@")[0]) : (replied.authorEmail || replied.authorPhone || "匿名");
+          replyInfo = `<span style="color:var(--muted);font-size:12px;">回复 ${escapeHtml(rname)}：</span>`;
+        }
+      }
+      return `
+        <div class="comment-item">
+          <div class="avatar">${avatar ? `<img src="${escapeHtml(avatar)}">` : escapeHtml(name[0])}${getMiniV(vBadge)}</div>
+          <div class="comment-item-content">
+            <div class="comment-item-name">${escapeHtml(name)}${getVBadgeHtml(vBadge)}</div>
+            <div class="comment-item-text">${replyInfo}${escapeHtml(cm.content)}</div>
+            <div class="comment-item-time">${formatTime(cm.time)}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+              <button class="comment-item-reply-btn" data-comment-id="${cm.id}" data-comment-name="${escapeHtml(name)}">回复</button>
+              <button class="comment-item-more-btn" data-comment-id="${cm.id}">⋮</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  body.innerHTML = html;
+
+  body.querySelectorAll(".comment-item-reply-btn").forEach(btn => {
+    btn.onclick = () => {
+      replyToCommentId = btn.dataset.commentId;
+      const name = btn.dataset.commentName;
+      document.getElementById("commentInput").placeholder = "回复 " + name + "...";
+      document.getElementById("commentInput").focus();
+    };
+  });
+
+  body.querySelectorAll(".comment-item-more-btn").forEach(btn => {
+    btn.onclick = () => {
+      const commentId = btn.dataset.commentId;
+      if (!currentUser) { alert("请先登录"); return; }
+      reportTargetCommentId = commentId;
+      document.getElementById("reportModal").style.display = "flex";
+    };
+  });
+}
+
+async function reportComment(commentId) {
+  try {
+    const d = await loadData();
+    if (!Array.isArray(d.reports)) d.reports = [];
+    d.reports.push({
+      id: "r_" + Date.now(),
+      commentId: commentId,
+      postId: commentTargetPostId,
+      reporter: currentUser.email || currentUser.phone,
+      time: nowTs(),
+      status: "pending"
+    });
+    await saveData(d);
+    alert("举报成功，管理员会尽快处理");
+  } catch (e) {
+    alert("举报失败：" + e.message);
+  }
+}
+
+document.getElementById("reportConfirmBtn").onclick = async () => {
+  if (reportTargetCommentId) {
+    await reportComment(reportTargetCommentId);
+  }
+  document.getElementById("reportModal").style.display = "none";
+  reportTargetCommentId = null;
+};
+document.getElementById("reportCancelBtn").onclick = () => {
+  document.getElementById("reportModal").style.display = "none";
+  reportTargetCommentId = null;
+};
+document.getElementById("reportModal").onclick = e => {
+  if (e.target === document.getElementById("reportModal")) {
+    document.getElementById("reportModal").style.display = "none";
+    reportTargetCommentId = null;
+  }
+};
+
+document.getElementById("commentBackBtn").onclick = () => {
+  document.getElementById("commentPage").classList.remove("open");
+  commentTargetPostId = null;
+  replyToCommentId = null;
+};
+
+document.getElementById("commentSendBtn").onclick = async () => {
+  if (!currentUser) { alert("请先登录"); return; }
+  const content = document.getElementById("commentInput").value.trim();
+  if (!content || !commentTargetPostId) return;
+  const d = await loadData();
+  const u = getUserByIdentifier(d, currentUser.email || currentUser.phone) || {};
+  const isAnon = u.isAnonymous || false;
+  d.comments.push({
+    id: "c_" + Date.now(),
+    postId: commentTargetPostId,
+    authorEmail: currentUser.email || null,
+    authorPhone: currentUser.phone || null,
+    authorName: isAnon ? "匿名" : u.nickname || (currentUser.email || currentUser.phone || "").split("@")[0],
+    authorAvatar: isAnon ? "" : u.avatar || "",
+    vBadge: isAnon ? null : u.vBadge || null,
+    content: content,
+    time: nowTs(),
+    replyTo: replyToCommentId,
+    isAnonymous: isAnon
+  });
+  await saveData(d);
+  cachedData = d;
+  document.getElementById("commentInput").value = "";
+  replyToCommentId = null;
+  document.getElementById("commentInput").placeholder = "写下你的评论...";
+  renderCommentPage();
 };
 
 function renderAdmin() {
@@ -1330,6 +1581,9 @@ function renderAdmin() {
     renderAdminReview();
     renderAdminManage();
     renderAdminUserList();
+    renderAdminInviteList();
+    renderAdminReports();
+    renderAdminPendingRegs();
   }
 }
 document.getElementById("adminLoginBtn").onclick = async () => {
@@ -1374,29 +1628,135 @@ async function renderAdminManage() {
 async function renderAdminUserList() {
   const d = await loadData();
   const c = document.getElementById("adminUserList");
-  c.innerHTML = d.users.map(u => `
-    <div class="card" style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+  const activeUsers = d.users.filter(u => !u.isDeleted);
+  if (!activeUsers.length) { c.innerHTML = '<p class="hint">暂无用户</p>'; return; }
+  c.innerHTML = "";
+  activeUsers.forEach(u => {
+    const banned = u.bannedUntil && u.bannedUntil > nowTs();
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
+    div.innerHTML = `
       <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div>
-      <div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}<div class="hint">${escapeHtml(u.email)}</div></div>
-      <button class="ghost" style="width:auto;" onclick="setVBadge('${escapeHtml(u.email)}','red')">红色V</button>
-      <button class="ghost" style="width:auto;" onclick="setVBadge('${escapeHtml(u.email)}','blue')">蓝色V</button>
-    </div>
-  `).join("") || '<p class="hint">暂无用户</p>';
+      <div style="flex:1;">
+        <b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}
+        <div class="hint">${escapeHtml(u.email || u.phone || "")}${banned ? "（已封禁）" : ""}</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="ghost small" data-action="redV" data-id="${escapeHtml(u.email || u.phone)}">红色V</button>
+        <button class="ghost small" data-action="blueV" data-id="${escapeHtml(u.email || u.phone)}">蓝色V</button>
+        <button class="ghost small" data-action="ban-user" data-id="${escapeHtml(u.email || u.phone)}">${banned ? "解封" : "封号"}</button>
+        <button class="danger small" data-action="delete-account" data-id="${escapeHtml(u.email || u.phone)}">删除账号</button>
+      </div>
+    `;
+    c.appendChild(div);
+  });
 }
-async function setVBadge(email, type) {
-  let text = "";
-  if (type === "red") {
-    text = prompt("输入红色V标内容（默认：表白墙官方号）：", "表白墙官方号") || "表白墙官方号";
-  } else if (type === "blue") {
-    text = prompt("输入蓝色V标内容：", "") || "";
-    if (!text) return alert("内容不能为空");
+
+function generateInviteCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  const d = await loadData();
-  const u = getUserByEmail(d, email);
-  if (u) u.vBadge = { type: type, text: text };
-  await saveData(d);
-  renderAdminUserList();
+  return code;
 }
+
+async function renderAdminInviteList() {
+  const d = await loadData();
+  const c = document.getElementById("adminInviteList");
+  if (!d.invites || !d.invites.length) {
+    c.innerHTML = '<p class="hint">暂无邀请码</p>';
+    return;
+  }
+  c.innerHTML = d.invites.map(inv => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span style="font-weight:700;font-family:monospace;">${escapeHtml(inv.code)}</span>
+      ${inv.usedBy
+        ? `<span style="color:var(--danger);font-size:13px;">此码已被使用，已报废</span>`
+        : `<span style="color:var(--ok);font-size:13px;">未使用</span>`}
+    </div>
+  `).join("");
+}
+
+async function renderAdminReports() {
+  const d = await loadData();
+  const c = document.getElementById("adminReportList");
+  if (!Array.isArray(d.reports)) d.reports = [];
+  const pending = d.reports.filter(r => r.status === "pending");
+  if (!pending.length) { c.innerHTML = '<p class="hint">暂无举报</p>'; return; }
+  c.innerHTML = "";
+  pending.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "post";
+    const comment = d.comments.find(cm => cm.id === r.commentId);
+    div.innerHTML = `
+      <div class="post-content">${comment ? escapeHtml(comment.content) : "评论已删除"}</div>
+      <div class="post-time">举报人：${escapeHtml(r.reporter)} · ${formatTime(r.time)}</div>
+      <div class="post-actions">
+        <button class="danger small" data-action="delete-reported-comment" data-id="${r.commentId}" data-report="${r.id}">删除评论</button>
+        <button class="ghost small" data-action="ignore-report" data-id="${r.id}">忽略</button>
+      </div>
+    `;
+    c.appendChild(div);
+  });
+}
+
+async function renderAdminPendingRegs() {
+  const d = await loadData();
+  const c = document.getElementById("adminPendingRegList");
+  if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
+  if (!d.pendingRegistrations.length) { c.innerHTML = '<p class="hint">暂无待审核注册</p>'; return; }
+  c.innerHTML = "";
+  d.pendingRegistrations.forEach(reg => {
+    const div = document.createElement("div");
+    div.className = "post";
+    div.innerHTML = `
+      <div class="post-content">${escapeHtml(reg.email || reg.phone)}</div>
+      <div class="post-actions">
+        <button class="ok small" data-action="approve-reg" data-id="${reg.id}">同意</button>
+        <button class="danger small" data-action="reject-reg" data-id="${reg.id}">拒绝</button>
+      </div>
+    `;
+    c.appendChild(div);
+  });
+}
+
+document.getElementById("generateInviteBtn").onclick = async () => {
+  try {
+    const d = await loadData();
+    const code = generateInviteCode();
+    d.invites.push({ code: code, usedBy: null, usedAt: null, createdAt: Date.now() });
+    await saveData(d);
+    cachedData = d;
+    document.getElementById("newInviteCode").textContent = code;
+    document.getElementById("inviteModal").style.display = "flex";
+    renderAdminInviteList();
+  } catch (e) {
+    alert("生成失败：" + e.message);
+  }
+};
+
+document.getElementById("copyInviteBtn").onclick = async () => {
+  const code = document.getElementById("newInviteCode").textContent;
+  try {
+    await navigator.clipboard.writeText(code);
+    document.getElementById("inviteModal").style.display = "none";
+  } catch (e) {
+    const input = document.createElement("input");
+    input.value = code;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+    document.getElementById("inviteModal").style.display = "none";
+  }
+};
+
+document.getElementById("closeInviteModalBtn").onclick = () => {
+  document.getElementById("inviteModal").style.display = "none";
+};
+
 document.getElementById("goldVerifyBtn").onclick = async () => {
   const name = document.getElementById("goldName").value.trim();
   const email = document.getElementById("goldEmail").value.trim();
@@ -1407,7 +1767,7 @@ document.getElementById("goldVerifyBtn").onclick = async () => {
   if (idCard !== CONFIG.goldAnswerIdCard) return alert("创造者身份证不正确");
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
-  const u = getUserByEmail(d, currentUser.email);
+  const u = getUserByIdentifier(d, currentUser.email || currentUser.phone);
   if (!u) return alert("当前账号不存在，请重新登录");
   u.vBadge = { type: "gold", text: "网站开发者创始人" };
   await saveData(d);
@@ -1417,6 +1777,97 @@ document.getElementById("goldVerifyBtn").onclick = async () => {
   document.getElementById("goldIdCard").value = "";
   renderMe();
 };
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+
+  if (action === "ban-user") {
+    const d = await loadData();
+    const u = getUserByIdentifier(d, id);
+    if (!u) return;
+    if (u.bannedUntil && u.bannedUntil > nowTs()) {
+      u.bannedUntil = 0;
+      u.banReason = "";
+      alert("已解封");
+    } else {
+      const days = prompt("请输入封禁天数（0为永久）：", "7");
+      if (days === null) return;
+      const daysNum = parseInt(days) || 0;
+      u.bannedUntil = daysNum === 0 ? 9999999999 : nowTs() + daysNum * 86400;
+      u.banReason = prompt("请输入封禁原因：", "违规操作") || "违规操作";
+      alert("已封禁");
+    }
+    await saveData(d);
+    renderAdminUserList();
+  }
+
+  if (action === "delete-account") {
+    if (!confirm("确定删除该账号？删除后该用户重新注册需要管理员审核")) return;
+    const d = await loadData();
+    const u = getUserByIdentifier(d, id);
+    if (u) u.isDeleted = true;
+    await saveData(d);
+    renderAdminUserList();
+  }
+
+  if (action === "delete-reported-comment") {
+    if (!confirm("确定删除这条评论？")) return;
+    const d = await loadData();
+    d.comments = d.comments.filter(cm => cm.id !== id);
+    const report = d.reports.find(r => r.id === btn.dataset.report);
+    if (report) report.status = "handled";
+    await saveData(d);
+    renderAdminReports();
+  }
+
+  if (action === "ignore-report") {
+    const d = await loadData();
+    const report = d.reports.find(r => r.id === id);
+    if (report) report.status = "ignored";
+    await saveData(d);
+    renderAdminReports();
+  }
+
+  if (action === "approve-reg") {
+    const d = await loadData();
+    const reg = d.pendingRegistrations.find(r => r.id === id);
+    if (!reg) return;
+    const existing = getUserByIdentifier(d, reg.email || reg.phone);
+    if (existing) {
+      existing.isDeleted = false;
+      existing.password = reg.password;
+      existing.secondPassword = reg.secondPassword;
+    }
+    d.pendingRegistrations = d.pendingRegistrations.filter(r => r.id !== id);
+    await saveData(d);
+    renderAdminPendingRegs();
+  }
+
+  if (action === "reject-reg") {
+    const d = await loadData();
+    d.pendingRegistrations = d.pendingRegistrations.filter(r => r.id !== id);
+    await saveData(d);
+    renderAdminPendingRegs();
+  }
+
+  if (action === "redV" || action === "blueV") {
+    let text = "";
+    if (action === "redV") {
+      text = prompt("输入红色V标内容（默认：表白墙官方号）：", "表白墙官方号") || "表白墙官方号";
+    } else {
+      text = prompt("输入蓝色V标内容：", "") || "";
+      if (!text) return;
+    }
+    const d = await loadData();
+    const u = getUserByIdentifier(d, id);
+    if (u) u.vBadge = { type: action === "redV" ? "red" : "blue", text: text };
+    await saveData(d);
+    renderAdminUserList();
+  }
+});
 
 function showLightbox(url) {
   const box = document.createElement("div");
