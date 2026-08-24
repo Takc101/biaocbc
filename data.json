@@ -77,7 +77,9 @@
       },
       "createdAt": 1787426594785,
       "password": "5201bzcbcnb",
-      "secondPassword": "cbcnb1bz"
+      "secondPassword": "cbcnb1bz",
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "3445964753@qq.com",
@@ -97,7 +99,9 @@
         "type": "blue",
         "text": "测试人员"
       },
-      "createdAt": 1787430129068
+      "createdAt": 1787430129068,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "1813704268@qq.com",
@@ -115,7 +119,9 @@
         "type": "blue",
         "text": "鸡巴夹断之人"
       },
-      "createdAt": 1787433112994
+      "createdAt": 1787433112994,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "2516159850@qq.com",
@@ -138,7 +144,9 @@
         "type": "red",
         "text": "华中表白墙官方号"
       },
-      "createdAt": 1787446107446
+      "createdAt": 1787446107446,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "303@bcj278.wecom.work",
@@ -153,7 +161,9 @@
         "p_1787429909181"
       ],
       "vBadge": null,
-      "createdAt": 1787542765937
+      "createdAt": 1787542765937,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "3643443670@qq.com",
@@ -168,7 +178,9 @@
       "followers": [],
       "likedPosts": [],
       "vBadge": null,
-      "createdAt": 1787546992253
+      "createdAt": 1787546992253,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": "3584804121@qq.com",
@@ -183,7 +195,9 @@
         "p_1787429909181"
       ],
       "vBadge": null,
-      "createdAt": 1787571312053
+      "createdAt": 1787571312053,
+      "isDeleted": false,
+      "bannedUntil": 0
     },
     {
       "email": null,
@@ -197,7 +211,9 @@
       "followers": [],
       "likedPosts": [],
       "vBadge": null,
-      "createdAt": 1787585513235
+      "createdAt": 1787585513235,
+      "isDeleted": false,
+      "bannedUntil": 0
     }
   ],
   "messages": [
@@ -345,5 +361,16 @@
       "usedAt": 1787585513235,
       "createdAt": 1787585454860
     }
-  ]
+  ],
+  "reports": [
+    {
+      "id": "r_1787588690636",
+      "commentId": "c_1787586056395",
+      "postId": "p_1787429909181",
+      "reporter": "15629142155",
+      "time": 1787588690,
+      "status": "pending"
+    }
+  ],
+  "pendingRegistrations": []
 }
