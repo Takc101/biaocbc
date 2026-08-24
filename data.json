@@ -275,7 +275,7 @@
       "content": "666",
       "type": "text",
       "time": 1787547609,
-      "read": false
+      "read": true
     }
   ]
 }
