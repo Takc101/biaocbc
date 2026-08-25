@@ -1,7 +1,25 @@
 {
   "adminPassword": "admin123",
   "posts": [],
-  "users": [],
+  "users": [
+    {
+      "email": "3250859482@qq.com",
+      "phone": null,
+      "nickname": "3250859482",
+      "avatar": "",
+      "password": "HJ830918",
+      "secondPassword": "HJ830918",
+      "isAnonymous": false,
+      "following": [],
+      "followers": [],
+      "likedPosts": [],
+      "vBadge": null,
+      "isDeleted": false,
+      "bannedUntil": 0,
+      "banReason": "",
+      "createdAt": 1787669974313
+    }
+  ],
   "messages": [],
   "comments": [],
   "invites": [],
