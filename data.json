@@ -1,6 +1,22 @@
 {
   "adminPassword": "admin123",
-  "posts": [],
+  "posts": [
+    {
+      "id": "p_1787670005031",
+      "type": "其他",
+      "content": "学校篮球场，你们一定要小心啊，今天给我摔的😖😖😖",
+      "time": 1787670005,
+      "likes": 0,
+      "status": "pending",
+      "images": [],
+      "authorEmail": "3250859482@qq.com",
+      "authorPhone": null,
+      "authorName": "3250859482",
+      "authorAvatar": "",
+      "vBadge": null,
+      "isAnonymous": false
+    }
+  ],
   "users": [
     {
       "email": "3250859482@qq.com",
