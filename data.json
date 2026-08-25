@@ -23,7 +23,7 @@
       "type": "暗恋",
       "content": "我喜欢你李钰萱 ，虽然你说等我成年，但我真不想看到你和别人谈",
       "time": 1787571451,
-      "likes": 1,
+      "likes": 2,
       "status": "approved",
       "images": [],
       "authorEmail": "3584804121@qq.com",
@@ -197,7 +197,8 @@
       "following": [],
       "followers": [],
       "likedPosts": [
-        "p_1787429909181"
+        "p_1787429909181",
+        "p_1787571451257"
       ],
       "vBadge": null,
       "createdAt": 1787585513235,
