@@ -291,6 +291,14 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
       </div>
 
       <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">弹窗设置</div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <input type="checkbox" id="welcomeModalDisabledSetting" style="width:auto;margin:0;"> 关闭欢迎弹窗（所有人不再显示）
+        </label>
+        <button class="ghost" id="saveWelcomeModalSettingBtn">保存设置</button>
+      </div>
+
+      <div class="card">
         <div style="font-weight:800;margin-bottom:10px;">举报处理</div>
         <div id="adminReportList"><p class="hint">暂无举报</p></div>
       </div>
@@ -431,22 +439,30 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 </div>
 <script>
 const CONFIG = {
-  owner: "Takc101",
-  repo: "biaocbc",
-  tokenPartA: "github_pat_11BYJ4FEA0UGT1emjfFG0P",
-  tokenPartB: "_XmDt3DYlw1xjgjNCmKj",
-  tokenPartC: "yJHfFgo0sgLgAjsiaAGdfrf8I75N6YPAerYXP7s0",
+  // 数据仓库（私有）
+  dataOwner: "Takc101",
+  dataRepo: "assse",
+
+  // 图片仓库（公开）
+  imgOwner: "Takc101",
+  imgRepo: "biaocbc",
+
+  tokenPartA: "github_pat_11BYJ4FEA0nIH9JjC8s2dp_",
+  tokenPartB: "ZKIXWyuiuQfQOHhmIbZmTIEvbwj9gGkDI",
+  tokenPartC: "7b1UQvDQ1dFPQUD7Q27ovIQmXO",
+
   branch: "main",
   dataPath: "data.json",
+
   emailjsServiceId: "service_5201bzcbc",
   emailjsTemplateId: "template_p09b9qc",
-  emailjsPublicKey: "xVmknOp8YZOsl75CF",
-  goldAnswerName: "陈宝昌",
-  goldAnswerEmail: "520chenbaochang@gmail.com",
-  goldAnswerIdCard: "421224201106013734"
+  emailjsPublicKey: "xVmknOp8YZOsl75CF"
 };
+
 CONFIG.token = CONFIG.tokenPartA + CONFIG.tokenPartB + CONFIG.tokenPartC;
-CONFIG.apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dataPath}`;
+CONFIG.dataApiUrl = `https://api.github.com/repos/${CONFIG.dataOwner}/${CONFIG.dataRepo}/contents/${CONFIG.dataPath}`;
+CONFIG.imgApiBase = `https://api.github.com/repos/${CONFIG.imgOwner}/${CONFIG.imgRepo}/contents`;
+CONFIG.imgRawBase = `https://raw.githubusercontent.com/${CONFIG.imgOwner}/${CONFIG.imgRepo}/${CONFIG.branch}`;
 
 let cachedData = null;
 let currentUser = JSON.parse(localStorage.getItem("email_user") || "null");
@@ -459,6 +475,8 @@ let codeTimer = null;
 let commentTargetPostId = null;
 let replyToCommentId = null;
 let reportTargetCommentId = null;
+let welcomeTimer = null;
+let welcomeCountdown = 10;
 
 const nowTs = () => Math.floor(Date.now() / 1000);
 
@@ -490,10 +508,10 @@ async function sendVerificationEmail(email, code) {
 }
 
 async function loadData() {
-  const res = await fetch(CONFIG.apiUrl, {
+  const res = await fetch(CONFIG.dataApiUrl, {
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
-  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], comments: [], invites: [], reports: [], pendingRegistrations: [], sha: null };
+  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], comments: [], invites: [], reports: [], pendingRegistrations: [], goldVerify: { name: "陈宝昌", email: "520chenbaochang@gmail.com", idCard: "421224201106013734" }, welcomeModalDisabled: false, sha: null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
   let c = "";
@@ -507,6 +525,8 @@ async function loadData() {
   if (!Array.isArray(d.invites)) d.invites = [];
   if (!Array.isArray(d.reports)) d.reports = [];
   if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
+  if (!d.goldVerify) d.goldVerify = { name: "陈宝昌", email: "520chenbaochang@gmail.com", idCard: "421224201106013734" };
+  if (typeof d.welcomeModalDisabled !== "boolean") d.welcomeModalDisabled = false;
   d.posts.forEach(p => {
     if (typeof p.likes !== "number") p.likes = 0;
     if (!p.status) p.status = "approved";
@@ -526,11 +546,11 @@ async function loadData() {
   return d;
 }
 async function saveData(d) {
-  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages, comments: d.comments, invites: d.invites, reports: d.reports, pendingRegistrations: d.pendingRegistrations }, null, 2);
+  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages, comments: d.comments, invites: d.invites, reports: d.reports, pendingRegistrations: d.pendingRegistrations, goldVerify: d.goldVerify, welcomeModalDisabled: d.welcomeModalDisabled }, null, 2);
   const b64 = btoa(unescape(encodeURIComponent(json)));
   const body = { message: "update data", content: b64, branch: CONFIG.branch };
   if (d.sha) body.sha = d.sha;
-  const res = await fetch(CONFIG.apiUrl, {
+  const res = await fetch(CONFIG.dataApiUrl, {
     method: "PUT",
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
     body: JSON.stringify(body)
@@ -539,13 +559,13 @@ async function saveData(d) {
 }
 async function uploadImage(base64, folder) {
   const name = folder + "_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
-  const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${folder}/${name}`, {
+  const res = await fetch(`${CONFIG.imgApiBase}/${folder}/${name}`, {
     method: "PUT",
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
     body: JSON.stringify({ message: "upload", content: base64, branch: CONFIG.branch })
   });
   if (!res.ok && res.status !== 201) throw new Error("上传失败: HTTP " + res.status);
-  return `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${folder}/${name}`;
+  return `${CONFIG.imgRawBase}/${folder}/${name}`;
 }
 
 function getUserByIdentifier(d, id) {
@@ -1586,6 +1606,7 @@ function renderAdmin() {
     renderAdminInviteList();
     renderAdminReports();
     renderAdminPendingRegs();
+    renderWelcomeModalSetting();
   }
 }
 document.getElementById("adminLoginBtn").onclick = async () => {
@@ -1724,6 +1745,20 @@ async function renderAdminPendingRegs() {
   });
 }
 
+async function renderWelcomeModalSetting() {
+  const d = await loadData();
+  cachedData = d;
+  document.getElementById("welcomeModalDisabledSetting").checked = d.welcomeModalDisabled || false;
+}
+
+document.getElementById("saveWelcomeModalSettingBtn").onclick = async () => {
+  const d = await loadData();
+  d.welcomeModalDisabled = document.getElementById("welcomeModalDisabledSetting").checked;
+  await saveData(d);
+  cachedData = d;
+  alert("弹窗设置已保存");
+};
+
 document.getElementById("generateInviteBtn").onclick = async () => {
   try {
     const d = await loadData();
@@ -1764,11 +1799,12 @@ document.getElementById("goldVerifyBtn").onclick = async () => {
   const email = document.getElementById("goldEmail").value.trim();
   const idCard = document.getElementById("goldIdCard").value.trim();
   if (!name || !email || !idCard) return alert("请填写完整信息");
-  if (name !== CONFIG.goldAnswerName) return alert("创造者名字不正确");
-  if (email !== CONFIG.goldAnswerEmail) return alert("创造者邮箱不正确");
-  if (idCard !== CONFIG.goldAnswerIdCard) return alert("创造者身份证不正确");
-  if (!currentUser) return alert("请先登录");
   const d = await loadData();
+  if (!d.goldVerify) return alert("金V验证数据不存在");
+  if (name !== d.goldVerify.name) return alert("创造者名字不正确");
+  if (email !== d.goldVerify.email) return alert("创造者邮箱不正确");
+  if (idCard !== d.goldVerify.idCard) return alert("创造者身份证不正确");
+  if (!currentUser) return alert("请先登录");
   const u = getUserByIdentifier(d, currentUser.email || currentUser.phone);
   if (!u) return alert("当前账号不存在，请重新登录");
   u.vBadge = { type: "gold", text: "网站开发者创始人" };
@@ -1879,16 +1915,34 @@ function showLightbox(url) {
   document.body.appendChild(box);
 }
 
+function startWelcomeCountdown() {
+  const btn = document.getElementById("welcomeCloseBtn");
+  const hasRead = localStorage.getItem("welcome_read") === "1";
+  if (hasRead) {
+    btn.disabled = false;
+    btn.textContent = "关闭";
+    return;
+  }
+  btn.disabled = true;
+  welcomeCountdown = 10;
+  btn.textContent = "阅读 " + welcomeCountdown + " 秒后关闭";
+  welcomeTimer = setInterval(() => {
+    welcomeCountdown--;
+    if (welcomeCountdown <= 0) {
+      clearInterval(welcomeTimer);
+      btn.disabled = false;
+      btn.textContent = "关闭";
+    } else {
+      btn.textContent = "阅读 " + welcomeCountdown + " 秒后关闭";
+    }
+  }, 1000);
+}
+
 document.getElementById("welcomeCloseBtn").onclick = () => {
   document.getElementById("welcomeModal").style.display = "none";
-  sessionStorage.setItem("welcome_shown", "1");
+  localStorage.setItem("welcome_read", "1");
 };
-document.getElementById("welcomeModal").onclick = e => {
-  if (e.target === document.getElementById("welcomeModal")) {
-    document.getElementById("welcomeModal").style.display = "none";
-    sessionStorage.setItem("welcome_shown", "1");
-  }
-};
+document.getElementById("welcomeModal").onclick = e => {};
 
 document.getElementById("adminEntry").onclick = e => {
   e.preventDefault();
@@ -1907,9 +1961,24 @@ if (currentUser) {
   updatePublishUI();
 }
 
-if (!sessionStorage.getItem("welcome_shown")) {
-  document.getElementById("welcomeModal").style.display = "flex";
-}
+const welcomeCheck = async () => {
+  try {
+    const d = await loadData();
+    if (d.welcomeModalDisabled) {
+      return;
+    }
+    if (!localStorage.getItem("welcome_read")) {
+      document.getElementById("welcomeModal").style.display = "flex";
+      startWelcomeCountdown();
+    }
+  } catch (e) {
+    if (!localStorage.getItem("welcome_read")) {
+      document.getElementById("welcomeModal").style.display = "flex";
+      startWelcomeCountdown();
+    }
+  }
+};
+welcomeCheck();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
