@@ -574,6 +574,8 @@ function getUserByIdentifier(d, id) {
 }
 function getFollowBtnText(targetUser, meId) {
   if (!targetUser || !meId) return "关注";
+  // 管理员只显示私信
+  if (targetUser.isAdmin) return "私信";
   const me = getUserByIdentifier(cachedData || { users: [] }, meId);
   if (!me) return "关注";
   if (!me.following) me.following = [];
@@ -669,7 +671,8 @@ function renderPosts(posts, containerId, opts = {}) {
       ${p.images && p.images.length ? `<div class="post-images">${p.images.map(u => `<img src="${escapeHtml(u)}" onclick="showLightbox('${escapeHtml(u)}')">`).join("")}</div>` : ""}
       <div class="post-actions">
         <button class="${liked ? "liked" : ""}" data-action="like" data-id="${p.id}">${liked ? "已赞" : "点赞"} ${p.likes}</button>
-        ${!isSelf && currentUser && !p.isAnonymous ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail || p.authorPhone)}">${followBtnText}</button>` : ""}
+        ${!isSelf && currentUser && !p.isAnonymous && !targetUser?.isAdmin ? `<button class="${following ? "followed" : ""}" data-action="follow" data-email="${escapeHtml(p.authorEmail || p.authorPhone)}">${followBtnText}</button>` : ""}
+        ${!isSelf && currentUser && !p.isAnonymous && targetUser?.isAdmin ? `<button class="followed" data-action="follow" data-email="${escapeHtml(p.authorEmail || p.authorPhone)}">私信</button>` : ""}
         ${isSelf ? `<button style="background:var(--danger);color:#fff;border:none;" data-action="delete" data-id="${p.id}">删除</button>
                     <button style="background:var(--primary);color:#fff;border:none;" data-action="edit" data-id="${p.id}">修改重发</button>` : ""}
         ${opts.showApprove ? `<button data-action="approve" data-id="${p.id}" style="background:var(--ok);color:#fff;border:none;">通过</button><button data-action="reject" data-id="${p.id}" style="background:var(--danger);color:#fff;border:none;">拒绝</button>` : ""}
@@ -766,14 +769,19 @@ async function like(id) {
 async function followOrChat(identifier) {
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
+  const target = getUserByIdentifier(d, identifier);
+  // 管理员直接私信，不关注
+  if (target && target.isAdmin) {
+    openChat(identifier);
+    return;
+  }
   const meId = currentUser.email || currentUser.phone;
   const me = getUserByIdentifier(d, meId);
   if (!me) return;
   if (!me.following) me.following = [];
   if (me.following.includes(identifier)) { openChat(identifier); return; }
   me.following.push(identifier);
-  const t = getUserByIdentifier(d, identifier);
-  if (t) { if (!t.followers) t.followers = []; t.followers.push(meId); }
+  if (target) { if (!target.followers) target.followers = []; target.followers.push(meId); }
   await saveData(d);
   cachedData = d;
   renderAllPosts();
@@ -820,22 +828,23 @@ async function globalSearch() {
   if (users.length) {
     userRes.innerHTML = '<div style="font-weight:800;margin:12px 0;">相关账号</div>';
     users.forEach(u => {
-      const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
-      const following = meId ? (getUserByIdentifier(d, meId)?.following || []).includes(u.email || u.phone) : false;
-      const followBtnText = getFollowBtnText(u, meId || "");
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
-      div.innerHTML = `
-        <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
-        <div style="flex:1;">
-          <b>${escapeHtml(u.nickname || u.email?.split("@")[0] || u.phone)}</b>${getVBadgeHtml(u.vBadge)}
-          <div class="hint">用户</div>
-        </div>
-        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${followBtnText}</button>
-      `;
-      userRes.appendChild(div);
-    });
+     const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
+     const followBtnText = getFollowBtnText(u, meId || "");
+    // 管理员显示"管理员"提示，不显示邮箱/手机号
+     const infoText = u.isAdmin ? "管理员" : "用户";
+     const div = document.createElement("div");
+     div.className = "card";
+     div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
+     div.innerHTML = `
+       <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
+       <div style="flex:1;">
+        <b>${escapeHtml(u.nickname || u.email?.split("@")[0] || u.phone)}</b>${getVBadgeHtml(u.vBadge)}
+       <div class="hint">${infoText}</div>
+    </div>
+    <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${followBtnText}</button>
+  `;
+  userRes.appendChild(div);
+});
   }
   if (!posts.length && !users.length) {
     postRes.innerHTML = '<p class="hint">未找到相关内容</p>';
