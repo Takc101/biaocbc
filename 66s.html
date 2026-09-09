@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楼盘罗盘 - 八卦阵旋转</title>
+    <style>
+        :root {
+            --bg-color: #1a0a00;
+            --gold: #d4a017;
+            --gold-light: #f0c850;
+            --gold-dark: #8b6914;
+            --red: #c0392b;
+            --red-dark: #7a1f1a;
+            --text-color: #f5e6c8;
+            --text-glow: #ffd700;
+            --panel-bg: rgba(20, 8, 0, 0.92);
+            --border-glow: rgba(212, 160, 23, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: var(--bg-color);
+            background-image:
+                radial-gradient(ellipse at center, #2a1500 0%, #1a0a00 50%, #0a0500 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Noto Serif SC', 'SimSun', 'STSong', serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景粒子 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(1px at 20% 30%, rgba(255, 215, 0, 0.5) 50%, transparent 50%),
+                radial-gradient(1px at 70% 60%, rgba(255, 215, 0, 0.4) 50%, transparent 50%),
+                radial-gradient(1.5px at 40% 80%, rgba(255, 180, 0, 0.3) 50%, transparent 50%),
+                radial-gradient(1px at 80% 20%, rgba(255, 215, 0, 0.5) 50%, transparent 50%),
+                radial-gradient(1px at 10% 70%, rgba(255, 200, 0, 0.4) 50%, transparent 50%),
+                radial-gradient(1.5px at 90% 85%, rgba(255, 215, 0, 0.35) 50%, transparent 50%),
+                radial-gradient(1px at 55% 45%, rgba(255, 215, 0, 0.3) 50%, transparent 50%),
+                radial-gradient(1px at 35% 15%, rgba(255, 215, 0, 0.45) 50%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: twinkle 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* 弹窗遮罩 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            animation: fadeInOverlay 0.5s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: var(--panel-bg);
+            border: 2px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 40px 35px 35px;
+            width: 420px;
+            max-width: 90vw;
+            box-shadow:
+                0 0 40px rgba(212, 160, 23, 0.3),
+                0 0 80px rgba(212, 160, 23, 0.1),
+                inset 0 0 20px rgba(212, 160, 23, 0.05);
+            position: relative;
+            animation: slideUpModal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUpModal {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal::before {
+            content: '☯';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 50px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(212, 160, 23, 0.8);
+            animation: floatYinYang 2s ease-in-out infinite;
+        }
+
+        @keyframes floatYinYang {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
+
+        .modal-title {
+            text-align: center;
+            color: var(--gold);
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(212, 160, 23, 0.6);
+        }
+
+        .modal-subtitle {
+            text-align: center;
+            color: #a08050;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 15px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group label .label-icon {
+            color: var(--gold);
+            margin-right: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1.5px solid rgba(212, 160, 23, 0.4);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 16px;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 160, 23, 0.25);
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .form-group input::placeholder {
+            color: #6a5040;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .default-hint {
+            font-size: 12px;
+            color: #8a7050;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #1a0a00;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-top: 10px;
+            box-shadow:
+                0 4px 15px rgba(212, 160, 23, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 25px rgba(212, 160, 23, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            letter-spacing: 8px;
+        }
+
+        .btn-confirm:active {
+            transform: translateY(1px);
+            box-shadow:
+                0 2px 10px rgba(212, 160, 23, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-confirm::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 40%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    transparent 60%);
+            animation: btnShine 3s ease-in-out infinite;
+        }
+
+        @keyframes btnShine {
+            0%,
+            100% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+            50% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* 主舞台 */
+        .main-stage {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            position: relative;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .main-stage.active {
+            display: flex;
+        }
+
+        /* 罗盘容器 */
+        .compass-wrapper {
+            position: relative;
+            width: min(560px, 85vw);
+            height: min(560px, 85vw);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 外圈光环 */
+        .compass-outer-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            box-shadow:
+                0 0 30px rgba(212, 160, 23, 0.4),
+                0 0 60px rgba(212, 160, 23, 0.2),
+                0 0 100px rgba(212, 160, 23, 0.1),
+                inset 0 0 30px rgba(212, 160, 23, 0.15);
+            animation: ringPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0%,
+            100% {
+                box-shadow:
+                    0 0 30px rgba(212, 160, 23, 0.4),
+                    0 0 60px rgba(212, 160, 23, 0.2),
+                    0 0 100px rgba(212, 160, 23, 0.1),
+                    inset 0 0 30px rgba(212, 160, 23, 0.15);
+            }
+            50% {
+                box-shadow:
+                    0 0 45px rgba(212, 160, 23, 0.6),
+                    0 0 80px rgba(212, 160, 23, 0.3),
+                    0 0 130px rgba(212, 160, 23, 0.2),
+                    inset 0 0 40px rgba(212, 160, 23, 0.25);
+            }
+        }
+
+        /* 刻度环 */
+        .tick-ring {
+            position: absolute;
+            inset: 12px;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(212, 160, 23, 0.35);
+            animation: spinSlow 60s linear infinite;
+        }
+
+        @keyframes spinSlow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 旋转的八卦阵主体 */
+        .compass-body {
+            position: absolute;
+            inset: 28px;
+            border-radius: 50%;
+            animation: compassSpin var(--spin-speed, 8s) linear infinite;
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        @keyframes compassSpin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 八卦符号容器 */
+        .trigram-symbols {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+        }
+
+        .trigram {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: clamp(20px, 3.5vw, 34px);
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(212, 160, 23, 0.7);
+            font-weight: bold;
+            letter-spacing: 2px;
+            transform-origin: center center;
+            transition: color 0.3s;
+        }
+
+        .trigram:hover {
+            color: var(--gold-light);
+            text-shadow: 0 0 25px rgba(212, 160, 23, 1);
+        }
+
+        /* 内圈八卦布局 */
+        .inner-ring {
+            position: absolute;
+            inset: 20%;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 160, 23, 0.5);
+            background: radial-gradient(circle, rgba(20, 8, 0, 0.9) 40%, rgba(30, 15, 0, 0.7) 70%, transparent 100%);
+            box-shadow:
+                inset 0 0 30px rgba(212, 160, 23, 0.15),
+                0 0 20px rgba(212, 160, 23, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* 中心太极图 */
+        .yin-yang-center {
+            width: clamp(60px, 10vw, 90px);
+            height: clamp(60px, 10vw, 90px);
+            border-radius: 50%;
+            background: linear-gradient(180deg, #fff 0%, #fff 49%, #000 49%, #000 100%);
+            position: relative;
+            margin-bottom: 12px;
+            box-shadow: 0 0 25px rgba(212, 160, 23, 0.5);
+            animation: yinYangFloat 3s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .yin-yang-center::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, #000 0%, #000 49%, #fff 49%, #fff 100%);
+            border-radius: 0 0 50% 50% / 0 0 100% 100%;
+        }
+
+        .yin-yang-center::after {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            width: 20%;
+            height: 20%;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 50% 0 0 #000;
+        }
+
+        @keyframes yinYangFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* 显示的名字 */
+        .display-name {
+            font-size: clamp(18px, 2.5vw, 28px);
+            color: var(--text-glow);
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow:
+                0 0 15px rgba(255, 215, 0, 0.8),
+                0 0 30px rgba(255, 215, 0, 0.4),
+                0 0 50px rgba(255, 215, 0, 0.2);
+            word-break: break-all;
+            line-height: 1.4;
+            max-width: 95%;
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%,
+            100% {
+                text-shadow:
+                    0 0 15px rgba(255, 215, 0, 0.8),
+                    0 0 30px rgba(255, 215, 0, 0.4),
+                    0 0 50px rgba(255, 215, 0, 0.2);
+            }
+            50% {
+                text-shadow:
+                    0 0 25px rgba(255, 215, 0, 1),
+                    0 0 50px rgba(255, 215, 0, 0.6),
+                    0 0 80px rgba(255, 215, 0, 0.3);
+            }
+        }
+
+        /* 八卦爻线 */
+        .yao-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .yao-line {
+            height: 4px;
+            background: var(--gold);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(212, 160, 23, 0.6);
+        }
+
+        .yao-line.full {
+            width: 38px;
+        }
+        .yao-line.half {
+            width: 18px;
+            margin: 0 auto;
+        }
+
+        /* 转速控制面板 */
+        .speed-panel {
+            background: var(--panel-bg);
+            border: 1.5px solid rgba(212, 160, 23, 0.4);
+            border-radius: 15px;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(212, 160, 23, 0.15);
+            backdrop-filter: blur(10px);
+            max-width: 90vw;
+        }
+
+        .speed-label {
+            color: var(--text-color);
+            font-size: 15px;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speed-label .icon {
+            color: var(--gold);
+            font-size: 18px;
+        }
+
+        .speed-slider {
+            -webkit-appearance: none;
+            width: 180px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #3a2510, var(--gold), #3a2510);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--gold-light), var(--gold-dark));
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(212, 160, 23, 0.7);
+            border: 2px solid #1a0a00;
+            transition: all 0.3s;
+        }
+
+        .speed-slider::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 20px rgba(212, 160, 23, 1);
+            transform: scale(1.15);
+        }
+
+        .speed-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--gold-light), var(--gold-dark));
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(212, 160, 23, 0.7);
+            border: 2px solid #1a0a00;
+        }
+
+        .speed-value {
+            color: var(--gold);
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            background: linear-gradient(180deg, #3a2510 0%, #2a1500 100%);
+            border: 1.5px solid rgba(212, 160, 23, 0.5);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 14px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-small:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 160, 23, 0.3);
+            color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        .btn-small:active {
+            transform: translateY(1px);
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .modal {
+                padding: 30px 20px 25px;
+                border-radius: 15px;
+            }
+            .modal-title {
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+            .speed-panel {
+                padding: 12px 15px;
+                gap: 10px;
+                border-radius: 12px;
+            }
+            .speed-slider {
+                width: 120px;
+            }
+            .compass-wrapper {
+                width: min(350px, 88vw);
+                height: min(350px, 88vw);
+            }
+            .trigram {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 输入弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title">☯ 八卦罗盘 ☯</div>
+            <div class="modal-subtitle">— 楼盘命运转轮 —</div>
+
+            <div class="form-group">
+                <label><span class="label-icon">✦</span>填写名字</label>
+                <input type="text" id="nameInput" placeholder="请输入名字..." maxlength="20" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label><span class="label-icon">✦</span>后缀词（可不填）</label>
+                <input type="text" id="suffixInput" placeholder="留空使用默认后缀..." maxlength="30" autocomplete="off">
+                <div class="default-hint">默认后缀：鸡巴被夹断</div>
+            </div>
+
+            <button class="btn-confirm" id="confirmBtn">确定</button>
+        </div>
+    </div>
+
+    <!-- 主舞台 -->
+    <div class="main-stage" id="mainStage">
+        <div class="compass-wrapper">
+            <div class="compass-outer-ring"></div>
+            <div class="tick-ring"></div>
+            <div class="compass-body" id="compassBody">
+                <!-- 八卦符号将在这里通过JS定位 -->
+                <div class="trigram-symbols" id="trigramContainer"></div>
+                <div class="inner-ring">
+                    <div class="yin-yang-center"></div>
+                    <div class="display-name" id="displayName"></div>
+                    <div class="yao-lines" id="yaoLines">
+                        <div class="yao-line full"></div>
+                        <div class="yao-line half"></div>
+                        <div class="yao-line full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="speed-panel">
+            <div class="speed-label">
+                <span class="icon">⚙</span>转速
+            </div>
+            <input type="range" class="speed-slider" id="speedSlider"
+            min="2" max="30" value="8" step="0.5">
+            <span class="speed-value" id="speedValue">8s/圈</span>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-small" id="resetBtn">⟳ 重新填写</button>
+            <button class="btn-small" id="pauseBtn">⏸ 暂停</button>
+            <button class="btn-small" id="reverseBtn">🔄 反转方向</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const DEFAULT_SUFFIX = '鸡巴被夹断';
+            const TRIGRAM_CHARS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷'];
+            const TRIGRAM_NAMES = ['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'];
+
+            let currentFullName = '';
+            let isPaused = false;
+            let isReversed = false;
+            let currentSpeed = 8; // seconds per rotation
+
+            // DOM元素
+            const modalOverlay = document.getElementById('modalOverlay');
+            const nameInput = document.getElementById('nameInput');
+            const suffixInput = document.getElementById('suffixInput');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const mainStage = document.getElementById('mainStage');
+            const compassBody = document.getElementById('compassBody');
+            const trigramContainer = document.getElementById('trigramContainer');
+            const displayName = document.getElementById('displayName');
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            const resetBtn = document.getElementById('resetBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const reverseBtn = document.getElementById('reverseBtn');
+
+            // 初始化八卦符号位置
+            function initTrigrams() {
+                trigramContainer.innerHTML = '';
+                const containerSize = trigramContainer.offsetWidth || 300;
+                const radius = containerSize * 0.35;
+                const centerX = containerSize / 2;
+                const centerY = containerSize / 2;
+
+                TRIGRAM_CHARS.forEach((char, index) => {
+                    const angle = (index / TRIGRAM_CHARS.length) * 2 * Math.PI - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+
+                    const span = document.createElement('span');
+                    span.className = 'trigram';
+                    span.textContent = char;
+                    span.title = TRIGRAM_NAMES[index];
+                    span.style.position = 'absolute';
+                    span.style.left = x + 'px';
+                    span.style.top = y + 'px';
+                    span.style.transform = 'translate(-50%, -50%)';
+
+                    // 八卦符号旋转以保持朝外
+                    const charAngle = angle + Math.PI / 2;
+                    span.style.transform = `translate(-50%, -50%) rotate(${charAngle}rad)`;
+
+                    trigramContainer.appendChild(span);
+                });
+            }
+
+            // 更新转速
+            function updateSpeed() {
+                const speed = parseFloat(speedSlider.value);
+                currentSpeed = speed;
+                speedValue.textContent = speed.toFixed(1) + 's/圈';
+                applySpinAnimation();
+            }
+
+            // 应用旋转动画
+            function applySpinAnimation() {
+                if (isPaused) {
+                    compassBody.style.animationPlayState = 'paused';
+                } else {
+                    compassBody.style.animationPlayState = 'running';
+                }
+                const direction = isReversed ? 'reverse' : 'normal';
+                compassBody.style.animationDirection = direction;
+                compassBody.style.animationDuration = currentSpeed + 's';
+                compassBody.style.animationName = 'compassSpin';
+                compassBody.style.animationTimingFunction = 'linear';
+                compassBody.style.animationIterationCount = 'infinite';
+            }
+
+            // 更新显示的名字
+            function updateDisplayName() {
+                displayName.textContent = currentFullName;
+            }
+
+            // 确认按钮
+            confirmBtn.addEventListener('click', function() {
+                const name = nameInput.value.trim();
+                let suffix = suffixInput.value.trim();
+
+                if (!name) {
+                    // 名字为空，给点提示
+                    nameInput.style.borderColor = '#ff4444';
+                    nameInput.style.boxShadow = '0 0 20px rgba(255,68,68,0.4)';
+                    nameInput.placeholder = '⚠ 请先填写名字！';
+                    nameInput.focus();
+                    setTimeout(() => {
+                        nameInput.style.borderColor = '';
+                        nameInput.style.boxShadow = '';
+                        nameInput.placeholder = '请输入名字...';
+                    }, 2000);
+                    return;
+                }
+
+                if (!suffix) {
+                    suffix = DEFAULT_SUFFIX;
+                }
+
+                currentFullName = name + suffix;
+
+                // 隐藏弹窗，显示主舞台
+                modalOverlay.style.display = 'none';
+                mainStage.classList.add('active');
+
+                // 更新显示
+                updateDisplayName();
+                updateSpeed();
+                applySpinAnimation();
+
+                // 重新初始化八卦位置（确保容器已显示）
+                setTimeout(() => {
+                    initTrigrams();
+                }, 100);
+
+                // 清空输入
+                nameInput.value = '';
+                suffixInput.value = '';
+            });
+
+            // 回车键确认
+            nameInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    confirmBtn.click();
+                }
+            });
+            suffixInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    confirmBtn.click();
+                }
+            });
+
+            // 转速滑块
+            speedSlider.addEventListener('input', updateSpeed);
+
+            // 暂停按钮
+            pauseBtn.addEventListener('click', function() {
+                isPaused = !isPaused;
+                if (isPaused) {
+                    pauseBtn.textContent = '▶ 继续';
+                    pauseBtn.style.borderColor = '#4caf50';
+                    pauseBtn.style.color = '#4caf50';
+                } else {
+                    pauseBtn.textContent = '⏸ 暂停';
+                    pauseBtn.style.borderColor = '';
+                    pauseBtn.style.color = '';
+                }
+                applySpinAnimation();
+            });
+
+            // 反转按钮
+            reverseBtn.addEventListener('click', function() {
+                isReversed = !isReversed;
+                if (isReversed) {
+                    reverseBtn.textContent = '🔄 正向旋转';
+                    reverseBtn.style.borderColor = '#ff6b6b';
+                    reverseBtn.style.color = '#ff6b6b';
+                } else {
+                    reverseBtn.textContent = '🔄 反转方向';
+                    reverseBtn.style.borderColor = '';
+                    reverseBtn.style.color = '';
+                }
+                applySpinAnimation();
+            });
+
+            // 重置按钮
+            resetBtn.addEventListener('click', function() {
+                // 重置状态
+                isPaused = false;
+                isReversed = false;
+                speedSlider.value = 8;
+                currentSpeed = 8;
+                speedValue.textContent = '8.0s/圈';
+
+                pauseBtn.textContent = '⏸ 暂停';
+                pauseBtn.style.borderColor = '';
+                pauseBtn.style.color = '';
+                reverseBtn.textContent = '🔄 反转方向';
+                reverseBtn.style.borderColor = '';
+                reverseBtn.style.color = '';
+
+                // 显示弹窗
+                modalOverlay.style.display = 'flex';
+                mainStage.classList.remove('active');
+
+                // 清空显示
+                currentFullName = '';
+                displayName.textContent = '';
+
+                // 聚焦名字输入
+                setTimeout(() => {
+                    nameInput.focus();
+                }, 300);
+
+                applySpinAnimation();
+            });
+
+            // 页面加载时初始化
+            window.addEventListener('load', function() {
+                nameInput.focus();
+                // 预初始化八卦
+                setTimeout(() => {
+                    initTrigrams();
+                }, 200);
+            });
+
+            // 窗口大小变化时重新定位八卦
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (mainStage.classList.contains('active')) {
+                        initTrigrams();
+                    }
+                }, 300);
+            });
+
+            // 初始化八卦位置（初始加载时也尝试）
+            initTrigrams();
+        })();
+    </script>
+</body>
+</html>
