@@ -3,30 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light">
 <title>校园社区</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
 :root{
-  color-scheme:light dark;
+  /* 默认固定浅色；只有系统黑白主题由 JS 根据系统设置切换 */
+  color-scheme:light;
   --bg:#f0f2f5;--card:#fff;--text:#1c1e21;--border:#e4e6eb;
   --primary:#2563eb;--danger:#e5484d;--ok:#1a7f37;--muted:#8a919a;
-}
-@media (prefers-color-scheme:dark){
-  :root{--bg:#18191d;--card:#242526;--text:#e8eaed;--border:#3a3b3c;--primary:#3b82f6;--danger:#ff6b6b;--ok:#4ade80;--muted:#9aa3ad;}
+  --card-bg:rgba(255,255,255,.45);--card-border:rgba(255,255,255,.5);
+  --nav-bg:rgba(255,255,255,.78);--nav-text:#333;
+  --nav-active:#000;--btn-active:rgba(255,255,255,.9);
+  --btn-active-text:#000;--btn-inactive:rgba(255,255,255,.25);
+  --btn-inactive-text:#000;
+  --blur-amount:16px;
+  --font-size:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:76px;transition:background .3s}
-body.theme-flow{
-  background:linear-gradient(120deg,#3b82f6,#06b6d4,#ec4899,#f59e0b,#3b82f6);background-size:400% 400%;animation:flowbg 14s ease infinite;
-  --nav-bg:rgba(255,255,255,.72);--nav-text:#333;--nav-active:#000;
-  --btn-active:rgba(255,255,255,.9);--btn-active-text:#000;--btn-inactive:rgba(255,255,255,.25);--btn-inactive-text:#000;
-  --card-bg:rgba(255,255,255,.85);--card-border:rgba(255,255,255,.5);
-}
+body.theme-animated{background-size:400% 400% !important;animation:flowbg 14s ease infinite;}
 @keyframes flowbg{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
-body.theme-system{
-  background:var(--bg);--nav-bg:var(--card);--nav-text:var(--muted);--nav-active:var(--text);
-  --btn-active:var(--text);--btn-active-text:var(--bg);--btn-inactive:transparent;--btn-inactive-text:var(--text);
-  --card-bg:var(--card);--card-border:var(--border);
-}
 .container{max-width:700px;margin:0 auto;padding:12px}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--nav-bg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .nav-item{flex:1;text-align:center;font-size:12px;color:var(--nav-text);cursor:pointer;padding:6px 0;user-select:none}
@@ -34,7 +33,7 @@ body.theme-system{
 .nav-add{flex:1;text-align:center;cursor:pointer}
 .nav-add .add-btn{width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;font-size:26px;line-height:44px;margin:-14px auto 0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .page{display:none}.page.active{display:block}
-.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px;margin-bottom:12px}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px;margin-bottom:12px;backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
 input,textarea,select,button{font-family:inherit;font-size:14px}
 input,textarea,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-bottom:8px;outline:none}
 button{padding:11px 16px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
@@ -45,16 +44,18 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .hint{font-size:13px;color:var(--muted)}
 .status{font-size:13px;margin-top:6px;white-space:pre-wrap}
 .success{color:var(--ok)}.error{color:var(--danger)}
-.post{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px;margin-bottom:12px}
+.post{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:14px;margin-bottom:12px;backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
 .post-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;flex-shrink:0;position:relative}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .v-badge-mini{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800;border:2px solid var(--card-bg)}
 .v-gold{background:#f5a623}.v-red{background:#e5484d}.v-blue{background:#3b82f6}
+/* 仅头像右下角的迷你 V 固定使用系统字体；用户名旁的 V 标签跟随用户字体 */
+.v-badge-mini{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif!important;font-style:normal!important;letter-spacing:normal!important}
 .v-tag{display:inline-block;font-size:12px;padding:2px 6px;border-radius:8px;color:#fff;font-weight:700;margin-left:6px;vertical-align:middle}
 .post-name{font-weight:700;font-size:14px}
 .post-time{font-size:11px;color:var(--muted)}
-.post-content{font-size:14px;line-height:1.6;margin-bottom:8px;word-break:break-word}
+.post-content{font-size:var(--font-size);line-height:1.6;margin-bottom:8px;word-break:break-word}
 .post-images{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .post-images img{width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--border);cursor:pointer}
 .post-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -66,11 +67,11 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .comment-entry-arrow{margin-left:auto;font-size:16px;color:var(--muted)}
 .comment-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:450;display:none;flex-direction:column}
 .comment-page.open{display:flex}
-.comment-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0}
+.comment-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .comment-back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .comment-header-title{font-weight:700;font-size:16px}
 .comment-body{flex:1;overflow-y:auto;padding:16px}
-.comment-original-post{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px;margin-bottom:16px}
+.comment-original-post{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px;margin-bottom:16px;backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
 .comment-original-post .post-top{margin-bottom:6px}
 .comment-original-post .post-content{margin-bottom:0}
 .comment-original-post .post-images{margin-bottom:0}
@@ -79,7 +80,7 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .comment-item .avatar{width:32px;height:32px;font-size:13px;flex-shrink:0}
 .comment-item-content{flex:1;min-width:0}
 .comment-item-name{font-weight:700;font-size:13px;display:flex;align-items:center}
-.comment-item-text{font-size:14px;line-height:1.5;margin-top:2px;word-break:break-word}
+.comment-item-text{font-size:var(--font-size);line-height:1.5;margin-top:2px;word-break:break-word}
 .comment-item-time{font-size:11px;color:var(--muted);margin-top:2px}
 .comment-item-reply-btn{font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none;padding:2px 0;width:auto;margin-top:2px}
 .comment-item-more-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0;line-height:1}
@@ -98,11 +99,10 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .profile-stats{display:flex;justify-content:space-around;margin:14px 0}
 .stat-item{text-align:center;cursor:pointer}
 .stat-num{font-weight:800;font-size:18px}.stat-label{font-size:12px;color:var(--muted)}
-.theme-btns{display:flex;gap:8px}.theme-btns button{flex:1}.theme-btns button.active{background:var(--btn-active);color:var(--btn-active-text)}.theme-btns button:not(.active){background:var(--btn-inactive);color:var(--btn-inactive-text)}
 .tab-btn{background:var(--btn-inactive);color:var(--btn-inactive-text);border:1px solid var(--border);border-radius:10px;padding:10px;font-weight:700;cursor:pointer;font-size:14px}
 .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal-box{background:var(--card-bg);border-radius:20px;padding:24px 20px;max-width:350px;width:100%;text-align:center;border:1px solid var(--card-border)}
+.modal-box{background:var(--card-bg);border-radius:20px;padding:24px 20px;max-width:350px;width:100%;text-align:center;border:1px solid var(--card-border);backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
 .modal-title{font-size:19px;font-weight:800;color:var(--text);margin-bottom:4px}
 .modal-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
 .modal-wx-img{width:170px;height:170px;border-radius:12px;object-fit:cover;margin:0 auto 14px;display:block;border:1px solid var(--border)}
@@ -116,8 +116,8 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .msg-item.unread{font-weight:700}
 .chat-bubble{max-width:70%;padding:10px 14px;border-radius:16px;margin:6px 0;word-break:break-word}
 .chat-me{background:var(--primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
-.chat-other{background:var(--card-bg);border:1px solid var(--border);margin-right:auto;border-bottom-left-radius:4px}
-.session-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--card-bg);border-radius:12px;margin-bottom:8px}
+.chat-other{background:var(--card-bg);border:1px solid var(--border);margin-right:auto;border-bottom-left-radius:4px;backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
+.session-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--card-bg);border-radius:12px;margin-bottom:8px;backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));}
 .session-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;overflow:hidden;flex-shrink:0;position:relative}
 .session-avatar img{width:100%;height:100%;object-fit:cover}
 .session-info{flex:1;min-width:0}
@@ -128,7 +128,7 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .unread-dot{display:inline-block;min-width:18px;height:18px;border-radius:9px;background:var(--danger);color:#fff;font-size:11px;text-align:center;line-height:18px;padding:0 5px;margin-top:4px}
 .chat-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:400;display:none;flex-direction:column}
 .chat-page.open{display:flex}
-.chat-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0}
+.chat-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .chat-back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .chat-header-info{flex:1;min-width:0}
 .chat-header-name{font-weight:700;font-size:15px;display:flex;align-items:center}
@@ -138,9 +138,91 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
 .chat-footer input{flex:1;margin-bottom:0}
 .chat-footer button{width:auto;white-space:nowrap}
 .chat-img-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+
+/* 自定UI页面 */
+.customize-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:500;display:none;flex-direction:column;overflow-y:auto;}
+.customize-page.open{display:flex}
+.customize-header{height:56px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+.customize-body{padding:16px;padding-bottom:80px}
+.customize-section-title{font-weight:800;font-size:15px;margin:16px 0 10px;}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.theme-item{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:6px;}
+.theme-circle{width:56px;height:56px;border-radius:50%;border:3px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;transition:transform .2s;}
+.theme-item:active .theme-circle{transform:scale(.92)}
+.theme-item.active .theme-circle{border-color:#fff;box-shadow:0 0 0 2px var(--primary),0 2px 8px rgba(0,0,0,.2);}
+.theme-name{font-size:11px;color:var(--text);text-align:center;opacity:.75;}
+.bg-preview{width:100%;height:120px;border-radius:12px;border:1px solid var(--border);background-color:var(--bg);background-size:cover;background-position:center;margin-bottom:12px;}
+.picker-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.picker-row:last-child{border-bottom:none;}
+.picker-label{font-size:14px;font-weight:600;}
+.picker-value{font-size:13px;color:var(--muted);}
+input[type="range"]{width:160px;padding:0;margin:0;background:transparent;border:none;}
+.color-palette{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.color-swatch{width:100%;aspect-ratio:1;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:transform .2s;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+.color-swatch:active{transform:scale(.9)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 3px var(--primary);}
+
+.font-list-item{
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:8px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  transition:all .2s;
+}
+.font-list-item:hover{border-color:var(--primary);}
+.font-list-item.active{
+  border-color:var(--primary);
+  background:var(--bg);
+  box-shadow:0 0 0 2px var(--primary);
+}
+.font-list-item .font-name{font-size:16px;font-weight:600;}
+.font-list-item .font-preview{font-size:12px;color:var(--muted);margin-top:2px;}
+.font-list-item .check-icon{color:var(--primary);font-size:20px;font-weight:800;opacity:0;}
+.font-list-item.active .check-icon{opacity:1;}
+
+.card-style-option{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  padding:12px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  transition:all .2s;
+}
+.card-style-option.active{
+  border-color:var(--primary);
+  background:var(--bg);
+}
+
+/* 迷你音乐悬浮菜单 */
+.music-float{position:fixed;right:14px;bottom:76px;z-index:480;width:238px;background:var(--card-bg);color:var(--text);border:1px solid var(--card-border);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;transition:width .2s,transform .2s}
+.music-float.collapsed{width:52px;height:52px;border-radius:50%}
+.music-float.collapsed .music-panel{display:none}
+.music-toggle{width:52px;height:52px;border-radius:50%;padding:0;display:none;align-items:center;justify-content:center;font-size:22px;background:var(--primary);color:#fff}
+.music-float.collapsed .music-toggle{display:flex}
+.music-panel{padding:11px 12px}
+.music-top{display:flex;align-items:center;gap:9px}
+.music-disc{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#111);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;animation:musicSpin 5s linear infinite;animation-play-state:paused}
+.music-float.playing .music-disc{animation-play-state:running}
+@keyframes musicSpin{to{transform:rotate(360deg)}}
+.music-meta{flex:1;min-width:0}
+.music-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-sub{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.music-collapse{width:28px;height:28px;padding:0;border-radius:50%;background:transparent;color:var(--muted);font-size:16px}
+.music-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:9px}
+.music-controls button{width:34px;height:30px;padding:0;border-radius:9px;font-size:14px}
+.music-play{width:42px!important;background:var(--primary)!important;color:#fff!important}
+.music-volume{width:70px!important;height:4px!important}
+@media(max-width:380px){.music-float{right:8px;width:218px}}
 </style>
 </head>
-<body class="theme-flow">
+<body>
 <div class="container">
 
   <!-- 热榜页 -->
@@ -189,11 +271,8 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
   <!-- 我的页 -->
   <div class="page" id="pageMe">
     <div class="card">
-      <div style="font-weight:800;margin-bottom:10px;">界面主题</div>
-      <div class="theme-btns">
-        <button id="themeFlowBtn">动态流光</button>
-        <button id="themeSystemBtn">系统黑白</button>
-      </div>
+      <div style="font-weight:800;margin-bottom:10px;">个性化</div>
+      <button class="ghost" id="openCustomizeBtn" style="width:100%;">🎨 自定 UI</button>
     </div>
 
     <div id="notLoggedIn" class="card profile-card">
@@ -323,6 +402,25 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
   <div class="nav-item" data-page="pageMe">我的</div>
 </div>
 
+<!-- ============ 免责声明弹窗（最高优先级） ============ -->
+<div class="modal-overlay" id="disclaimerModal" style="display:none;z-index:900;">
+  <div class="modal-box" style="max-width:400px;">
+    <div class="modal-title">免责声明</div>
+    <div class="modal-sub">使用前请仔细阅读以下条款</div>
+    <div style="text-align:left;font-size:13px;line-height:1.7;color:var(--text);margin:12px 0;max-height:50vh;overflow-y:auto;padding-right:4px;">
+      <p style="margin-bottom:8px;">欢迎使用本站，在使用前请您仔细阅读以下条款：</p>
+      <p style="margin-bottom:8px;">1. 本站仅提供校园信息交流平台，用户发布的内容仅代表其个人观点，与本站及开发者无关。</p>
+      <p style="margin-bottom:8px;">2. 用户须对自己发布的内容负责，严禁发布任何违法违规、侵犯他人隐私、辱骂攻击、色情暴力等不良信息。</p>
+      <p style="margin-bottom:8px;">3. 本站管理员有权对违规内容进行删除、封禁账号等处理，恕不另行通知。</p>
+      <p style="margin-bottom:8px;">4. 用户因使用本站产生的任何纠纷或损失，由用户自行承担，本站不承担任何法律责任。</p>
+      <p style="margin-bottom:8px;">5. 本站可能会收集必要的设备信息用于功能运行，不会主动泄露给第三方。</p>
+      <p style="margin-bottom:8px;">6. 继续使用本站即表示您已阅读并完全同意以上条款。若您不同意，请立即停止使用并关闭本页面。</p>
+    </div>
+    <button id="agreeDisclaimerBtn">同意并继续</button>
+    <button class="ghost" id="disagreeDisclaimerBtn" style="margin-top:8px;">不同意</button>
+  </div>
+</div>
+
 <!-- 登录/注册弹窗 -->
 <div class="modal-overlay" id="loginModal" style="display:none;">
   <div class="modal-box">
@@ -437,23 +535,163 @@ button.small{width:auto;padding:6px 14px;font-size:13px;border-radius:8px;margin
     <button id="commentSendBtn">发送</button>
   </div>
 </div>
+
+<!-- ============ 自定UI页面 ============ -->
+<div class="customize-page" id="customizePage">
+  <div class="customize-header">
+    <button class="comment-back-btn" id="customizeBackBtn">←</button>
+    <div class="comment-header-title">自定 UI</div>
+  </div>
+
+  <div class="customize-body">
+
+    <div class="customize-section-title">预设主题</div>
+    <div class="theme-grid" id="themeGrid"></div>
+
+    <div class="customize-section-title">自定义背景图</div>
+    <div class="card">
+      <div class="bg-preview" id="bgPreview"></div>
+      <button class="ghost" id="uploadBgBtn" style="width:100%;">上传背景图</button>
+      <input type="file" id="bgImageInput" accept="image/*" style="display:none;">
+      <button class="ghost" id="clearBgBtn" style="width:100%;margin-top:8px;">恢复主题背景</button>
+    </div>
+
+    <div class="customize-section-title">主色调</div>
+    <div class="card">
+      <div class="color-palette" id="primaryPalette">
+        <div class="color-swatch" data-color="#2563eb" style="background:#2563eb;"></div>
+        <div class="color-swatch" data-color="#ec4899" style="background:#ec4899;"></div>
+        <div class="color-swatch" data-color="#10b981" style="background:#10b981;"></div>
+        <div class="color-swatch" data-color="#f97316" style="background:#f97316;"></div>
+        <div class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6;"></div>
+        <div class="color-swatch" data-color="#0891b2" style="background:#0891b2;"></div>
+        <div class="color-swatch" data-color="#ef4444" style="background:#ef4444;"></div>
+        <div class="color-swatch" data-color="#eab308" style="background:#eab308;"></div>
+        <div class="color-swatch" data-color="#6366f1" style="background:#6366f1;"></div>
+        <div class="color-swatch" data-color="#f43f5e" style="background:#f43f5e;"></div>
+        <div class="color-swatch" data-color="#14b8a6" style="background:#14b8a6;"></div>
+        <div class="color-swatch" data-color="#a855f7" style="background:#a855f7;"></div>
+      </div>
+    </div>
+
+    <div class="customize-section-title">文字颜色</div>
+    <div class="card">
+      <div class="color-palette" id="textPalette">
+        <div class="color-swatch" data-color="#1c1e21" style="background:#1c1e21;"></div>
+        <div class="color-swatch" data-color="#374151" style="background:#374151;"></div>
+        <div class="color-swatch" data-color="#6b7280" style="background:#6b7280;"></div>
+        <div class="color-swatch" data-color="#ffffff" style="background:#ffffff;border-color:#ccc;"></div>
+        <div class="color-swatch" data-color="#e8eaed" style="background:#e8eaed;border-color:#ccc;"></div>
+        <div class="color-swatch" data-color="#fbbf24" style="background:#fbbf24;"></div>
+      </div>
+    </div>
+
+    <div class="customize-section-title">卡片背景色</div>
+    <div class="card">
+      <div class="color-palette" id="cardPalette">
+        <div class="color-swatch" data-color="#ffffff" style="background:#ffffff;border-color:#ccc;"></div>
+        <div class="color-swatch" data-color="#f5f5f7" style="background:#f5f5f7;"></div>
+        <div class="color-swatch" data-color="#fef3c7" style="background:#fef3c7;"></div>
+        <div class="color-swatch" data-color="#dbeafe" style="background:#dbeafe;"></div>
+        <div class="color-swatch" data-color="#dcfce7" style="background:#dcfce7;"></div>
+        <div class="color-swatch" data-color="#fce7f3" style="background:#fce7f3;"></div>
+        <div class="color-swatch" data-color="#1c1f24" style="background:#1c1f24;"></div>
+        <div class="color-swatch" data-color="#242526" style="background:#242526;"></div>
+      </div>
+    </div>
+
+    <div class="customize-section-title">其他调节</div>
+    <div class="card">
+      <div class="picker-row">
+        <span class="picker-label">卡片透明度</span>
+        <input type="range" id="cardOpacity" min="10" max="100" value="45">
+      </div>
+      <div class="picker-row">
+        <span class="picker-label">毛玻璃模糊</span>
+        <input type="range" id="blurAmount" min="0" max="30" value="16">
+      </div>
+    </div>
+
+   
+
+    <div class="customize-section-title">字体选择</div>
+    <div class="card">
+      <div id="currentFontDisplay" style="font-size:15px;font-weight:600;margin-bottom:10px;">系统默认字体</div>
+      <button class="ghost" id="openFontPickerBtn" style="width:100%;">选择字体</button>
+    </div>
+
+    <div class="customize-section-title">显示模式</div>
+    <div class="card">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="darkModeToggle" style="width:auto;margin:0;">
+        <span>深色模式</span>
+      </label>
+    </div>
+
+    <div class="customize-section-title">卡片样式（二选一）</div>
+    <div class="card">
+      <div style="display:flex;gap:12px;">
+        <label class="card-style-option" id="cardStyleTransparent">
+          <input type="radio" name="cardStyle" value="transparent" style="width:auto;margin:0;">
+          <span>透明卡片</span>
+        </label>
+        <label class="card-style-option" id="cardStyleSolid">
+          <input type="radio" name="cardStyle" value="solid" style="width:auto;margin:0;">
+          <span>不透明卡片</span>
+        </label>
+      </div>
+    </div>
+
+    <button id="saveUIThemeBtn" style="width:100%;margin-top:20px;">💾 保存 UI 设置</button>
+    <button class="ghost" id="resetThemeBtn" style="width:100%;margin-top:10px;">恢复默认 UI 设置</button>
+
+  </div>
+</div>
+
+<!-- 字体选择弹窗 -->
+<div class="modal-overlay" id="fontPickerModal" style="display:none;z-index:700;">
+  <div class="modal-box" style="max-width:420px;max-height:80vh;overflow-y:auto;">
+    <div class="modal-title">选择字体</div>
+    <div class="modal-sub">免费开源网络字体，首次使用需要联网加载</div>
+    <div id="fontList" style="text-align:left;margin-bottom:12px;"></div>
+    <button id="confirmFontBtn">确定</button>
+    <button class="ghost" id="closeFontBtn" style="margin-top:8px;">取消</button>
+  </div>
+</div>
+
+<!-- 迷你音乐悬浮菜单 -->
+<div class="music-float" id="musicFloat">
+  <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器">♫</button>
+  <div class="music-panel">
+    <div class="music-top">
+      <div class="music-disc">♫</div>
+      <div class="music-meta">
+        <div class="music-title" id="musicTitle">轻音乐</div>
+        <div class="music-sub" id="musicStatus">正在准备播放...</div>
+      </div>
+      <button class="music-collapse" id="musicCollapseBtn" aria-label="收起音乐播放器">×</button>
+    </div>
+    <div class="music-controls">
+      <button id="musicPrevBtn" aria-label="上一首">◀</button>
+      <button class="music-play" id="musicPlayBtn" aria-label="播放或暂停">▶</button>
+      <button id="musicNextBtn" aria-label="下一首">▶|</button>
+      <input class="music-volume" id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.45" aria-label="音量">
+    </div>
+  </div>
+</div>
+<audio id="bgMusic" preload="metadata"></audio>
+
 <script>
 const CONFIG = {
-  // 数据仓库（私有）
   dataOwner: "Takc101",
   dataRepo: "assse",
-
-  // 图片仓库（公开）
   imgOwner: "Takc101",
   imgRepo: "biaocbc",
-
   tokenPartA: "github_pat_11BYJ4FEA0nIH9JjC8s2dp_",
   tokenPartB: "ZKIXWyuiuQfQOHhmIbZmTIEvbwj9gGkDI",
   tokenPartC: "7b1UQvDQ1dFPQUD7Q27ovIQmXO",
-
   branch: "main",
   dataPath: "data.json",
-
   emailjsServiceId: "service_5201bzcbc",
   emailjsTemplateId: "template_p09b9qc",
   emailjsPublicKey: "xVmknOp8YZOsl75CF"
@@ -465,7 +703,13 @@ CONFIG.imgApiBase = `https://api.github.com/repos/${CONFIG.imgOwner}/${CONFIG.im
 CONFIG.imgRawBase = `https://raw.githubusercontent.com/${CONFIG.imgOwner}/${CONFIG.imgRepo}/${CONFIG.branch}`;
 
 let cachedData = null;
-let currentUser = JSON.parse(localStorage.getItem("email_user") || "null");
+let currentUser = null;
+try {
+  currentUser = JSON.parse(localStorage.getItem("email_user") || "null");
+} catch (e) {
+  // 本地登录缓存损坏时自动清理，避免整个页面脚本停止运行
+  localStorage.removeItem("email_user");
+}
 let selectedImages = [];
 let chatTarget = null;
 let adminLoggedIn = false;
@@ -480,6 +724,493 @@ let welcomeCountdown = 10;
 
 const nowTs = () => Math.floor(Date.now() / 1000);
 
+/* ==================== 免责声明 ==================== */
+function checkDisclaimer() {
+  const agreed = localStorage.getItem("disclaimer_agreed");
+  if (!agreed) {
+    document.getElementById("disclaimerModal").style.display = "flex";
+    return true;
+  }
+  return false;
+}
+document.getElementById("agreeDisclaimerBtn").onclick = () => {
+  localStorage.setItem("disclaimer_agreed", "1");
+  document.getElementById("disclaimerModal").style.display = "none";
+  // 同意后再判断欢迎弹窗
+  setTimeout(() => {
+    welcomeCheck();
+  }, 300);
+};
+document.getElementById("disagreeDisclaimerBtn").onclick = () => {
+  alert("您不同意免责声明，将无法使用本站。");
+  // 关闭页面（部分浏览器限制，尽力而为）
+  window.close();
+  // 兜底：跳转到空白页
+  setTimeout(() => {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#888;font-size:16px;">您已拒绝免责声明，请关闭此页面</div>';
+  }, 300);
+};
+/* ==================== 免责声明结束 ==================== */
+
+/* ==================== 自定UI系统 ==================== */
+const THEMES = [
+  { id:"blue", name:"蓝紫流光", color:"#2563eb", bg:"linear-gradient(120deg,#3b82f6,#06b6d4,#ec4899,#f59e0b,#3b82f6)", animated:true, light:true },
+  { id:"pink", name:"恋爱粉", color:"#ec4899", bg:"linear-gradient(120deg,#fda4af,#f472b6,#ec4899,#fda4af)", animated:true, light:true },
+  { id:"mint", name:"薄荷绿", color:"#10b981", bg:"linear-gradient(120deg,#6ee7b7,#10b981,#34d399,#6ee7b7)", animated:true, light:true },
+  { id:"sunset", name:"日落橙", color:"#f97316", bg:"linear-gradient(120deg,#fbbf24,#f97316,#ef4444,#fbbf24)", animated:true, light:true },
+  { id:"purple", name:"星空紫", color:"#8b5cf6", bg:"linear-gradient(120deg,#a78bfa,#8b5cf6,#c084fc,#a78bfa)", animated:true, light:true },
+  { id:"ocean", name:"深海蓝", color:"#0891b2", bg:"linear-gradient(120deg,#22d3ee,#0891b2,#0e7490,#22d3ee)", animated:true, light:true },
+  { id:"rainbow", name:"彩虹", color:"#6366f1", bg:"linear-gradient(120deg,#ef4444,#f59e0b,#10b981,#3b82f6,#8b5cf6,#ec4899)", animated:true, light:true },
+  { id:"light", name:"纯白简约", color:"#1c1e21", bg:"#f5f5f7", animated:false, light:true },
+  { id:"gray", name:"高级灰", color:"#4b5563", bg:"#e5e7eb", animated:false, light:true },
+  { id:"dark", name:"暗夜黑", color:"#a78bfa", bg:"#121417", animated:false, light:false },
+  { id:"darkblue", name:"午夜蓝", color:"#60a5fa", bg:"linear-gradient(135deg,#0f172a,#1e293b,#0f172a)", animated:false, light:false },
+  { id:"darkpink", name:"夜樱", color:"#f472b6", bg:"linear-gradient(135deg,#1a0b18,#2d1530,#1a0b18)", animated:false, light:false },
+  { id:"system", name:"系统黑白", color:"#2563eb", bg:"#f0f2f5", animated:false, light:true, system:true }
+];
+
+const FONTS = [
+  { id:"default", name:"系统默认", css:"system-ui,-apple-system,'Segoe UI',sans-serif", preview:"清晰自然 · 校园社区" },
+  { id:"noto-sans-sc", name:"思源黑体", css:"'Noto Sans SC',sans-serif", preview:"现代清晰 · 青春正当时" },
+  { id:"noto-serif-sc", name:"思源宋体", css:"'Noto Serif SC',serif", preview:"典雅书卷 · 山高水长" },
+  { id:"ma-shan-zheng", name:"马善政毛笔楷书", css:"'Ma Shan Zheng',cursive", preview:"潇洒有力 · 少年意气" },
+  { id:"zcool-kuaile", name:"站酷快乐体", css:"'ZCOOL KuaiLe',sans-serif", preview:"活泼可爱 · 快乐每一天" },
+  { id:"long-cang", name:"龙藏体", css:"'Long Cang',cursive", preview:"古朴手写 · 岁月如歌" },
+  { id:"liu-jian-mao-cao", name:"刘建毛草", css:"'Liu Jian Mao Cao',cursive", preview:"自由洒脱 · 青春飞扬" }
+];
+
+let pendingFontId = "default";
+
+function getCustomSettings() {
+  try { return JSON.parse(localStorage.getItem("custom_settings") || "{}"); }
+  catch (e) { return {}; }
+}
+function setCustomSettings(obj) {
+  localStorage.setItem("custom_settings", JSON.stringify(obj));
+}
+function hexToRgba(hex, alpha) {
+  if (!hex || hex[0] !== "#") return hex;
+  hex = hex.replace("#", "");
+  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function getFontById(id) {
+  return FONTS.find(f => f.id === id) || FONTS[0];
+}
+
+function applyFontFamily() {
+  const s = getCustomSettings();
+  const font = getFontById(s.fontFamily || "default");
+  document.body.style.fontFamily = font.css;
+}
+function updateFontDisplay() {
+  const s = getCustomSettings();
+  const font = getFontById(s.fontFamily || "default");
+  const display = document.getElementById("currentFontDisplay");
+  if (display) {
+    display.textContent = font.name;
+    display.style.fontFamily = font.css;
+  }
+}
+
+function applyCustomTheme(themeId) {
+  let theme = THEMES.find(t => t.id === themeId);
+  if (!theme) {
+    theme = THEMES[0];
+    themeId = theme.id;
+  }
+
+  const root = document.documentElement;
+  const body = document.body;
+  const settings = getCustomSettings();
+
+  body.classList.remove("theme-animated");
+
+  const customBg = localStorage.getItem("custom_bg");
+  if (customBg) {
+    body.style.background = `url(${customBg}) center/cover no-repeat fixed`;
+    body.style.backgroundSize = "cover";
+  } else {
+    body.style.background = theme.bg;
+    if (theme.animated) body.classList.add("theme-animated");
+    else body.style.backgroundSize = "";
+  }
+
+  const primaryColor = settings.primaryColor || theme.color;
+  root.style.setProperty("--primary", primaryColor);
+
+  // 系统黑白主题：复刻模板配色，并跟随系统深浅色
+  if (theme.system) {
+    const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const systemColors = systemDark ? {
+      bg: "#18191d",
+      card: "#242526",
+      text: "#e8eaed",
+      border: "#3a3b3c",
+      primary: "#3b82f6",
+      danger: "#ff6b6b",
+      ok: "#4ade80",
+      muted: "#9aa3ad"
+    } : {
+      bg: "#f0f2f5",
+      card: "#ffffff",
+      text: "#1c1e21",
+      border: "#e4e6eb",
+      primary: "#2563eb",
+      danger: "#e5484d",
+      ok: "#1a7f37",
+      muted: "#8a919a"
+    };
+
+    body.style.background = systemColors.bg;
+    body.style.backgroundSize = "";
+    root.style.colorScheme = systemDark ? "dark" : "light";
+    document.querySelector('meta[name="color-scheme"]').setAttribute("content", systemDark ? "dark" : "light");
+    root.style.setProperty("--bg", systemColors.bg);
+    root.style.setProperty("--card", systemColors.card);
+    root.style.setProperty("--text", systemColors.text);
+    root.style.setProperty("--border", systemColors.border);
+    root.style.setProperty("--primary", systemColors.primary);
+    root.style.setProperty("--danger", systemColors.danger);
+    root.style.setProperty("--ok", systemColors.ok);
+    root.style.setProperty("--muted", systemColors.muted);
+
+    // 对应模板 body.theme-system 中的变量
+    root.style.setProperty("--nav-bg", systemColors.card);
+    root.style.setProperty("--nav-text", systemColors.muted);
+    root.style.setProperty("--nav-active", systemColors.text);
+    root.style.setProperty("--btn-active", systemColors.text);
+    root.style.setProperty("--btn-active-text", systemColors.bg);
+    root.style.setProperty("--btn-inactive", "transparent");
+    root.style.setProperty("--btn-inactive-text", systemColors.text);
+    root.style.setProperty("--card-bg", systemColors.card);
+    root.style.setProperty("--card-border", systemColors.border);
+    root.style.setProperty("--blur-amount", "0px");
+    root.style.setProperty("--font-size", "14px");
+
+    localStorage.setItem("custom_theme", themeId);
+    document.querySelectorAll(".theme-item").forEach(el => {
+      el.classList.toggle("active", el.dataset.themeId === themeId);
+    });
+    applyFontFamily();
+    updateFontDisplay();
+    return;
+  }
+
+  const isDark = settings.darkMode !== undefined ? settings.darkMode : !theme.light;
+  root.style.colorScheme = isDark ? "dark" : "light";
+  document.querySelector('meta[name="color-scheme"]').setAttribute("content", isDark ? "dark" : "light");
+  // 清除系统黑白主题写入的状态色，防止切换到其他主题后残留
+  root.style.setProperty("--danger", isDark ? "#ff6b6b" : "#e5484d");
+  root.style.setProperty("--ok", isDark ? "#4ade80" : "#1a7f37");
+  const isSolidCard = settings.cardStyle === "solid";
+  const cardAlpha = isSolidCard ? 1 : ((settings.cardOpacity !== undefined ? settings.cardOpacity : 45) / 100);
+  const blurPx = isSolidCard ? 0 : (settings.blurAmount !== undefined ? settings.blurAmount : 16);
+
+  if (isDark) {
+    root.style.setProperty("--bg", "#18191d");
+    root.style.setProperty("--card", "#242526");
+    root.style.setProperty("--text", settings.textColor || "#e8eaed");
+    root.style.setProperty("--border", "#3a3b3c");
+    root.style.setProperty("--muted", "#9aa3ad");
+    root.style.setProperty("--nav-bg", "rgba(24,25,29,.85)");
+    root.style.setProperty("--nav-text", "#9aa3ad");
+    root.style.setProperty("--nav-active", "#ffffff");
+    root.style.setProperty("--btn-active", "#ffffff");
+    root.style.setProperty("--btn-active-text", "#18191d");
+    root.style.setProperty("--btn-inactive", "rgba(255,255,255,.1)");
+    root.style.setProperty("--btn-inactive-text", "#e8eaed");
+    const cardColor = settings.cardColor || "#242526";
+    root.style.setProperty("--card-bg", hexToRgba(cardColor, cardAlpha));
+    root.style.setProperty("--card-border", "rgba(255,255,255,.1)");
+  } else {
+    root.style.setProperty("--bg", "#f0f2f5");
+    root.style.setProperty("--card", "#ffffff");
+    root.style.setProperty("--text", settings.textColor || "#1c1e21");
+    root.style.setProperty("--border", "#e4e6eb");
+    root.style.setProperty("--muted", "#6b7280");
+    root.style.setProperty("--nav-bg", "rgba(255,255,255,.78)");
+    root.style.setProperty("--nav-text", "#333333");
+    root.style.setProperty("--nav-active", "#000000");
+    root.style.setProperty("--btn-active", "rgba(255,255,255,.9)");
+    root.style.setProperty("--btn-active-text", "#000000");
+    root.style.setProperty("--btn-inactive", "rgba(255,255,255,.25)");
+    root.style.setProperty("--btn-inactive-text", "#000000");
+    const cardColor = settings.cardColor || "#ffffff";
+    root.style.setProperty("--card-bg", hexToRgba(cardColor, cardAlpha));
+    root.style.setProperty("--card-border", "rgba(255,255,255,.5)");
+  }
+
+  root.style.setProperty("--blur-amount", blurPx + "px");
+  root.style.setProperty("--font-size", "14px");
+
+  localStorage.setItem("custom_theme", themeId);
+
+  document.querySelectorAll(".theme-item").forEach(el => {
+    el.classList.toggle("active", el.dataset.themeId === themeId);
+  });
+  document.querySelectorAll(".color-swatch").forEach(el => {
+    el.classList.toggle("active", el.dataset.color === primaryColor);
+  });
+
+  applyFontFamily();
+  updateFontDisplay();
+}
+
+function renderThemeGrid() {
+  const grid = document.getElementById("themeGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  THEMES.forEach(t => {
+    const item = document.createElement("div");
+    item.className = "theme-item";
+    item.dataset.themeId = t.id;
+    item.innerHTML = `<div class="theme-circle" style="background:${t.bg};background-size:cover;background-position:center;"></div><div class="theme-name">${t.name}</div>`;
+    item.onclick = () => {
+      applyCustomTheme(t.id);
+      updateBgPreview();
+      syncColorPickers();
+    };
+    grid.appendChild(item);
+  });
+}
+
+function updateBgPreview() {
+  const preview = document.getElementById("bgPreview");
+  if (!preview) return;
+  const customBg = localStorage.getItem("custom_bg");
+  if (customBg) {
+    preview.style.backgroundImage = `url(${customBg})`;
+    preview.style.backgroundSize = "cover";
+    preview.style.backgroundPosition = "center";
+  } else {
+    const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "blue")) || THEMES[0];
+    preview.style.backgroundImage = currentTheme.bg;
+    preview.style.backgroundSize = currentTheme.animated ? "300% 300%" : "cover";
+  }
+}
+
+function syncColorPickers() {
+  const settings = getCustomSettings();
+  const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "blue")) || THEMES[0];
+  const cardOpacity = document.getElementById("cardOpacity");
+  const blurAmount = document.getElementById("blurAmount");
+  const darkToggle = document.getElementById("darkModeToggle");
+  if (cardOpacity) cardOpacity.value = settings.cardOpacity !== undefined ? settings.cardOpacity : 45;
+  if (blurAmount) blurAmount.value = settings.blurAmount !== undefined ? settings.blurAmount : 16;
+  if (darkToggle) darkToggle.checked = settings.darkMode !== undefined ? settings.darkMode : !currentTheme.light;
+
+  const primary = settings.primaryColor || currentTheme.color;
+  document.querySelectorAll(".color-swatch").forEach(el => {
+    el.classList.toggle("active", el.dataset.color === primary);
+  });
+
+  const cardStyle = settings.cardStyle || "transparent";
+  document.querySelectorAll('input[name="cardStyle"]').forEach(r => {
+    r.checked = r.value === cardStyle;
+  });
+  document.querySelectorAll(".card-style-option").forEach(el => {
+    const input = el.querySelector('input');
+    el.classList.toggle("active", input && input.checked);
+  });
+
+  updateFontDisplay();
+}
+
+function renderFontList() {
+  const list = document.getElementById("fontList");
+  list.innerHTML = "";
+  FONTS.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "font-list-item";
+    div.dataset.fontId = f.id;
+    if (f.id === pendingFontId) div.classList.add("active");
+    div.innerHTML = `
+      <div>
+        <div class="font-name" style="font-family:${f.css};">${f.name}</div>
+        <div class="font-preview" style="font-family:${f.css};">${f.preview}</div>
+      </div>
+      <div class="check-icon">✓</div>
+    `;
+    div.onclick = () => {
+      pendingFontId = f.id;
+      document.querySelectorAll(".font-list-item").forEach(el => {
+        el.classList.toggle("active", el.dataset.fontId === pendingFontId);
+      });
+    };
+    list.appendChild(div);
+  });
+}
+
+// 打开/关闭自定UI
+document.getElementById("openCustomizeBtn").onclick = () => {
+  renderThemeGrid();
+  updateBgPreview();
+  syncColorPickers();
+  document.getElementById("customizePage").classList.add("open");
+};
+document.getElementById("customizeBackBtn").onclick = () => {
+  document.getElementById("customizePage").classList.remove("open");
+};
+
+// 背景图
+document.getElementById("uploadBgBtn").onclick = () => document.getElementById("bgImageInput").click();
+document.getElementById("bgImageInput").onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  e.target.value = "";
+  compressImage(f, 1280, 0.75, b64 => {
+    try {
+      localStorage.setItem("custom_bg", "data:image/jpeg;base64," + b64);
+      applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+      updateBgPreview();
+      alert("背景图已设置");
+    } catch (err) { alert("保存失败：" + err.message); }
+  });
+};
+document.getElementById("clearBgBtn").onclick = () => {
+  localStorage.removeItem("custom_bg");
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  updateBgPreview();
+  alert("已恢复主题背景");
+};
+
+// 色板
+document.querySelectorAll("#primaryPalette .color-swatch").forEach(sw => {
+  sw.onclick = () => {
+    const s = getCustomSettings(); s.primaryColor = sw.dataset.color; setCustomSettings(s);
+    applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  };
+});
+document.querySelectorAll("#textPalette .color-swatch").forEach(sw => {
+  sw.onclick = () => {
+    const s = getCustomSettings(); s.textColor = sw.dataset.color; setCustomSettings(s);
+    applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  };
+});
+document.querySelectorAll("#cardPalette .color-swatch").forEach(sw => {
+  sw.onclick = () => {
+    const s = getCustomSettings(); s.cardColor = sw.dataset.color; setCustomSettings(s);
+    applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  };
+});
+
+// 滑块
+document.getElementById("cardOpacity").oninput = e => {
+  const s = getCustomSettings(); s.cardOpacity = parseInt(e.target.value); setCustomSettings(s);
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+};
+document.getElementById("blurAmount").oninput = e => {
+  const s = getCustomSettings(); s.blurAmount = parseInt(e.target.value); setCustomSettings(s);
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+};
+// 深色模式
+document.getElementById("darkModeToggle").onchange = e => {
+  const s = getCustomSettings(); s.darkMode = e.target.checked; setCustomSettings(s);
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+};
+
+// 卡片样式二选一
+document.querySelectorAll('input[name="cardStyle"]').forEach(r => {
+  r.onchange = e => {
+    const s = getCustomSettings();
+    s.cardStyle = e.target.value;
+    if (e.target.value === "transparent") {
+      s.cardOpacity = 45;
+      s.blurAmount = 16;
+      const cardOpacitySlider = document.getElementById("cardOpacity");
+      const blurAmountSlider = document.getElementById("blurAmount");
+      if (cardOpacitySlider) cardOpacitySlider.value = 45;
+      if (blurAmountSlider) blurAmountSlider.value = 16;
+    } else {
+      s.cardOpacity = 100;
+      s.blurAmount = 0;
+      const cardOpacitySlider = document.getElementById("cardOpacity");
+      const blurAmountSlider = document.getElementById("blurAmount");
+      if (cardOpacitySlider) cardOpacitySlider.value = 100;
+      if (blurAmountSlider) blurAmountSlider.value = 0;
+    }
+    setCustomSettings(s);
+    document.querySelectorAll(".card-style-option").forEach(el => {
+      const input = el.querySelector('input');
+      el.classList.toggle("active", input && input.checked);
+    });
+    applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  };
+});
+
+// 字体选择
+document.getElementById("openFontPickerBtn").onclick = () => {
+  const s = getCustomSettings();
+  pendingFontId = s.fontFamily || "default";
+  renderFontList();
+  document.getElementById("fontPickerModal").style.display = "flex";
+};
+document.getElementById("closeFontBtn").onclick = () => {
+  document.getElementById("fontPickerModal").style.display = "none";
+};
+document.getElementById("fontPickerModal").onclick = e => {
+  if (e.target === document.getElementById("fontPickerModal")) {
+    document.getElementById("fontPickerModal").style.display = "none";
+  }
+};
+document.getElementById("confirmFontBtn").onclick = () => {
+  const s = getCustomSettings();
+  s.fontFamily = pendingFontId;
+  setCustomSettings(s);
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+  document.getElementById("fontPickerModal").style.display = "none";
+};
+
+// 保存UI设置
+document.getElementById("saveUIThemeBtn").onclick = () => {
+  const settings = getCustomSettings();
+  const themeId = localStorage.getItem("custom_theme") || "blue";
+  localStorage.setItem("custom_settings", JSON.stringify(settings));
+  localStorage.setItem("custom_theme", themeId);
+  alert("UI 设置已保存到本地");
+};
+
+// 恢复默认
+document.getElementById("resetThemeBtn").onclick = () => {
+  if (!confirm("确定恢复默认设置吗？")) return;
+  localStorage.removeItem("custom_bg");
+  localStorage.removeItem("custom_theme");
+  localStorage.removeItem("custom_settings");
+  document.body.style.fontFamily = "";
+  applyCustomTheme("blue");
+  updateBgPreview();
+  renderThemeGrid();
+  syncColorPickers();
+  alert("已恢复默认");
+};
+
+// 监听系统深浅色切换，自动刷新黑白主题（兼容旧版 WebView/Safari）
+if (window.matchMedia) {
+  const systemColorQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handleSystemColorChange = () => {
+    if (localStorage.getItem("custom_theme") === "system") {
+      applyCustomTheme("system");
+    }
+  };
+  if (typeof systemColorQuery.addEventListener === "function") {
+    systemColorQuery.addEventListener("change", handleSystemColorChange);
+  } else if (typeof systemColorQuery.addListener === "function") {
+    systemColorQuery.addListener(handleSystemColorChange);
+  }
+}
+
+// 初始化
+(function initCustomTheme() {
+  applyCustomTheme(localStorage.getItem("custom_theme") || "blue");
+})();
+/* ==================== 自定UI系统结束 ==================== */
+
+
+/* ==================== EmailJS ==================== */
 function initEmailJS() {
   if (typeof emailjs !== "undefined" && CONFIG.emailjsPublicKey !== "你的PublicKey") {
     emailjs.init(CONFIG.emailjsPublicKey);
@@ -507,16 +1238,23 @@ async function sendVerificationEmail(email, code) {
   }
 }
 
+/* ==================== 数据读写 ==================== */
 async function loadData() {
   const res = await fetch(CONFIG.dataApiUrl, {
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
-  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], comments: [], invites: [], reports: [], pendingRegistrations: [], goldVerify: { name: "陈宝昌", email: "520chenbaochang@gmail.com", idCard: "421224201106013734" }, welcomeModalDisabled: false, sha: null };
+  if (res.status === 404) return { adminPassword: "admin123", posts: [], users: [], messages: [], comments: [], invites: [], reports: [], pendingRegistrations: [], adminCodes: [], goldVerify: { name: "陈宝昌", email: "520chenbaochang@gmail.com", idCard: "421224201106013734" }, welcomeModalDisabled: false, sha: null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
   let c = "";
-  try { c = decodeURIComponent(escape(atob(j.content.replace(/\s/g, "")))); } catch (e) { c = "{}"; }
-  const d = JSON.parse(c || "{}");
+  let d = {};
+  try {
+    c = decodeURIComponent(escape(atob((j.content || "").replace(/\s/g, ""))));
+    d = JSON.parse(c || "{}");
+  } catch (e) {
+    console.error("远端数据解析失败，已使用空数据兜底：", e);
+    d = {};
+  }
   if (!d.adminPassword) d.adminPassword = "admin123";
   if (!Array.isArray(d.posts)) d.posts = [];
   if (!Array.isArray(d.users)) d.users = [];
@@ -525,6 +1263,7 @@ async function loadData() {
   if (!Array.isArray(d.invites)) d.invites = [];
   if (!Array.isArray(d.reports)) d.reports = [];
   if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
+  if (!Array.isArray(d.adminCodes)) d.adminCodes = [];
   if (!d.goldVerify) d.goldVerify = { name: "陈宝昌", email: "520chenbaochang@gmail.com", idCard: "421224201106013734" };
   if (typeof d.welcomeModalDisabled !== "boolean") d.welcomeModalDisabled = false;
   d.posts.forEach(p => {
@@ -541,12 +1280,13 @@ async function loadData() {
     if (!Array.isArray(u.likedPosts)) u.likedPosts = [];
     if (typeof u.isDeleted !== "boolean") u.isDeleted = false;
     if (!u.bannedUntil) u.bannedUntil = 0;
+    if (typeof u.isAdmin !== "boolean") u.isAdmin = false;
   });
   d.sha = j.sha;
   return d;
 }
 async function saveData(d) {
-  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages, comments: d.comments, invites: d.invites, reports: d.reports, pendingRegistrations: d.pendingRegistrations, goldVerify: d.goldVerify, welcomeModalDisabled: d.welcomeModalDisabled }, null, 2);
+  const json = JSON.stringify({ adminPassword: d.adminPassword, posts: d.posts, users: d.users, messages: d.messages, comments: d.comments, invites: d.invites, reports: d.reports, pendingRegistrations: d.pendingRegistrations, goldVerify: d.goldVerify, welcomeModalDisabled: d.welcomeModalDisabled, adminCodes: d.adminCodes }, null, 2);
   const b64 = btoa(unescape(encodeURIComponent(json)));
   const body = { message: "update data", content: b64, branch: CONFIG.branch };
   if (d.sha) body.sha = d.sha;
@@ -555,7 +1295,14 @@ async function saveData(d) {
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  if (!res.ok) throw new Error("GitHub保存失败: HTTP " + res.status);
+  if (!res.ok) {
+    let detail = "";
+    try { detail = (await res.json()).message || ""; } catch (e) {}
+    throw new Error("GitHub保存失败: HTTP " + res.status + (detail ? " - " + detail : ""));
+  }
+  // 保存后立即更新 SHA，避免同一份数据连续保存时触发 GitHub 409 冲突
+  const result = await res.json();
+  if (result && result.content && result.content.sha) d.sha = result.content.sha;
 }
 async function uploadImage(base64, folder) {
   const name = folder + "_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
@@ -568,13 +1315,13 @@ async function uploadImage(base64, folder) {
   return `${CONFIG.imgRawBase}/${folder}/${name}`;
 }
 
+/* ==================== 工具函数 ==================== */
 function getUserByIdentifier(d, id) {
   if (!id) return null;
   return d.users.find(u => u.email === id || u.phone === id) || null;
 }
 function getFollowBtnText(targetUser, meId) {
   if (!targetUser || !meId) return "关注";
-  // 管理员只显示私信
   if (targetUser.isAdmin) return "私信";
   const me = getUserByIdentifier(cachedData || { users: [] }, meId);
   if (!me) return "关注";
@@ -608,18 +1355,7 @@ function formatTime(ts) {
   return d.toLocaleDateString();
 }
 
-function applyTheme(t) {
-  document.body.classList.remove("theme-flow", "theme-system");
-  if (t === "system") document.body.classList.add("theme-system");
-  else document.body.classList.add("theme-flow");
-  localStorage.setItem("theme", t);
-  document.getElementById("themeFlowBtn").classList.toggle("active", t === "flow");
-  document.getElementById("themeSystemBtn").classList.toggle("active", t === "system");
-}
-document.getElementById("themeFlowBtn").onclick = () => applyTheme("flow");
-document.getElementById("themeSystemBtn").onclick = () => applyTheme("system");
-applyTheme(localStorage.getItem("theme") || "flow");
-
+/* ==================== 导航 ==================== */
 function updateNavActive() {
   const ap = document.querySelector(".page.active");
   document.querySelectorAll(".bottom-nav .nav-item").forEach(n => n.classList.remove("active"));
@@ -643,6 +1379,7 @@ document.querySelectorAll(".bottom-nav > div").forEach(el => {
   });
 });
 
+/* ==================== 帖子渲染 ==================== */
 function renderPosts(posts, containerId, opts = {}) {
   const c = document.getElementById(containerId);
   if (!opts.append) c.innerHTML = "";
@@ -770,11 +1507,7 @@ async function followOrChat(identifier) {
   if (!currentUser) return alert("请先登录");
   const d = await loadData();
   const target = getUserByIdentifier(d, identifier);
-  // 管理员直接私信，不关注
-  if (target && target.isAdmin) {
-    openChat(identifier);
-    return;
-  }
+  if (target && target.isAdmin) { openChat(identifier); return; }
   const meId = currentUser.email || currentUser.phone;
   const me = getUserByIdentifier(d, meId);
   if (!me) return;
@@ -788,6 +1521,7 @@ async function followOrChat(identifier) {
   renderMe();
 }
 
+/* ==================== 热榜 ==================== */
 async function renderHot() {
   try {
     const d = await loadData();
@@ -810,6 +1544,7 @@ async function renderHot() {
   }
 }
 
+/* ==================== 搜索 ==================== */
 async function globalSearch() {
   const kw = document.getElementById("globalSearch").value.trim().toLowerCase();
   const d = cachedData || await loadData();
@@ -828,23 +1563,22 @@ async function globalSearch() {
   if (users.length) {
     userRes.innerHTML = '<div style="font-weight:800;margin:12px 0;">相关账号</div>';
     users.forEach(u => {
-     const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
-     const followBtnText = getFollowBtnText(u, meId || "");
-    // 管理员显示"管理员"提示，不显示邮箱/手机号
-     const infoText = u.isAdmin ? "管理员" : "用户";
-     const div = document.createElement("div");
-     div.className = "card";
-     div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
-     div.innerHTML = `
-       <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
-       <div style="flex:1;">
-        <b>${escapeHtml(u.nickname || u.email?.split("@")[0] || u.phone)}</b>${getVBadgeHtml(u.vBadge)}
-       <div class="hint">${infoText}</div>
-    </div>
-    <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${followBtnText}</button>
-  `;
-  userRes.appendChild(div);
-});
+      const meId = currentUser ? (currentUser.email || currentUser.phone) : null;
+      const followBtnText = getFollowBtnText(u, meId || "");
+      const infoText = u.isAdmin ? "管理员" : "用户";
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
+      div.innerHTML = `
+        <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
+        <div style="flex:1;">
+          <b>${escapeHtml(u.nickname || u.email?.split("@")[0] || u.phone)}</b>${getVBadgeHtml(u.vBadge)}
+          <div class="hint">${infoText}</div>
+        </div>
+        <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${followBtnText}</button>
+      `;
+      userRes.appendChild(div);
+    });
   }
   if (!posts.length && !users.length) {
     postRes.innerHTML = '<p class="hint">未找到相关内容</p>';
@@ -852,6 +1586,7 @@ async function globalSearch() {
 }
 document.getElementById("globalSearch").oninput = globalSearch;
 
+/* ==================== 今日投稿 ==================== */
 async function renderToday() {
   try {
     const d = await loadData();
@@ -866,6 +1601,7 @@ async function renderToday() {
   }
 }
 
+/* ==================== 全部投稿 ==================== */
 async function renderAllPosts() {
   try {
     const d = await loadData();
@@ -878,6 +1614,7 @@ async function renderAllPosts() {
   }
 }
 
+/* ==================== 发布 ==================== */
 function updatePublishUI() {
   const tip = document.getElementById("publishLoginTip");
   if (!currentUser) {
@@ -955,22 +1692,36 @@ document.getElementById("imgInput").onchange = e => {
   e.target.value = "";
 };
 function compressImage(file, maxW, quality, cb) {
+  if (!file || !file.type || !file.type.startsWith("image/")) {
+    alert("请选择有效的图片文件");
+    return;
+  }
   const r = new FileReader();
+  r.onerror = () => alert("图片读取失败，请重新选择");
   r.onload = e => {
     const img = new Image();
+    img.onerror = () => alert("图片格式不支持或文件已损坏");
     img.onload = () => {
-      const canvas = document.createElement("canvas");
-      let w = img.width, h = img.height;
-      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      cb(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
+      try {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if (!w || !h) throw new Error("图片尺寸无效");
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("浏览器不支持图片处理");
+        ctx.drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL("image/jpeg", quality).split(",")[1]);
+      } catch (err) {
+        alert("图片处理失败：" + err.message);
+      }
     };
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
 }
 
+/* ==================== 登录/注册 ==================== */
 document.getElementById("showLoginBtn").onclick = () => {
   document.getElementById("loginModal").style.display = "flex";
   switchAuthTab("login");
@@ -1057,8 +1808,7 @@ document.getElementById("loginBtn").onclick = async () => {
     if (u.isDeleted) { status.textContent = "账号已被删除，请重新注册并等待审核"; status.classList.add("error"); return; }
     if (u.bannedUntil && u.bannedUntil > nowTs()) {
       status.textContent = "账号已被封禁至 " + new Date(u.bannedUntil * 1000).toLocaleString() + "\n原因：" + (u.banReason || "违规操作");
-      status.classList.add("error");
-      return;
+      status.classList.add("error"); return;
     }
     if (!u.password || !u.secondPassword) { status.textContent = "账号未设置密码，请通过注册补设"; status.classList.add("error"); return; }
     if (u.password !== password || u.secondPassword !== secondPassword) { status.textContent = "密码或二级密码错误"; status.classList.add("error"); return; }
@@ -1112,22 +1862,12 @@ document.getElementById("registerBtn").onclick = async () => {
       if (existingEmailUser) {
         if (!existingEmailUser.isDeleted) {
           status.textContent = "该邮箱已注册，请直接登录";
-          status.classList.add("error");
-          return;
+          status.classList.add("error"); return;
         }
-        if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
-        d.pendingRegistrations.push({
-          id: "pr_" + Date.now(),
-          email: email,
-          phone: phone || null,
-          password: password,
-          secondPassword: secondPassword,
-          time: nowTs()
-        });
+        d.pendingRegistrations.push({ id: "pr_" + Date.now(), email: email, phone: phone || null, password: password, secondPassword: secondPassword, time: nowTs() });
         await saveData(d);
         status.textContent = "该账号曾被删除，注册申请已提交管理员审核";
-        status.classList.add("success");
-        return;
+        status.classList.add("success"); return;
       }
     }
 
@@ -1136,67 +1876,37 @@ document.getElementById("registerBtn").onclick = async () => {
       if (existingPhoneUser) {
         if (!existingPhoneUser.isDeleted) {
           status.textContent = "该手机号已注册";
-          status.classList.add("error");
-          return;
+          status.classList.add("error"); return;
         }
-        if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
-        d.pendingRegistrations.push({
-          id: "pr_" + Date.now(),
-          email: email || null,
-          phone: phone,
-          password: password,
-          secondPassword: secondPassword,
-          time: nowTs()
-        });
+        d.pendingRegistrations.push({ id: "pr_" + Date.now(), email: email || null, phone: phone, password: password, secondPassword: secondPassword, time: nowTs() });
         await saveData(d);
         status.textContent = "该账号曾被删除，注册申请已提交管理员审核";
-        status.classList.add("success");
-        return;
+        status.classList.add("success"); return;
       }
     }
 
     let inviteIndex = -1;
     if (inviteCode) {
-      if (!Array.isArray(d.invites)) d.invites = [];
       inviteIndex = d.invites.findIndex(inv => inv.code === inviteCode);
-      if (inviteIndex === -1) {
-        status.textContent = "邀请码不存在";
-        status.classList.add("error");
-        return;
-      }
-      if (d.invites[inviteIndex].usedBy) {
-        status.textContent = "此码已被使用，已报废";
-        status.classList.add("error");
-        return;
-      }
+      if (inviteIndex === -1) { status.textContent = "邀请码不存在"; status.classList.add("error"); return; }
+      if (d.invites[inviteIndex].usedBy) { status.textContent = "此码已被使用，已报废"; status.classList.add("error"); return; }
     }
 
     const newUser = {
-      email: email || null,
-      phone: phone || null,
+      email: email || null, phone: phone || null,
       nickname: email ? email.split("@")[0] : phone,
-      avatar: "",
-      password: password,
-      secondPassword: secondPassword,
-      isAnonymous: false,
-      following: [],
-      followers: [],
-      likedPosts: [],
-      vBadge: null,
-      isDeleted: false,
-      bannedUntil: 0,
-      banReason: "",
+      avatar: "", password: password, secondPassword: secondPassword,
+      isAnonymous: false, following: [], followers: [], likedPosts: [],
+      vBadge: null, isDeleted: false, bannedUntil: 0, banReason: "",
+      isAdmin: false, adminClassName: "", adminRealName: "",
       createdAt: Date.now()
     };
     d.users.push(newUser);
-
     if (inviteIndex !== -1) {
       d.invites[inviteIndex].usedBy = email || phone;
       d.invites[inviteIndex].usedAt = Date.now();
     }
-
     await saveData(d);
-
     currentUser = { email: newUser.email, phone: newUser.phone, nickname: newUser.nickname, avatar: "" };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
     status.textContent = "注册成功，已自动登录";
@@ -1227,6 +1937,7 @@ function clearAuthFields() {
   document.getElementById("registerStatus").textContent = "";
 }
 
+/* ==================== 我的页面 ==================== */
 async function renderMe() {
   if (!currentUser) {
     document.getElementById("notLoggedIn").style.display = "block";
@@ -1249,6 +1960,7 @@ async function renderMe() {
   document.getElementById("anonSetting").checked = me.isAnonymous || false;
   const myPosts = d.posts.filter(p => p.authorEmail === me.email || p.authorPhone === me.phone);
   renderPosts(myPosts, "myPostsList");
+
   const fl = document.getElementById("myFollowingList");
   fl.innerHTML = (me.following || []).length ? me.following.map(f => {
     const u = getUserByIdentifier(d, f);
@@ -1259,11 +1971,7 @@ async function renderMe() {
   const followers = (me.followers || []).map(f => getUserByIdentifier(d, f)).filter(Boolean);
   followersList.innerHTML = followers.length ? followers.map(u => {
     const btnText = getFollowBtnText(u, me.email || me.phone);
-    return `<div class="card" style="display:flex;align-items:center;gap:10px;">
-      <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div>
-      <div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div>
-      <button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${btnText}</button>
-    </div>`;
+    return `<div class="card" style="display:flex;align-items:center;gap:10px;"><div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}</div><button class="ghost" style="width:auto;" onclick="followOrChat('${escapeHtml(u.email || u.phone)}')">${btnText}</button></div>`;
   }).join("") : '<p class="hint">暂无粉丝</p>';
 
   const msgs = d.messages.filter(m => m.toEmail === me.email || m.fromEmail === me.email || m.toPhone === me.phone || m.fromPhone === me.phone);
@@ -1286,22 +1994,7 @@ async function renderMe() {
       const otherV = otherUser ? otherUser.vBadge : null;
       const unreadCount = list.filter(m => (m.toEmail === me.email || m.toPhone === me.phone) && !m.read).length;
       const previewText = lastMsg.type === "image" ? "[图片]" : escapeHtml(lastMsg.content);
-      return `
-        <div class="session-item" onclick="openChat('${escapeHtml(otherId)}')">
-          <div class="session-avatar">
-            ${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}">` : escapeHtml(otherName[0])}
-            ${getMiniV(otherV)}
-          </div>
-          <div class="session-info">
-            <div class="session-name">${escapeHtml(otherName)}${getVBadgeHtml(otherV)}</div>
-            <div class="session-preview">${previewText}</div>
-          </div>
-          <div class="session-right">
-            <div class="session-time">${formatTime(lastMsg.time)}</div>
-            ${unreadCount > 0 ? `<span class="unread-dot">${unreadCount}</span>` : ""}
-          </div>
-        </div>
-      `;
+      return `<div class="session-item" onclick="openChat('${escapeHtml(otherId)}')"><div class="session-avatar">${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}">` : escapeHtml(otherName[0])}${getMiniV(otherV)}</div><div class="session-info"><div class="session-name">${escapeHtml(otherName)}${getVBadgeHtml(otherV)}</div><div class="session-preview">${previewText}</div></div><div class="session-right"><div class="session-time">${formatTime(lastMsg.time)}</div>${unreadCount > 0 ? `<span class="unread-dot">${unreadCount}</span>` : ""}</div></div>`;
     }).join("");
   }
 }
@@ -1352,6 +2045,7 @@ document.getElementById("avatarFileInput").onchange = async e => {
   });
 };
 
+/* ==================== 私信 ==================== */
 function openChat(identifier) {
   chatTarget = identifier;
   const d = cachedData || null;
@@ -1385,24 +2079,9 @@ async function renderChat() {
   chatBody.innerHTML = msgs.map(m => {
     const isMe = m.fromEmail === myId || m.fromPhone === myId;
     if (isMe) {
-      return `
-        <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-bottom:12px;">
-          <div class="chat-bubble chat-me">
-            ${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}
-            <div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)} ${m.read ? "已读" : "未读"}</div>
-          </div>
-        </div>
-      `;
+      return `<div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-bottom:12px;"><div class="chat-bubble chat-me">${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}<div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)} ${m.read ? "已读" : "未读"}</div></div></div>`;
     } else {
-      return `
-        <div style="display:flex;justify-content:flex-start;align-items:flex-end;gap:8px;margin-bottom:12px;">
-          ${otherAvatarHtml}
-          <div class="chat-bubble chat-other">
-            ${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}
-            <div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)}</div>
-          </div>
-        </div>
-      `;
+      return `<div style="display:flex;justify-content:flex-start;align-items:flex-end;gap:8px;margin-bottom:12px;">${otherAvatarHtml}<div class="chat-bubble chat-other">${m.type === "image" ? `<img src="${escapeHtml(m.content)}" style="max-width:200px;border-radius:8px;" onclick="showLightbox('${escapeHtml(m.content)}')">` : escapeHtml(m.content)}<div style="font-size:10px;opacity:.7;margin-top:4px;">${formatTime(m.time)}</div></div></div>`;
     }
   }).join("");
   msgs.filter(m => (m.toEmail === myId || m.toPhone === myId) && !m.read).forEach(m => m.read = true);
@@ -1436,6 +2115,7 @@ document.getElementById("chatBackBtn").onclick = () => {
   renderMe();
 };
 
+/* ==================== 评论 ==================== */
 function openCommentPage(postId) {
   commentTargetPostId = postId;
   replyToCommentId = null;
@@ -1443,7 +2123,6 @@ function openCommentPage(postId) {
   document.getElementById("commentPage").classList.add("open");
   renderCommentPage();
 }
-
 async function renderCommentPage() {
   if (!commentTargetPostId) return;
   const d = await loadData();
@@ -1451,24 +2130,9 @@ async function renderCommentPage() {
   const post = d.posts.find(p => p.id === commentTargetPostId);
   const comments = d.comments.filter(cm => cm.postId === commentTargetPostId).sort((a, b) => a.time - b.time);
   const body = document.getElementById("commentBody");
-
-  if (!post) {
-    body.innerHTML = '<p class="hint">投稿不存在或已删除</p>';
-    return;
-  }
-
-  let html = '';
-  html += '<div class="comment-original-post">';
-  html += `
-    <div class="post-top">
-      <div class="avatar">${post.authorAvatar ? `<img src="${escapeHtml(post.authorAvatar)}">` : escapeHtml((post.authorName || "匿")[0])}${getMiniV(post.vBadge)}</div>
-      <div style="flex:1;">
-        <div class="post-name">${escapeHtml(post.authorName || "匿名")}${getVBadgeHtml(post.vBadge)}</div>
-        <div class="post-time">${formatTime(post.time)}</div>
-      </div>
-    </div>
-    <div class="post-content">${escapeHtml(post.content)}</div>
-  `;
+  if (!post) { body.innerHTML = '<p class="hint">投稿不存在或已删除</p>'; return; }
+  let html = '<div class="comment-original-post">';
+  html += `<div class="post-top"><div class="avatar">${post.authorAvatar ? `<img src="${escapeHtml(post.authorAvatar)}">` : escapeHtml((post.authorName || "匿")[0])}${getMiniV(post.vBadge)}</div><div style="flex:1;"><div class="post-name">${escapeHtml(post.authorName || "匿名")}${getVBadgeHtml(post.vBadge)}</div><div class="post-time">${formatTime(post.time)}</div></div></div><div class="post-content">${escapeHtml(post.content)}</div>`;
   if (post.images && post.images.length) {
     html += '<div class="post-images">';
     post.images.forEach(u => { html += `<img src="${escapeHtml(u)}" onclick="showLightbox('${escapeHtml(u)}')">`; });
@@ -1493,67 +2157,35 @@ async function renderCommentPage() {
           replyInfo = `<span style="color:var(--muted);font-size:12px;">回复 ${escapeHtml(rname)}：</span>`;
         }
       }
-      return `
-        <div class="comment-item">
-          <div class="avatar">${avatar ? `<img src="${escapeHtml(avatar)}">` : escapeHtml(name[0])}${getMiniV(vBadge)}</div>
-          <div class="comment-item-content">
-            <div class="comment-item-name">${escapeHtml(name)}${getVBadgeHtml(vBadge)}</div>
-            <div class="comment-item-text">${replyInfo}${escapeHtml(cm.content)}</div>
-            <div class="comment-item-time">${formatTime(cm.time)}</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
-              <button class="comment-item-reply-btn" data-comment-id="${cm.id}" data-comment-name="${escapeHtml(name)}">回复</button>
-              <button class="comment-item-more-btn" data-comment-id="${cm.id}">⋮</button>
-            </div>
-          </div>
-        </div>
-      `;
+      return `<div class="comment-item"><div class="avatar">${avatar ? `<img src="${escapeHtml(avatar)}">` : escapeHtml(name[0])}${getMiniV(vBadge)}</div><div class="comment-item-content"><div class="comment-item-name">${escapeHtml(name)}${getVBadgeHtml(vBadge)}</div><div class="comment-item-text">${replyInfo}${escapeHtml(cm.content)}</div><div class="comment-item-time">${formatTime(cm.time)}</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><button class="comment-item-reply-btn" data-comment-id="${cm.id}" data-comment-name="${escapeHtml(name)}">回复</button><button class="comment-item-more-btn" data-comment-id="${cm.id}">⋮</button></div></div></div>`;
     }).join("");
   }
-
   body.innerHTML = html;
-
   body.querySelectorAll(".comment-item-reply-btn").forEach(btn => {
     btn.onclick = () => {
       replyToCommentId = btn.dataset.commentId;
-      const name = btn.dataset.commentName;
-      document.getElementById("commentInput").placeholder = "回复 " + name + "...";
+      document.getElementById("commentInput").placeholder = "回复 " + btn.dataset.commentName + "...";
       document.getElementById("commentInput").focus();
     };
   });
-
   body.querySelectorAll(".comment-item-more-btn").forEach(btn => {
     btn.onclick = () => {
-      const commentId = btn.dataset.commentId;
       if (!currentUser) { alert("请先登录"); return; }
-      reportTargetCommentId = commentId;
+      reportTargetCommentId = btn.dataset.commentId;
       document.getElementById("reportModal").style.display = "flex";
     };
   });
 }
-
 async function reportComment(commentId) {
   try {
     const d = await loadData();
-    if (!Array.isArray(d.reports)) d.reports = [];
-    d.reports.push({
-      id: "r_" + Date.now(),
-      commentId: commentId,
-      postId: commentTargetPostId,
-      reporter: currentUser.email || currentUser.phone,
-      time: nowTs(),
-      status: "pending"
-    });
+    d.reports.push({ id: "r_" + Date.now(), commentId: commentId, postId: commentTargetPostId, reporter: currentUser.email || currentUser.phone, time: nowTs(), status: "pending" });
     await saveData(d);
     alert("举报成功，管理员会尽快处理");
-  } catch (e) {
-    alert("举报失败：" + e.message);
-  }
+  } catch (e) { alert("举报失败：" + e.message); }
 }
-
 document.getElementById("reportConfirmBtn").onclick = async () => {
-  if (reportTargetCommentId) {
-    await reportComment(reportTargetCommentId);
-  }
+  if (reportTargetCommentId) await reportComment(reportTargetCommentId);
   document.getElementById("reportModal").style.display = "none";
   reportTargetCommentId = null;
 };
@@ -1567,13 +2199,11 @@ document.getElementById("reportModal").onclick = e => {
     reportTargetCommentId = null;
   }
 };
-
 document.getElementById("commentBackBtn").onclick = () => {
   document.getElementById("commentPage").classList.remove("open");
   commentTargetPostId = null;
   replyToCommentId = null;
 };
-
 document.getElementById("commentSendBtn").onclick = async () => {
   if (!currentUser) { alert("请先登录"); return; }
   const content = document.getElementById("commentInput").value.trim();
@@ -1582,17 +2212,11 @@ document.getElementById("commentSendBtn").onclick = async () => {
   const u = getUserByIdentifier(d, currentUser.email || currentUser.phone) || {};
   const isAnon = u.isAnonymous || false;
   d.comments.push({
-    id: "c_" + Date.now(),
-    postId: commentTargetPostId,
-    authorEmail: currentUser.email || null,
-    authorPhone: currentUser.phone || null,
+    id: "c_" + Date.now(), postId: commentTargetPostId,
+    authorEmail: currentUser.email || null, authorPhone: currentUser.phone || null,
     authorName: isAnon ? "匿名" : u.nickname || (currentUser.email || currentUser.phone || "").split("@")[0],
-    authorAvatar: isAnon ? "" : u.avatar || "",
-    vBadge: isAnon ? null : u.vBadge || null,
-    content: content,
-    time: nowTs(),
-    replyTo: replyToCommentId,
-    isAnonymous: isAnon
+    authorAvatar: isAnon ? "" : u.avatar || "", vBadge: isAnon ? null : u.vBadge || null,
+    content: content, time: nowTs(), replyTo: replyToCommentId, isAnonymous: isAnon
   });
   await saveData(d);
   cachedData = d;
@@ -1602,6 +2226,7 @@ document.getElementById("commentSendBtn").onclick = async () => {
   renderCommentPage();
 };
 
+/* ==================== 管理员 ==================== */
 function renderAdmin() {
   if (!adminLoggedIn) {
     document.getElementById("adminLoginPanel").style.display = "block";
@@ -1668,53 +2293,25 @@ async function renderAdminUserList() {
     const div = document.createElement("div");
     div.className = "card";
     div.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:8px;";
-    div.innerHTML = `
-      <div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div>
-      <div style="flex:1;">
-        <b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}
-        <div class="hint">${escapeHtml(u.email || u.phone || "")}${banned ? "（已封禁）" : ""}</div>
-      </div>
-      <div style="display:flex;gap:6px;">
-        <button class="ghost small" data-action="redV" data-id="${escapeHtml(u.email || u.phone)}">红色V</button>
-        <button class="ghost small" data-action="blueV" data-id="${escapeHtml(u.email || u.phone)}">蓝色V</button>
-        <button class="ghost small" data-action="ban-user" data-id="${escapeHtml(u.email || u.phone)}">${banned ? "解封" : "封号"}</button>
-        <button class="danger small" data-action="delete-account" data-id="${escapeHtml(u.email || u.phone)}">删除账号</button>
-      </div>
-    `;
+    div.innerHTML = `<div class="avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}">` : (u.nickname || "?")[0]}${getMiniV(u.vBadge)}</div><div style="flex:1;"><b>${escapeHtml(u.nickname)}</b>${getVBadgeHtml(u.vBadge)}<div class="hint">${escapeHtml(u.email || u.phone || "")}${banned ? "（已封禁）" : ""}${u.isAdmin ? "（管理员）" : ""}</div></div><div style="display:flex;gap:6px;"><button class="ghost small" data-action="redV" data-id="${escapeHtml(u.email || u.phone)}">红V</button><button class="ghost small" data-action="blueV" data-id="${escapeHtml(u.email || u.phone)}">蓝V</button><button class="ghost small" data-action="ban-user" data-id="${escapeHtml(u.email || u.phone)}">${banned ? "解封" : "封号"}</button><button class="danger small" data-action="delete-account" data-id="${escapeHtml(u.email || u.phone)}">删号</button></div>`;
     c.appendChild(div);
   });
 }
-
 function generateInviteCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return code;
 }
-
 async function renderAdminInviteList() {
   const d = await loadData();
   const c = document.getElementById("adminInviteList");
-  if (!d.invites || !d.invites.length) {
-    c.innerHTML = '<p class="hint">暂无邀请码</p>';
-    return;
-  }
-  c.innerHTML = d.invites.map(inv => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span style="font-weight:700;font-family:monospace;">${escapeHtml(inv.code)}</span>
-      ${inv.usedBy
-        ? `<span style="color:var(--danger);font-size:13px;">此码已被使用，已报废</span>`
-        : `<span style="color:var(--ok);font-size:13px;">未使用</span>`}
-    </div>
-  `).join("");
+  if (!d.invites || !d.invites.length) { c.innerHTML = '<p class="hint">暂无邀请码</p>'; return; }
+  c.innerHTML = d.invites.map(inv => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-weight:700;font-family:monospace;">${escapeHtml(inv.code)}</span>${inv.usedBy ? `<span style="color:var(--danger);font-size:13px;">此码已被使用，已报废</span>` : `<span style="color:var(--ok);font-size:13px;">未使用</span>`}</div>`).join("");
 }
-
 async function renderAdminReports() {
   const d = await loadData();
   const c = document.getElementById("adminReportList");
-  if (!Array.isArray(d.reports)) d.reports = [];
   const pending = d.reports.filter(r => r.status === "pending");
   if (!pending.length) { c.innerHTML = '<p class="hint">暂无举报</p>'; return; }
   c.innerHTML = "";
@@ -1722,44 +2319,27 @@ async function renderAdminReports() {
     const div = document.createElement("div");
     div.className = "post";
     const comment = d.comments.find(cm => cm.id === r.commentId);
-    div.innerHTML = `
-      <div class="post-content">${comment ? escapeHtml(comment.content) : "评论已删除"}</div>
-      <div class="post-time">举报人：${escapeHtml(r.reporter)} · ${formatTime(r.time)}</div>
-      <div class="post-actions">
-        <button class="danger small" data-action="delete-reported-comment" data-id="${r.commentId}" data-report="${r.id}">删除评论</button>
-        <button class="ghost small" data-action="ignore-report" data-id="${r.id}">忽略</button>
-      </div>
-    `;
+    div.innerHTML = `<div class="post-content">${comment ? escapeHtml(comment.content) : "评论已删除"}</div><div class="post-time">举报人：${escapeHtml(r.reporter)} · ${formatTime(r.time)}</div><div class="post-actions"><button class="danger small" data-action="delete-reported-comment" data-id="${r.commentId}" data-report="${r.id}">删除评论</button><button class="ghost small" data-action="ignore-report" data-id="${r.id}">忽略</button></div>`;
     c.appendChild(div);
   });
 }
-
 async function renderAdminPendingRegs() {
   const d = await loadData();
   const c = document.getElementById("adminPendingRegList");
-  if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
   if (!d.pendingRegistrations.length) { c.innerHTML = '<p class="hint">暂无待审核注册</p>'; return; }
   c.innerHTML = "";
   d.pendingRegistrations.forEach(reg => {
     const div = document.createElement("div");
     div.className = "post";
-    div.innerHTML = `
-      <div class="post-content">${escapeHtml(reg.email || reg.phone)}</div>
-      <div class="post-actions">
-        <button class="ok small" data-action="approve-reg" data-id="${reg.id}">同意</button>
-        <button class="danger small" data-action="reject-reg" data-id="${reg.id}">拒绝</button>
-      </div>
-    `;
+    div.innerHTML = `<div class="post-content">${escapeHtml(reg.email || reg.phone)}</div><div class="post-actions"><button class="ok small" data-action="approve-reg" data-id="${reg.id}">同意</button><button class="danger small" data-action="reject-reg" data-id="${reg.id}">拒绝</button></div>`;
     c.appendChild(div);
   });
 }
-
 async function renderWelcomeModalSetting() {
   const d = await loadData();
   cachedData = d;
   document.getElementById("welcomeModalDisabledSetting").checked = d.welcomeModalDisabled || false;
 }
-
 document.getElementById("saveWelcomeModalSettingBtn").onclick = async () => {
   const d = await loadData();
   d.welcomeModalDisabled = document.getElementById("welcomeModalDisabledSetting").checked;
@@ -1767,7 +2347,6 @@ document.getElementById("saveWelcomeModalSettingBtn").onclick = async () => {
   cachedData = d;
   alert("弹窗设置已保存");
 };
-
 document.getElementById("generateInviteBtn").onclick = async () => {
   try {
     const d = await loadData();
@@ -1778,11 +2357,8 @@ document.getElementById("generateInviteBtn").onclick = async () => {
     document.getElementById("newInviteCode").textContent = code;
     document.getElementById("inviteModal").style.display = "flex";
     renderAdminInviteList();
-  } catch (e) {
-    alert("生成失败：" + e.message);
-  }
+  } catch (e) { alert("生成失败：" + e.message); }
 };
-
 document.getElementById("copyInviteBtn").onclick = async () => {
   const code = document.getElementById("newInviteCode").textContent;
   try {
@@ -1798,11 +2374,9 @@ document.getElementById("copyInviteBtn").onclick = async () => {
     document.getElementById("inviteModal").style.display = "none";
   }
 };
-
 document.getElementById("closeInviteModalBtn").onclick = () => {
   document.getElementById("inviteModal").style.display = "none";
 };
-
 document.getElementById("goldVerifyBtn").onclick = async () => {
   const name = document.getElementById("goldName").value.trim();
   const email = document.getElementById("goldEmail").value.trim();
@@ -1824,20 +2398,17 @@ document.getElementById("goldVerifyBtn").onclick = async () => {
   document.getElementById("goldIdCard").value = "";
   renderMe();
 };
-
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest("button[data-action]");
   if (!btn) return;
   const action = btn.dataset.action;
   const id = btn.dataset.id;
-
   if (action === "ban-user") {
     const d = await loadData();
     const u = getUserByIdentifier(d, id);
     if (!u) return;
     if (u.bannedUntil && u.bannedUntil > nowTs()) {
-      u.bannedUntil = 0;
-      u.banReason = "";
+      u.bannedUntil = 0; u.banReason = "";
       alert("已解封");
     } else {
       const days = prompt("请输入封禁天数（0为永久）：", "7");
@@ -1850,7 +2421,6 @@ document.addEventListener("click", async (e) => {
     await saveData(d);
     renderAdminUserList();
   }
-
   if (action === "delete-account") {
     if (!confirm("确定删除该账号？删除后该用户重新注册需要管理员审核")) return;
     const d = await loadData();
@@ -1859,7 +2429,6 @@ document.addEventListener("click", async (e) => {
     await saveData(d);
     renderAdminUserList();
   }
-
   if (action === "delete-reported-comment") {
     if (!confirm("确定删除这条评论？")) return;
     const d = await loadData();
@@ -1869,7 +2438,6 @@ document.addEventListener("click", async (e) => {
     await saveData(d);
     renderAdminReports();
   }
-
   if (action === "ignore-report") {
     const d = await loadData();
     const report = d.reports.find(r => r.id === id);
@@ -1877,7 +2445,6 @@ document.addEventListener("click", async (e) => {
     await saveData(d);
     renderAdminReports();
   }
-
   if (action === "approve-reg") {
     const d = await loadData();
     const reg = d.pendingRegistrations.find(r => r.id === id);
@@ -1892,14 +2459,12 @@ document.addEventListener("click", async (e) => {
     await saveData(d);
     renderAdminPendingRegs();
   }
-
   if (action === "reject-reg") {
     const d = await loadData();
     d.pendingRegistrations = d.pendingRegistrations.filter(r => r.id !== id);
     await saveData(d);
     renderAdminPendingRegs();
   }
-
   if (action === "redV" || action === "blueV") {
     let text = "";
     if (action === "redV") {
@@ -1916,6 +2481,7 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+/* ==================== 大图 ==================== */
 function showLightbox(url) {
   const box = document.createElement("div");
   box.className = "lightbox";
@@ -1924,14 +2490,11 @@ function showLightbox(url) {
   document.body.appendChild(box);
 }
 
+/* ==================== 欢迎弹窗 ==================== */
 function startWelcomeCountdown() {
   const btn = document.getElementById("welcomeCloseBtn");
   const hasRead = localStorage.getItem("welcome_read") === "1";
-  if (hasRead) {
-    btn.disabled = false;
-    btn.textContent = "关闭";
-    return;
-  }
+  if (hasRead) { btn.disabled = false; btn.textContent = "关闭"; return; }
   btn.disabled = true;
   welcomeCountdown = 10;
   btn.textContent = "阅读 " + welcomeCountdown + " 秒后关闭";
@@ -1946,36 +2509,16 @@ function startWelcomeCountdown() {
     }
   }, 1000);
 }
-
 document.getElementById("welcomeCloseBtn").onclick = () => {
   document.getElementById("welcomeModal").style.display = "none";
   localStorage.setItem("welcome_read", "1");
 };
 document.getElementById("welcomeModal").onclick = e => {};
 
-document.getElementById("adminEntry").onclick = e => {
-  e.preventDefault();
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById("pageAdmin").classList.add("active");
-  updateNavActive();
-  renderAdmin();
-};
-
-renderHot();
-updatePublishUI();
-updateNavActive();
-
-if (currentUser) {
-  renderMe();
-  updatePublishUI();
-}
-
 const welcomeCheck = async () => {
   try {
     const d = await loadData();
-    if (d.welcomeModalDisabled) {
-      return;
-    }
+    if (d.welcomeModalDisabled) return;
     if (!localStorage.getItem("welcome_read")) {
       document.getElementById("welcomeModal").style.display = "flex";
       startWelcomeCountdown();
@@ -1987,7 +2530,176 @@ const welcomeCheck = async () => {
     }
   }
 };
-welcomeCheck();
+
+/* ==================== 管理员入口 ==================== */
+document.getElementById("adminEntry").onclick = e => {
+  e.preventDefault();
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("pageAdmin").classList.add("active");
+  updateNavActive();
+  renderAdmin();
+};
+
+/* ==================== QQ 音乐免费榜单播放器 ==================== */
+// 只接受 QQ 音乐官方榜单中明确非 VIP 且返回官方播放地址的歌曲。
+const FREE_MUSIC = [];
+let musicIndex = 0;
+let musicLoading = false;
+let musicFailedAttempts = 0;
+const QQ_HOT_URL = "https://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data=" + encodeURIComponent(JSON.stringify({
+  detail:{module:"musicToplist.ToplistInfoServer",method:"GetDetail",param:{topId:26,offset:0,num:30,period:""}}
+}));
+const QQ_VKEY_URL = "https://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data=";
+
+// QQ 接口跨域时使用 JSONP，避免普通 fetch 被浏览器 CORS 拦截
+function qqJsonp(url, timeout) {
+  return new Promise((resolve, reject) => {
+    const name = "__qqMusicCb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    let finished = false;
+    const timer = setTimeout(() => finish(new Error("QQ 接口请求超时")), timeout || 10000);
+    function finish(err, data) {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      try { delete window[name]; } catch (e) { window[name] = undefined; }
+      if (script.parentNode) script.parentNode.removeChild(script);
+      err ? reject(err) : resolve(data);
+    }
+    window[name] = data => finish(null, data);
+    script.onerror = () => finish(new Error("QQ 接口网络错误"));
+    script.src = url + "&format=jsonp&callback=" + encodeURIComponent(name);
+    document.head.appendChild(script);
+  });
+}
+
+async function loadQQFreeMusic() {
+  musicLoading = true;
+  musicStatus.textContent = "正在加载 QQ 音乐热歌榜...";
+  try {
+    const json = await qqJsonp(QQ_HOT_URL, 12000);
+    const detail = json && json.detail;
+    const data = detail && detail.data;
+    const inner = data && data.data;
+    const list = (data && data.songInfoList) || (inner && inner.songInfoList) || (data && data.song) || (inner && inner.song);
+    // 兼容 QQ 接口返回的榜单歌曲字段
+    if (!Array.isArray(list)) throw new Error("QQ 音乐榜单格式发生变化");
+    list.forEach(item => {
+      const song = item.data || item;
+      const pay = song.pay || {};
+      const mid = song.mid || song.songmid || "";
+      if (!mid || Number(pay.pay_play || pay.payplay || 0) !== 0) return;
+      const singer = Array.isArray(song.singer) && song.singer.length ? song.singer.map(s => s.name).join("/") : "未知歌手";
+      FREE_MUSIC.push({title:song.name || song.songname || "未命名歌曲", artist:singer, mid:mid, url:""});
+    });
+    if (!FREE_MUSIC.length) throw new Error("榜单中暂时没有官方免费播放歌曲");
+    musicIndex = Math.max(0, Math.min(FREE_MUSIC.length - 1, parseInt(localStorage.getItem("music_index"),10) || 0));
+    await resolveQQOfficialUrl(musicIndex, true);
+  } catch (e) {
+    musicStatus.textContent = "QQ 热歌榜暂时无法加载，请检查网络或点击重试";
+    musicLoading = false;
+  }
+}
+
+async function resolveQQOfficialUrl(index, autoplay) {
+  const track = FREE_MUSIC[index];
+  if (!track) return;
+  musicIndex = index;
+  musicTitle.textContent = track.title;
+  musicStatus.textContent = "正在获取官方试听地址...";
+  try {
+    const payload = {req_0:{module:"vkey.GetVkeyServer",method:"CgiGetVkey",param:{guid:"10000",songmid:[track.mid],songtype:[0],uin:"0",loginflag:0,platform:"20",filename:[""]}},comm:{uin:0,format:"json",ct:24,cv:0}};
+    const json = await qqJsonp(QQ_VKEY_URL + encodeURIComponent(JSON.stringify(payload)), 12000);
+    const info = json && json.req_0 && json.req_0.data && json.req_0.data.midurlinfo && json.req_0.data.midurlinfo[0];
+    const purl = info && info.purl;
+    if (!purl) throw new Error("该歌曲没有官方免费试听地址");
+    const sip = json.req_0.data.sip && json.req_0.data.sip[0] ? json.req_0.data.sip[0] : "https://ws.stream.qqmusic.qq.com/";
+    track.url = sip + purl;
+    localStorage.setItem("music_index", String(musicIndex));
+    bgMusic.src = track.url;
+    bgMusic.load();
+    updateMusicUI();
+    if (autoplay) bgMusic.play().catch(() => { musicStatus.textContent = "浏览器阻止自动播放，请点击 ▶"; });
+  } catch (e) {
+    musicStatus.textContent = "该歌曲无官方免费试听，正在尝试下一首...";
+    setTimeout(() => nextFreeTrack(true), 900);
+  } finally { musicLoading = false; }
+}
+function nextFreeTrack(autoplay) {
+  if (!FREE_MUSIC.length) return;
+  resolveQQOfficialUrl((musicIndex + 1) % FREE_MUSIC.length, autoplay);
+}
+
+const bgMusic = document.getElementById("bgMusic");
+const musicFloat = document.getElementById("musicFloat");
+const musicTitle = document.getElementById("musicTitle");
+const musicStatus = document.getElementById("musicStatus");
+const musicPlayBtn = document.getElementById("musicPlayBtn");
+const musicVolume = document.getElementById("musicVolume");
+
+function updateMusicUI() {
+  const track = FREE_MUSIC[musicIndex];
+  if (!track) return;
+  musicTitle.textContent = track.title;
+  musicStatus.textContent = bgMusic.paused ? "点击播放 · " + track.artist : "正在播放 · " + track.artist;
+  musicPlayBtn.textContent = bgMusic.paused ? "▶" : "❚❚";
+  musicFloat.classList.toggle("playing", !bgMusic.paused);
+}
+function toggleMusic() {
+  if (bgMusic.paused) {
+    bgMusic.play().catch(() => { musicStatus.textContent = "播放失败，请检查网络"; });
+  } else {
+    bgMusic.pause();
+  }
+}
+
+document.getElementById("musicPlayBtn").onclick = toggleMusic;
+document.getElementById("musicPrevBtn").onclick = () => {
+  if (FREE_MUSIC.length) resolveQQOfficialUrl((musicIndex - 1 + FREE_MUSIC.length) % FREE_MUSIC.length, true);
+};
+document.getElementById("musicNextBtn").onclick = () => nextFreeTrack(true);
+document.getElementById("musicCollapseBtn").onclick = () => {
+  musicFloat.classList.add("collapsed");
+  localStorage.setItem("music_collapsed", "1");
+};
+document.getElementById("musicExpandBtn").onclick = () => {
+  musicFloat.classList.remove("collapsed");
+  localStorage.removeItem("music_collapsed");
+};
+musicVolume.value = localStorage.getItem("music_volume") || "0.45";
+bgMusic.volume = Number(musicVolume.value);
+musicVolume.oninput = () => {
+  bgMusic.volume = Number(musicVolume.value);
+  localStorage.setItem("music_volume", musicVolume.value);
+};
+bgMusic.onplay = updateMusicUI;
+bgMusic.onpause = updateMusicUI;
+bgMusic.onended = () => nextFreeTrack(true);
+bgMusic.onerror = () => {
+  if (musicLoading || !FREE_MUSIC.length) return;
+  musicStatus.textContent = "当前官方音源加载失败，正在换一首...";
+  setTimeout(() => nextFreeTrack(true), 1200);
+};
+if (localStorage.getItem("music_collapsed") === "1") musicFloat.classList.add("collapsed");
+loadQQFreeMusic();
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("music_paused", bgMusic.paused ? "1" : "0");
+});
+
+/* ==================== 初始化 ==================== */
+renderHot();
+updatePublishUI();
+updateNavActive();
+
+if (currentUser) {
+  renderMe();
+  updatePublishUI();
+}
+
+// 免责声明优先，同意后再走欢迎弹窗
+if (!checkDisclaimer()) {
+  welcomeCheck();
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
