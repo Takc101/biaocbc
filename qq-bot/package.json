@@ -1,0 +1,15 @@
+{
+  "name": "qq-bind-worker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "QQ 一键注册绑定服务（表白墙网站配套 Cloudflare Worker）",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

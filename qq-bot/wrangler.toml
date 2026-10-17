@@ -1,0 +1,16 @@
+name = "qq-bind-worker"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 部署前把 id 换成你创建的 KV namespace id：
+#   npx wrangler kv namespace create QQ_BINDINGS
+[[kv_namespaces]]
+binding = "QQ_BINDINGS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# 敏感信息用 secrets 注入，不要写在这里：
+#   npx wrangler secret put QQ_APP_ID
+#   npx wrangler secret put QQ_APP_SECRET
+#   npx wrangler secret put SITE_ORIGIN   （例：https://yourname.github.io，多个用逗号分隔；本地调试可留空）
+[vars]
+# QQ_APP_ID = "1905821633"
