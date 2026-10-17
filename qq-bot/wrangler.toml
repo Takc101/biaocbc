@@ -6,7 +6,7 @@ compatibility_date = "2025-01-01"
 #   npx wrangler kv namespace create QQ_BINDINGS
 [[kv_namespaces]]
 binding = "QQ_BINDINGS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "add95ad2e0d246909e8f18550d21fb28"
 
 # 敏感信息用 secrets 注入，不要写在这里：
 #   npx wrangler secret put QQ_APP_ID
