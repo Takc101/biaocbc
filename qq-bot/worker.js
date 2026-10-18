@@ -376,6 +376,22 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(env, request) });
     }
+    // 调试：记录所有非 GET 请求的入口，确认外部请求是否真的到达（含任何路径）
+    if (request.method !== "GET" && url.pathname !== "/api/debug") {
+      try {
+        const clone = request.clone();
+        ctx.waitUntil(clone.text().then(body => env.QQ_BINDINGS.put("debug:last_entry", JSON.stringify({
+          time: Date.now(),
+          path: url.pathname,
+          host: url.host,
+          method: request.method,
+          ua: request.headers.get("User-Agent") || "",
+          ct: request.headers.get("Content-Type") || "",
+          appidHdr: request.headers.get("X-Bot-Appid") || "",
+          body: String(body).slice(0, 400)
+        }), { expirationTtl: 3600 })).catch(() => {}));
+      } catch (e) {}
+    }
     const cors = corsHeaders(env, request);
     try {
       if (url.pathname === "/qq/callback" && request.method === "POST") {
@@ -396,6 +412,8 @@ export default {
         const a = String(env.QQ_APP_ID || "");
         let lastCb = null;
         try { lastCb = await env.QQ_BINDINGS.get("debug:last_cb", "json"); } catch (e) {}
+        let lastEntry = null;
+        try { lastEntry = await env.QQ_BINDINGS.get("debug:last_entry", "json"); } catch (e) {}
         return json({
           appId: a,
           appIdLen: a.length,
@@ -406,6 +424,7 @@ export default {
           secretHasSpace: /\s/.test(s),
           kvBound: !!env.QQ_BINDINGS,
           lastCallback: lastCb,
+          lastEntry: lastEntry,
         }, 200, cors);
       }
       return json({ error: "not found" }, 404, cors);
