@@ -195,7 +195,13 @@ async function handleQQCallback(request, env) {
   // 1) 回调地址校验（在 QQ 后台保存回调地址时触发，op=13）
   if (payload.op === 13) {
     const d = payload.d || {};
+    const s = String(env.QQ_APP_SECRET || "");
+    console.log("[op13] 收到:", JSON.stringify(d),
+      "| secretLen:", s.length,
+      "| head:", s.slice(0, 4), "| tail:", s.slice(-4),
+      "| hasSpace:", /\s/.test(s));
     const signature = await qqSign(env.QQ_APP_SECRET, String(d.event_ts || "") + String(d.plain_token || ""));
+    console.log("[op13] 回复 signature:", signature);
     return json({ plain_token: d.plain_token || "", signature });
   }
 
@@ -361,6 +367,21 @@ export default {
       }
       if (url.pathname === "/api/health" && request.method === "GET") {
         return await handleHealth(env, cors);
+      }
+      // 临时调试端点：查看 Worker 运行时实际读到的配置（验证完可删）
+      if (url.pathname === "/api/debug" && request.method === "GET") {
+        const s = String(env.QQ_APP_SECRET || "");
+        const a = String(env.QQ_APP_ID || "");
+        return json({
+          appId: a,
+          appIdLen: a.length,
+          hasSecret: !!s,
+          secretLen: s.length,
+          secretHead: s.slice(0, 4),
+          secretTail: s.slice(-4),
+          secretHasSpace: /\s/.test(s),
+          kvBound: !!env.QQ_BINDINGS,
+        }, 200, cors);
       }
       return json({ error: "not found" }, 404, cors);
     } catch (e) {
