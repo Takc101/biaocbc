@@ -187,10 +187,29 @@ function cleanQQName(raw) {
 }
 
 /* ---------------- QQ WebHook 回调 ---------------- */
+// 把每次回调请求记进 KV，便于远程排查（1 小时后自动过期）
+async function logCallback(env, request, raw, note) {
+  try {
+    await env.QQ_BINDINGS.put("debug:last_cb", JSON.stringify({
+      time: Date.now(),
+      method: request.method,
+      url: request.url,
+      ua: request.headers.get("User-Agent") || "",
+      ct: request.headers.get("Content-Type") || "",
+      appidHdr: request.headers.get("X-Bot-Appid") || "",
+      body: String(raw).slice(0, 500),
+      note: note
+    }), { expirationTtl: 3600 });
+  } catch (e) {}
+}
+
 async function handleQQCallback(request, env) {
   const raw = await request.text();
   let payload = null;
-  try { payload = JSON.parse(raw); } catch (e) { return new Response("bad json", { status: 400 }); }
+  try { payload = JSON.parse(raw); } catch (e) {
+    await logCallback(env, request, raw, "bad json");
+    return new Response("bad json", { status: 400 });
+  }
 
   // 1) 回调地址校验（在 QQ 后台保存回调地址时触发，op=13）
   if (payload.op === 13) {
@@ -202,8 +221,11 @@ async function handleQQCallback(request, env) {
       "| hasSpace:", /\s/.test(s));
     const signature = await qqSign(env.QQ_APP_SECRET, String(d.event_ts || "") + String(d.plain_token || ""));
     console.log("[op13] 回复 signature:", signature);
+    await logCallback(env, request, raw, "op13 ok, secretLen=" + s.length + ", sig=" + signature.slice(0, 16));
     return json({ plain_token: d.plain_token || "", signature });
   }
+
+  await logCallback(env, request, raw, "event op=" + payload.op + " t=" + (payload.t || ""));
 
   // 2) 事件验签：X-Signature-Timestamp + 原始 body
   const ts = request.headers.get("X-Signature-Timestamp") || "";
@@ -372,6 +394,8 @@ export default {
       if (url.pathname === "/api/debug" && request.method === "GET") {
         const s = String(env.QQ_APP_SECRET || "");
         const a = String(env.QQ_APP_ID || "");
+        let lastCb = null;
+        try { lastCb = await env.QQ_BINDINGS.get("debug:last_cb", "json"); } catch (e) {}
         return json({
           appId: a,
           appIdLen: a.length,
@@ -381,6 +405,7 @@ export default {
           secretTail: s.slice(-4),
           secretHasSpace: /\s/.test(s),
           kvBound: !!env.QQ_BINDINGS,
+          lastCallback: lastCb,
         }, 200, cors);
       }
       return json({ error: "not found" }, 404, cors);
