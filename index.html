@@ -3639,6 +3639,7 @@ async function renderMe(force){
   $("myAvatar").innerHTML = (me.avatar ? `<img src="${escapeHtml(me.avatar)}" alt="我的头像">` : escapeHtml((me.nickname || "我")[0])) + `<span class="cam">${ico("image")}</span>`;
   $("myVBadge").innerHTML = getVBadgeHtml(me.vBadge);
   $("guestSwitchBtn").hidden = !guest;
+  $("logoutBtn").querySelector(".row-title").textContent = guest ? "退出游客模式" : "退出登录";
   $("myFollowing").querySelector(".stat-num").textContent = (me.following || []).length;
   $("myFollowers").querySelector(".stat-num").textContent = (me.followers || []).length;
   $("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => uidOf(p) === meId).reduce((s, p) => s + (p.likes || 0), 0);
