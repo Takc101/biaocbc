@@ -1,13 +1,17 @@
 /* 表白墙 PWA Service Worker
    策略：页面走「网络优先」保证每次都是最新代码；静态资源走「缓存优先」加速。 */
-const CACHE = "bq-shell-v1";
+const CACHE = "bq-shell-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png"
+  "./apple-touch-icon.png",
+  "./music/cover-wan-zixi.jpg",
+  "./music/cover-zoulang.jpg",
+  "./music/cover-yuluo.jpg",
+  "./music/cover-xin.jpg"
 ];
 
 self.addEventListener("install", event => {
@@ -33,8 +37,9 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return; /* 跨域接口交给浏览器 */
 
   const isPage = req.mode === "navigate" || /\/index\.html$/.test(url.pathname) || url.pathname.endsWith("/");
+  const isFresh = /\/qq-daily\.json$/.test(url.pathname); /* 歌单每天变，不能被缓存定死 */
 
-  if (isPage) {
+  if (isPage || isFresh) {
     event.respondWith(
       fetch(req)
         .then(res => {
@@ -42,7 +47,7 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
           return res;
         })
-        .catch(() => caches.match(req).then(hit => hit || caches.match("./index.html")))
+        .catch(() => caches.match(req).then(hit => hit || (isPage ? caches.match("./index.html") : Response.error())))
     );
     return;
   }
