@@ -581,6 +581,27 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
   background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--r-lg);padding:13px;margin-bottom:16px;
   box-shadow:var(--shadow-sm);backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));
 }
+/* 评论页要盖在用户主页之上：两者同为 fullsheet(800)，主页在 DOM 里更靠后会反压 */
+#commentPage{z-index:900}
+/* 从主页点进投稿时，卡片外的彩色光环转一圈后淡出 */
+@property --halo-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+.halo{position:relative}
+.halo::after{
+  content:"";position:absolute;inset:-4px;border-radius:calc(var(--r-lg) + 4px);
+  padding:4px;pointer-events:none;
+  background:conic-gradient(from var(--halo-angle),#f43f5e,#f59e0b,#22c55e,#3b82f6,#a855f7,#f43f5e);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:haloSpin .5s linear forwards,haloFade .5s ease forwards;
+}
+@keyframes haloSpin{to{--halo-angle:360deg}}
+@keyframes haloFade{0%,62%{opacity:1}100%{opacity:0}}
+/* 游客身份标记 */
+.guest-tag{
+  display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;
+  padding:1px 6px;border-radius:999px;background:var(--surface-2);color:var(--muted);
+  border:1px solid var(--border);vertical-align:middle;margin-left:4px;
+}
 .comment-item{display:flex;gap:10px;margin-bottom:16px}
 .comment-item .avatar{width:34px;height:34px;font-size:14px}
 .comment-item-content{flex:1;min-width:0}
@@ -949,6 +970,11 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
             <span class="row-title">匿名发布</span>
             <span class="switch"><input type="checkbox" id="anonSetting"><span class="track"></span><span class="thumb"></span></span>
           </div>
+          <button class="row" id="guestSwitchBtn" hidden>
+            <span class="row-ico" data-ico="users"></span>
+            <span class="row-title">切换账号登录或注册</span>
+            <span class="row-val">当前为游客<span data-ico="chevron"></span></span>
+          </button>
           <button class="row" id="editNameBtn">
             <span class="row-ico" data-ico="edit"></span>
             <span class="row-title">修改用户名</span>
@@ -1284,7 +1310,7 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
   <div class="modal-box">
     <div class="dialog-ico" data-ico="sparkles"></div>
     <div class="modal-title">欢迎来到表白墙</div>
-    <div class="modal-sub">登录或注册账号</div>
+    <div class="modal-sub">登录、注册，或直接以游客身份进入</div>
 
     <button class="btn btn-qq btn-block" id="qqLoginBtn" hidden style="margin-bottom:12px"><span class="btn-qq-ico" data-ico="qq"></span>QQ 一键注册 / 登录</button>
     <div class="auth-divider" id="qqAuthDivider" hidden><span>或</span></div>
@@ -1292,10 +1318,11 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
     <div class="tab-switch">
       <button id="loginTabBtn" class="btn btn-ghost btn-sm active" style="flex:1">登录</button>
       <button id="registerTabBtn" class="btn btn-ghost btn-sm" style="flex:1">注册</button>
+      <button id="guestTabBtn" class="btn btn-ghost btn-sm" style="flex:1">游客</button>
     </div>
 
     <div id="loginForm" style="text-align:left">
-      <input id="loginAccount" class="input" placeholder="邮箱或手机号" autocomplete="username">
+      <input id="loginAccount" class="input" placeholder="邮箱 / 手机号 / 账号" autocomplete="username">
       <div style="height:8px"></div>
       <div style="position:relative">
         <input id="loginPassword" type="password" class="input" placeholder="密码" style="padding-right:46px" autocomplete="current-password">
@@ -1303,7 +1330,7 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
       </div>
       <div style="height:8px"></div>
       <div style="position:relative">
-        <input id="loginSecondPassword" type="password" class="input" placeholder="二级密码" style="padding-right:46px">
+        <input id="loginSecondPassword" type="password" class="input" placeholder="二级密码（没设置可不填）" style="padding-right:46px">
         <button class="icon-btn sm" id="loginPwdEye2" style="position:absolute;right:5px;top:50%;transform:translateY(-50%)" aria-label="显示密码" data-ico="eye"></button>
       </div>
       <div style="height:14px"></div>
@@ -1313,11 +1340,11 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 
     <div id="registerForm" hidden style="text-align:left">
       <select id="regType" class="input">
-        <option value="email">邮箱注册</option>
         <option value="phone">手机号注册</option>
+        <option value="email">邮箱注册</option>
         <option value="both">邮箱 + 手机号绑定</option>
       </select>
-      <div id="regEmailBox" style="margin-top:8px">
+      <div id="regEmailBox" style="margin-top:8px" hidden>
         <input id="regEmail" type="email" class="input" placeholder="邮箱">
         <div style="height:8px"></div>
         <div style="display:flex;gap:8px">
@@ -1325,21 +1352,48 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
           <button id="sendCodeBtn" class="btn" style="width:auto;white-space:nowrap;flex-shrink:0">发送验证码</button>
         </div>
       </div>
-      <div id="regPhoneBox" hidden style="margin-top:8px">
+      <div id="regPhoneBox" style="margin-top:8px">
         <input id="regPhone" type="tel" class="input" placeholder="手机号">
-        <div style="height:8px"></div>
-        <input id="regInviteCode" class="input" placeholder="邀请码（找管理员领取）">
       </div>
       <div style="height:8px"></div>
       <input id="regPassword" type="password" class="input" placeholder="密码（至少 6 位）">
       <div style="height:8px"></div>
-      <input id="regSecondPassword" type="password" class="input" placeholder="二级密码（至少 6 位）">
+      <input id="regSecondPassword" type="password" class="input" placeholder="二级密码（选填，加强保护）">
       <div style="height:14px"></div>
       <button class="btn btn-block" id="registerBtn">注册</button>
       <div class="status" id="registerStatus"></div>
     </div>
 
+    <div id="guestForm" hidden style="text-align:left">
+      <div class="qq-intro">
+        <p>不注册也能用：浏览、点赞、关注、换头像都可以。</p>
+        <p class="hint">游客身份只保存在这台设备的浏览器里。发布投稿前需要用手机号认证一次，认证后就不用再填了。</p>
+      </div>
+      <div class="hint" id="guestCurrentInfo" style="margin-bottom:10px"></div>
+      <button class="btn btn-block" id="guestEnterBtn">以游客身份进入</button>
+      <div class="status" id="guestStatus"></div>
+    </div>
+
     <button class="btn btn-ghost btn-block" id="loginCloseBtn" style="margin-top:10px">关闭</button>
+  </div>
+</div>
+
+<!-- ============ 游客发布前的手机号认证 ============ -->
+<div class="modal-overlay" id="verifyModal" style="display:none">
+  <div class="modal-box">
+    <div class="dialog-ico" data-ico="shield"></div>
+    <div class="modal-title">发布前认证一次</div>
+    <div class="modal-sub">填写手机号即可，认证后不再重复询问</div>
+    <div style="text-align:left">
+      <input id="verifyPhone" type="tel" class="input" placeholder="手机号" maxlength="11" autocomplete="tel">
+      <div style="height:8px"></div>
+      <input id="verifyPassword" type="password" class="input" placeholder="登录密码（至少 6 位）" autocomplete="new-password">
+      <div class="hint" style="margin-top:8px;text-align:left">认证后游客账号会绑定这个手机号，以后换设备可以用「手机号 + 密码」登录，投稿不会丢。</div>
+    </div>
+    <div style="height:14px"></div>
+    <button class="btn btn-block" id="verifySubmitBtn">认证并发布</button>
+    <button class="btn btn-ghost btn-block" id="verifyCancelBtn" style="margin-top:8px">先不发布</button>
+    <div class="status" id="verifyStatus"></div>
   </div>
 </div>
 
@@ -1455,6 +1509,7 @@ let codeExpireTime = 0;
 let codeTimer = null;
 let commentTargetPostId = null;
 let replyToCommentId = null;
+let spotlightOnOpen = false;
 let welcomeTimer = null;
 let welcomeCountdown = 10;
 let pendingFontId = "default";
@@ -2094,6 +2149,8 @@ async function fetchDataRemote(){
     if (!u.password) u.password = "";
     if (!u.secondPassword) u.secondPassword = "";
     if (u.qqOpenid === undefined) u.qqOpenid = null;
+    if (!u.guestId) u.guestId = null;
+    if (typeof u.isGuest !== "boolean") u.isGuest = !u.email && !u.phone && !u.qqOpenid && !!u.guestId;
     if (!Array.isArray(u.following)) u.following = [];
     if (!Array.isArray(u.followers)) u.followers = [];
     if (!Array.isArray(u.likedPosts)) u.likedPosts = [];
@@ -2141,26 +2198,85 @@ async function uploadImage(base64, folder, ext){
 /* ==================== 工具函数 ==================== */
 function getUserByIdentifier(d, id){
   if (!id) return null;
-  return d.users.find(u => u.email === id || u.phone === id || u.qqOpenid === id) || null;
+  const users = (d && d.users) || [];
+  return users.find(u => u.email === id || u.phone === id || u.qqOpenid === id || u.guestId === id) || null;
 }
-/* 统一身份标识：邮箱 > 手机号 > QQ openid（QQ 注册用户没有邮箱/手机号）
-   对投稿/评论对象回退读取 authorEmail/authorPhone/authorQq */
+/* 统一身份标识：邮箱 > 手机号 > QQ openid > 游客 ID
+   对投稿/评论对象回退读取 authorEmail/authorPhone/authorQq/authorGuest */
 function uidOf(x){
   if (!x) return null;
-  return x.email || x.phone || x.qqOpenid
-      || x.authorEmail || x.authorPhone || x.authorQq
+  return x.email || x.phone || x.qqOpenid || x.guestId
+      || x.authorEmail || x.authorPhone || x.authorQq || x.authorGuest
       || null;
 }
-function msgFrom(m){ return m.fromEmail || m.fromPhone || m.fromQq || null; }
-function msgTo(m){ return m.toEmail || m.toPhone || m.toQq || null; }
+function msgFrom(m){ return m.fromEmail || m.fromPhone || m.fromQq || m.fromGuest || null; }
+function msgTo(m){ return m.toEmail || m.toPhone || m.toQq || m.toGuest || null; }
 /* 按接收方身份类型拆分私信字段 */
 function msgTargetFields(target){
-  if (!target) return { toEmail:null, toPhone:null, toQq:null };
-  if (target.includes("@")) return { toEmail: target, toPhone:null, toQq:null };
-  if (/^1\d{10}$/.test(target)) return { toEmail:null, toPhone: target, toQq:null };
-  return { toEmail:null, toPhone:null, toQq: target };
+  if (!target) return { toEmail:null, toPhone:null, toQq:null, toGuest:null };
+  if (target.includes("@")) return { toEmail: target, toPhone:null, toQq:null, toGuest:null };
+  if (/^1\d{10}$/.test(target)) return { toEmail:null, toPhone: target, toQq:null, toGuest:null };
+  if (target.startsWith("g_")) return { toEmail:null, toPhone:null, toQq:null, toGuest: target };
+  return { toEmail:null, toPhone:null, toQq: target, toGuest:null };
 }
 function displayId(id){ return !id ? "" : (id.includes("@") ? id.split("@")[0] : id); }
+
+/* ==================== 游客身份 ==================== */
+const GUEST_ID_KEY = "guest_id";
+const GUEST_OPTOUT_KEY = "guest_optout";
+function isGuestUser(u){
+  if (!u) return false;
+  if (u.isGuest) return true;
+  return !u.email && !u.phone && !u.qqOpenid && !!u.guestId;
+}
+function newGuestName(){
+  return "游客" + String(Math.floor(1000 + Math.random() * 9000));
+}
+function createGuestSession(){
+  const g = {
+    guestId: "g_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    nickname: newGuestName(), avatar: "", isGuest: true
+  };
+  currentUser = g;
+  localStorage.setItem("email_user", JSON.stringify(g));
+  localStorage.setItem(GUEST_ID_KEY, g.guestId);
+  localStorage.removeItem(GUEST_OPTOUT_KEY);
+  return g;
+}
+/* 首次进入自动游客登录；用户主动退出后本次不再自动创建 */
+function autoGuestLogin(){
+  if (currentUser) return false;
+  if (localStorage.getItem(GUEST_OPTOUT_KEY) === "1") return false;
+  createGuestSession();
+  return true;
+}
+/* 游客在第一次真正要写数据（换头像 / 投稿 / 点赞）时才落库，避免空账号灌进用户表 */
+function ensureGuestRecord(d, cu){
+  const me = cu || currentUser;
+  if (!me || !d) return null;
+  if (!me.guestId) return getUserByIdentifier(d, uidOf(me));
+  let u = d.users.find(x => x.guestId === me.guestId);
+  if (!u){
+    u = {
+      email:null, phone:null, qqOpenid:null, guestId: me.guestId,
+      nickname: me.nickname || newGuestName(), avatar: me.avatar || "",
+      password:"", secondPassword:"",
+      isAnonymous:false, following:[], followers:[], likedPosts:[],
+      vBadge:null, isDeleted:false, bannedUntil:0, banReason:"",
+      isAdmin:false, adminClassName:"", adminRealName:"",
+      isGuest:true, createdAt: Date.now()
+    };
+    d.users.push(u);
+  }
+  return u;
+}
+/* 当前用户的记录：游客可能还没落库，这里只补到内存，不自动保存 */
+function resolveMe(d){
+  if (!d) d = cachedData;
+  if (!currentUser || !d) return null;
+  return getUserByIdentifier(d, uidOf(currentUser)) || (currentUser.guestId ? ensureGuestRecord(d, currentUser) : null);
+}
+
 function getFollowBtnText(targetUser, meId){
   if (!targetUser || !meId) return "关注";
   if (targetUser.isAdmin) return "私信";
@@ -2342,8 +2458,7 @@ async function likePost(id, btn){
   if (!currentUser){ needLogin(); return; }
   let d;
   try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
-  const meId = uidOf(currentUser);
-  const u = getUserByIdentifier(d, meId);
+  const u = resolveMe(d);
   if (!u) return toast("用户不存在", "err");
   if (!u.likedPosts) u.likedPosts = [];
   if (u.likedPosts.includes(id)) return toast("已经赞过了");
@@ -2368,9 +2483,9 @@ async function followOrChat(identifier){
   try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const target = getUserByIdentifier(d, identifier);
   if (target && target.isAdmin){ openChat(identifier); return; }
-  const meId = uidOf(currentUser);
-  const me = getUserByIdentifier(d, meId);
+  const me = resolveMe(d);
   if (!me) return;
+  const meId = uidOf(me);
   if (!me.following) me.following = [];
   if (me.following.includes(identifier)){ openChat(identifier); return; }
   me.following.push(identifier);
@@ -2568,7 +2683,9 @@ async function openProfile(uid){
   if (!d){
     try { d = await loadData(); cachedData = d; } catch (e) { toast("加载失败：" + e.message, "err"); return; }
   }
-  const u = getUserByIdentifier(d, uid);
+  let u = getUserByIdentifier(d, uid);
+  /* 游客可能还没落库，看自己的主页时临时补一条 */
+  if (!u && currentUser && currentUser.guestId && uid === uidOf(currentUser)) u = ensureGuestRecord(d, currentUser);
   if (!u){ toast("用户不存在", "err"); return; }
   profileUid = uidOf(u);
   profileTab = "posts";
@@ -2611,7 +2728,9 @@ async function renderProfile(){
   const meId = currentUser ? uidOf(currentUser) : null;
   const isSelf = meId === uid;
   $("profileHeadName").textContent = u.nickname || displayId(uid);
-  const myPosts = (d.posts || []).filter(p => uidOf(p) === uid);
+  const allPosts = (d.posts || []).filter(p => uidOf(p) === uid);
+  /* 别人主页不展示匿名投稿，否则「匿名」等于没匿 */
+  const myPosts = isSelf ? allPosts : allPosts.filter(p => !p.isAnonymous);
   const approved = myPosts.filter(p => p.status === "approved");
   const likeCount = approved.reduce((s, p) => s + (p.likes || 0), 0);
   let actionsHtml = "";
@@ -2812,9 +2931,14 @@ function updatePublishUI(){
     tip.className = "publish-tip warn";
     tip.innerHTML = `${ico("alert")}<span>登录后才能发布投稿，点这里登录</span>`;
     $("publishBtn").disabled = true;
+  } else if (isGuestUser(currentUser)){
+    tip.className = "publish-tip warn";
+    tip.innerHTML = `${ico("alert")}<span>游客模式：发布前需手机号认证（只需一次）</span>`;
+    $("publishBtn").disabled = false;
   } else {
+    const name = currentUser.nickname || currentUser.email || currentUser.phone || "QQ 用户";
     tip.className = "publish-tip ok";
-    tip.innerHTML = `${ico("check")}<span>已登录：${escapeHtml(currentUser.nickname || currentUser.email || currentUser.phone || "QQ 用户")}</span>`;
+    tip.innerHTML = `${ico("check")}<span>已登录：${escapeHtml(name)}</span>`;
     $("publishBtn").disabled = false;
   }
 }
@@ -2882,6 +3006,16 @@ $("publishBtn").onclick = async () => {
   status.className = "status";
   status.textContent = "";
   if (!content){ status.textContent = "正文不能为空"; status.classList.add("error"); $("content").focus(); return; }
+  /* 游客发布前必须完成一次手机号认证；认证过的账号直接放行 */
+  if (isGuestUser(currentUser)){
+    let meNow = null;
+    try { const d0 = await loadData(); meNow = resolveMe(d0); } catch (e) {}
+    if (!meNow || !meNow.phone){
+      pendingPublishAfterVerify = true;
+      openVerifyModal();
+      return;
+    }
+  }
   const btn = $("publishBtn");
   btn.disabled = true;
   const loading = toast("正在发布…", "load");
@@ -2904,7 +3038,7 @@ $("publishBtn").onclick = async () => {
       upVideo.close();
     }
     const d = await loadData(true);
-    const u = getUserByIdentifier(d, uidOf(currentUser)) || {};
+    const u = ensureGuestRecord(d, currentUser) || {};
     const isAnon = !!u.isAnonymous;
     d.posts.push({
       id: "p_" + Date.now(),
@@ -2918,6 +3052,7 @@ $("publishBtn").onclick = async () => {
       authorEmail: currentUser.email || null,
       authorPhone: currentUser.phone || null,
       authorQq: currentUser.qqOpenid || null,
+      authorGuest: currentUser.guestId || null,
       authorName: isAnon ? "匿名" : u.nickname || displayId(uidOf(currentUser)),
       authorAvatar: isAnon ? "" : u.avatar || "",
       vBadge: isAnon ? null : u.vBadge || null,
@@ -2973,12 +3108,45 @@ $("loginCloseBtn").onclick = () => $("loginModal").style.display = "none";
 $("loginModal").onclick = e => { if (e.target === $("loginModal")) $("loginModal").style.display = "none"; };
 function switchAuthTab(tab){
   $("loginForm").hidden = tab !== "login";
-  $("registerForm").hidden = tab === "login";
+  $("registerForm").hidden = tab !== "register";
+  $("guestForm").hidden = tab !== "guest";
   $("loginTabBtn").classList.toggle("active", tab === "login");
-  $("registerTabBtn").classList.toggle("active", tab !== "login");
+  $("registerTabBtn").classList.toggle("active", tab === "register");
+  $("guestTabBtn").classList.toggle("active", tab === "guest");
+  if (tab === "guest") renderGuestPane();
 }
 $("loginTabBtn").onclick = () => switchAuthTab("login");
 $("registerTabBtn").onclick = () => switchAuthTab("register");
+$("guestTabBtn").onclick = () => switchAuthTab("guest");
+function renderGuestPane(){
+  const g = isGuestUser(currentUser) ? currentUser : null;
+  $("guestCurrentInfo").textContent = g
+    ? `当前游客身份：${g.nickname}（保存在这台设备）`
+    : "还没有游客身份，点下面按钮就能开始";
+  $("guestEnterBtn").textContent = g ? "继续使用当前游客身份" : "以游客身份进入";
+}
+$("guestEnterBtn").onclick = async () => {
+  if (isGuestUser(currentUser)){
+    $("loginModal").style.display = "none";
+    toast("正在使用游客身份", "ok");
+    return;
+  }
+  if (currentUser && !isGuestUser(currentUser)){
+    const ok = await confirmDialog({ title:"切换为游客？", text:"当前账号会退出登录，账号数据不会丢失", ok:"切换" });
+    if (!ok) return;
+  }
+  createGuestSession();
+  $("loginModal").style.display = "none";
+  clearAuthFields();
+  toast("已进入游客模式", "ok");
+  renderMe(); updatePublishUI(); updateNavActive();
+  if ($("pageHot").classList.contains("active")) renderHot();
+};
+$("guestSwitchBtn").onclick = () => {
+  refreshQQEntry();
+  $("loginModal").style.display = "flex";
+  switchAuthTab("login");
+};
 $("regType").onchange = () => {
   const type = $("regType").value;
   $("regEmailBox").hidden = type === "phone";
@@ -3026,7 +3194,7 @@ $("loginBtn").onclick = async () => {
   const status = $("loginStatus");
   status.className = "status";
   status.textContent = "";
-  if (!account || !password || !secondPassword){ status.textContent = "请填写账号、密码和二级密码"; status.classList.add("error"); return; }
+  if (!account || !password){ status.textContent = "请填写账号和密码"; status.classList.add("error"); return; }
   const loading = toast("正在登录…", "load");
   try {
     const d = await loadData(true);
@@ -3038,10 +3206,16 @@ $("loginBtn").onclick = async () => {
       status.textContent = "账号已被封禁至 " + new Date(u.bannedUntil * 1000).toLocaleString() + "\n原因：" + (u.banReason || "违规操作");
       status.classList.add("error"); return;
     }
-    if (!u.password || !u.secondPassword){ loading.close(); status.textContent = "账号未设置密码，请通过注册补设"; status.classList.add("error"); return; }
-    if (u.password !== password || u.secondPassword !== secondPassword){ loading.close(); status.textContent = "密码或二级密码错误"; status.classList.add("error"); return; }
-    currentUser = { email: u.email || null, phone: u.phone || null, nickname: u.nickname, avatar: u.avatar };
+    if (!u.password){ loading.close(); status.textContent = "这个账号还没设置密码，请用注册页补设"; status.classList.add("error"); return; }
+    if (u.password !== password){ loading.close(); status.textContent = "密码错误"; status.classList.add("error"); return; }
+    /* 二级密码只在账号确实设置过时才校验，新账号可以完全不设 */
+    if (u.secondPassword){
+      if (!secondPassword){ loading.close(); status.textContent = "请输入二级密码"; status.classList.add("error"); return; }
+      if (u.secondPassword !== secondPassword){ loading.close(); status.textContent = "二级密码错误"; status.classList.add("error"); return; }
+    }
+    currentUser = { email: u.email || null, phone: u.phone || null, qqOpenid: u.qqOpenid || null, nickname: u.nickname, avatar: u.avatar };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
+    localStorage.removeItem(GUEST_OPTOUT_KEY);
     cachedData = d;
     loading.close();
     status.textContent = "登录成功";
@@ -3064,7 +3238,6 @@ $("registerBtn").onclick = async () => {
   const regType = $("regType").value;
   const email = $("regEmail").value.trim();
   const phone = $("regPhone").value.trim();
-  const inviteCode = $("regInviteCode").value.trim();
   const code = $("regCode").value.trim();
   const password = $("regPassword").value;
   const secondPassword = $("regSecondPassword").value;
@@ -3072,8 +3245,9 @@ $("registerBtn").onclick = async () => {
   status.className = "status";
   status.textContent = "";
 
-  if (!password || !secondPassword){ status.textContent = "请填写密码和二级密码"; status.classList.add("error"); return; }
-  if (password.length < 6 || secondPassword.length < 6){ status.textContent = "密码和二级密码至少 6 位"; status.classList.add("error"); return; }
+  if (!password){ status.textContent = "请填写密码"; status.classList.add("error"); return; }
+  if (password.length < 6){ status.textContent = "密码至少 6 位"; status.classList.add("error"); return; }
+  if (secondPassword && secondPassword.length < 6){ status.textContent = "二级密码至少 6 位，或留空不设"; status.classList.add("error"); return; }
   if (regType === "email" || regType === "both"){
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ status.textContent = "请输入正确邮箱"; status.classList.add("error"); return; }
     if (!code){ status.textContent = "请输入邮箱验证码"; status.classList.add("error"); return; }
@@ -3082,7 +3256,6 @@ $("registerBtn").onclick = async () => {
   }
   if (regType === "phone" || regType === "both"){
     if (!phone || !/^1\d{10}$/.test(phone)){ status.textContent = "请输入正确手机号"; status.classList.add("error"); return; }
-    if (!inviteCode){ status.textContent = "请输入邀请码"; status.classList.add("error"); return; }
   }
   const loading = toast("正在注册…", "load");
   try {
@@ -3103,7 +3276,7 @@ $("registerBtn").onclick = async () => {
       const exist = d.users.find(u => u.phone === phone);
       if (exist){
         loading.close();
-        if (!exist.isDeleted){ status.textContent = "该手机号已注册"; status.classList.add("error"); return; }
+        if (!exist.isDeleted){ status.textContent = "该手机号已注册，请直接登录"; status.classList.add("error"); return; }
         d.pendingRegistrations.push({ id:"pr_" + Date.now(), email: email || null, phone:phone, password:password, secondPassword:secondPassword, time:nowTs() });
         await saveData(d);
         status.textContent = "该账号曾被删除，注册申请已提交管理员审核";
@@ -3111,29 +3284,21 @@ $("registerBtn").onclick = async () => {
         return;
       }
     }
-    let inviteIndex = -1;
-    if (inviteCode){
-      inviteIndex = d.invites.findIndex(inv => inv.code === inviteCode);
-      if (inviteIndex === -1){ loading.close(); status.textContent = "邀请码不存在"; status.classList.add("error"); return; }
-      if (d.invites[inviteIndex].usedBy){ loading.close(); status.textContent = "此码已被使用，已报废"; status.classList.add("error"); return; }
-    }
     const newUser = {
-      email: email || null, phone: phone || null,
+      email: email || null, phone: phone || null, qqOpenid: null, guestId: null,
       nickname: email ? email.split("@")[0] : phone,
-      avatar: "", password: password, secondPassword: secondPassword,
+      avatar: "", password: password, secondPassword: secondPassword || "",
+      isGuest: false,
       isAnonymous: false, following: [], followers: [], likedPosts: [],
       vBadge: null, isDeleted: false, bannedUntil: 0, banReason: "",
       isAdmin: false, adminClassName: "", adminRealName: "",
       createdAt: Date.now()
     };
     d.users.push(newUser);
-    if (inviteIndex !== -1){
-      d.invites[inviteIndex].usedBy = email || phone;
-      d.invites[inviteIndex].usedAt = Date.now();
-    }
     await saveData(d);
-    currentUser = { email: newUser.email, phone: newUser.phone, nickname: newUser.nickname, avatar: "" };
+    currentUser = { email: newUser.email, phone: newUser.phone, qqOpenid: null, nickname: newUser.nickname, avatar: "" };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
+    localStorage.removeItem(GUEST_OPTOUT_KEY);
     cachedData = d;
     loading.close();
     status.textContent = "注册成功，已自动登录";
@@ -3157,13 +3322,88 @@ function clearAuthFields(){
   $("loginSecondPassword").value = "";
   $("regEmail").value = "";
   $("regPhone").value = "";
-  $("regInviteCode").value = "";
   $("regCode").value = "";
   $("regPassword").value = "";
   $("regSecondPassword").value = "";
   $("loginStatus").textContent = "";
   $("registerStatus").textContent = "";
+  $("guestStatus").textContent = "";
 }
+
+/* ==================== 游客发布前的手机号认证 ==================== */
+let pendingPublishAfterVerify = false;
+function openVerifyModal(){
+  $("verifyStatus").textContent = "";
+  $("verifyStatus").className = "status";
+  $("verifyPhone").value = "";
+  $("verifyPassword").value = "";
+  $("verifySubmitBtn").disabled = false;
+  $("verifyModal").style.display = "flex";
+  setTimeout(() => { try { $("verifyPhone").focus(); } catch (e) {} }, 80);
+}
+function closeVerifyModal(){ $("verifyModal").style.display = "none"; }
+$("verifyCancelBtn").onclick = () => { pendingPublishAfterVerify = false; closeVerifyModal(); };
+$("verifyModal").onclick = e => { if (e.target === $("verifyModal")){ pendingPublishAfterVerify = false; closeVerifyModal(); } };
+$("verifySubmitBtn").onclick = async () => {
+  const phone = $("verifyPhone").value.trim();
+  const pwd = $("verifyPassword").value;
+  const st = $("verifyStatus");
+  st.className = "status";
+  st.textContent = "";
+  if (!/^1\d{10}$/.test(phone)){ st.textContent = "请输入 11 位手机号"; st.classList.add("error"); return; }
+  if (pwd.length < 6){ st.textContent = "密码至少 6 位"; st.classList.add("error"); return; }
+  const btn = $("verifySubmitBtn");
+  btn.disabled = true;
+  const loading = toast("正在认证…", "load");
+  try {
+    const d = await loadData(true);
+    const me = ensureGuestRecord(d, currentUser);
+    if (!me){ throw new Error("身份异常，请刷新页面后重试"); }
+    const exist = d.users.find(u => u.phone === phone && u !== me);
+    if (exist){
+      loading.close(); btn.disabled = false;
+      st.textContent = "该手机号已有账号，请直接用「手机号 + 密码」登录";
+      st.classList.add("error");
+      return;
+    }
+    const guestId = me.guestId;
+    me.phone = phone;
+    me.password = pwd;
+    me.isGuest = false;
+    me.verifiedAt = Date.now();
+    /* 身份升级：把游客 ID 下的投稿/评论/私信/关注关系全部迁到手机号，历史内容不丢 */
+    (d.posts || []).forEach(p => { if (p.authorGuest === guestId){ p.authorGuest = null; p.authorPhone = phone; } });
+    (d.comments || []).forEach(c => { if (c.authorGuest === guestId){ c.authorGuest = null; c.authorPhone = phone; } });
+    (d.messages || []).forEach(m => {
+      if (m.fromGuest === guestId){ m.fromGuest = null; m.fromPhone = phone; }
+      if (m.toGuest === guestId){ m.toGuest = null; m.toPhone = phone; }
+    });
+    (d.users || []).forEach(u => {
+      if (u === me) return;
+      u.following = (u.following || []).map(x => x === guestId ? phone : x);
+      u.followers = (u.followers || []).map(x => x === guestId ? phone : x);
+    });
+    await saveData(d);
+    currentUser = { email: null, phone, qqOpenid: null, nickname: me.nickname, avatar: me.avatar || "" };
+    localStorage.setItem("email_user", JSON.stringify(currentUser));
+    localStorage.removeItem(GUEST_ID_KEY);
+    localStorage.removeItem(GUEST_OPTOUT_KEY);
+    cachedData = d;
+    loading.close();
+    closeVerifyModal();
+    toast("认证完成，下次发布不用再填", "ok");
+    renderMe(); updatePublishUI();
+    if (pendingPublishAfterVerify){
+      pendingPublishAfterVerify = false;
+      setTimeout(() => $("publishBtn").click(), 280);
+    }
+  } catch (e) {
+    loading.close();
+    btn.disabled = false;
+    st.textContent = e.message;
+    st.classList.add("error");
+  }
+};
 
 /* ==================== QQ 一键注册 ==================== */
 function qqCfg(){
@@ -3384,16 +3624,21 @@ async function renderMe(force){
   $("loggedIn").hidden = false;
   let d;
   try { d = await loadData(force); cachedData = d; } catch (e) { toast("加载失败：" + e.message, "err"); return; }
-  const me = getUserByIdentifier(d, uidOf(currentUser));
+  /* 游客可能还没落库：这里补一条到内存，保证页面能渲染 */
+  const me = resolveMe(d);
   if (!me) return;
   const meId = uidOf(me);
+  const guest = isGuestUser(me);
   $("myNickname").textContent = me.nickname || meId;
   $("myNickname").style.cursor = "pointer";
   $("myNickname").title = "查看我的主页";
   $("myNickname").onclick = () => openProfile(meId);
-  $("myEmail").textContent = me.qqOpenid ? "QQ 账号" : (me.email || me.phone || "");
+  $("myEmail").innerHTML = guest
+    ? `游客模式 · 未实名认证`
+    : (me.qqOpenid ? "QQ 账号" : escapeHtml(me.email || me.phone || ""));
   $("myAvatar").innerHTML = (me.avatar ? `<img src="${escapeHtml(me.avatar)}" alt="我的头像">` : escapeHtml((me.nickname || "我")[0])) + `<span class="cam">${ico("image")}</span>`;
   $("myVBadge").innerHTML = getVBadgeHtml(me.vBadge);
+  $("guestSwitchBtn").hidden = !guest;
   $("myFollowing").querySelector(".stat-num").textContent = (me.following || []).length;
   $("myFollowers").querySelector(".stat-num").textContent = (me.followers || []).length;
   $("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => uidOf(p) === meId).reduce((s, p) => s + (p.likes || 0), 0);
@@ -3403,7 +3648,7 @@ async function renderMe(force){
 }
 function renderMeTab(){
   const d = cachedData;
-  const me = currentUser ? getUserByIdentifier(d, uidOf(currentUser)) : null;
+  const me = currentUser ? resolveMe(d) : null;
   if (!me) return;
   const meId = uidOf(me);
   $("myPostsList").hidden = meTab !== "posts";
@@ -3501,7 +3746,7 @@ $("editNameBtn").onclick = async () => {
   if (!name) return;
   try {
     const d = await loadData(true);
-    const u = getUserByIdentifier(d, uidOf(currentUser));
+    const u = ensureGuestRecord(d, currentUser);
     if (u) u.nickname = name;
     await saveData(d);
     currentUser.nickname = name;
@@ -3515,7 +3760,7 @@ $("anonSetting").onchange = async e => {
   if (!currentUser) return;
   try {
     const d = await loadData(true);
-    const u = getUserByIdentifier(d, uidOf(currentUser));
+    const u = ensureGuestRecord(d, currentUser);
     if (!u) return;
     u.isAnonymous = e.target.checked;
     await saveData(d);
@@ -3525,13 +3770,22 @@ $("anonSetting").onchange = async e => {
   } catch (err) { toast("保存失败：" + err.message, "err"); e.target.checked = !e.target.checked; }
 };
 $("logoutBtn").onclick = async () => {
-  if (!(await confirmDialog({ title:"退出登录？", text:"本地登录状态会被清除", ok:"退出" }))) return;
+  const guest = isGuestUser(currentUser);
+  const ok = await confirmDialog({
+    title: guest ? "退出游客模式？" : "退出登录？",
+    text: guest ? "退出后需要重新登录或注册才能发布投稿" : "本地登录状态会被清除",
+    ok: "退出"
+  });
+  if (!ok) return;
   localStorage.removeItem("email_user");
+  localStorage.removeItem(GUEST_ID_KEY);
+  /* 记住这次是主动退出，刷新页面别再自动变成游客 */
+  localStorage.setItem(GUEST_OPTOUT_KEY, "1");
   currentUser = null;
   renderMe();
   updatePublishUI();
   updateMsgBadge();
-  toast("已退出登录", "ok");
+  toast(guest ? "已退出游客模式" : "已退出登录", "ok");
 };
 $("contactDevBtn").onclick = () => window.open("https://user.qzone.qq.com/2051392957", "_blank");
 $("myAvatar").onclick = () => {
@@ -3547,7 +3801,8 @@ $("avatarFileInput").onchange = async e => {
     try {
       const url = await uploadImage(b64, "avatars");
       const d = await loadData(true);
-      const u = getUserByIdentifier(d, uidOf(currentUser));
+      /* 游客第一次换头像时把账号落库 */
+      const u = ensureGuestRecord(d, currentUser);
       if (u) u.avatar = url;
       await saveData(d);
       currentUser.avatar = url;
@@ -3632,7 +3887,7 @@ $("chatSendBtn").onclick = async () => {
   if (!v || !chatTarget) return;
   try {
     const d = await loadData(true);
-    d.messages.push({ id:"m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, fromQq: currentUser.qqOpenid || null, ...msgTargetFields(chatTarget), content:v, type:"text", time:nowTs(), read:false });
+    d.messages.push({ id:"m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, fromQq: currentUser.qqOpenid || null, fromGuest: currentUser.guestId || null, ...msgTargetFields(chatTarget), content:v, type:"text", time:nowTs(), read:false });
     await saveData(d);
     $("chatInput").value = "";
     renderChat();
@@ -3649,7 +3904,7 @@ $("chatImageInput").onchange = async e => {
     try {
       const url = await uploadImage(b64, "images");
       const d = await loadData(true);
-      d.messages.push({ id:"m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, fromQq: currentUser.qqOpenid || null, ...msgTargetFields(chatTarget), content:url, type:"image", time:nowTs(), read:false });
+      d.messages.push({ id:"m_" + Date.now(), fromEmail: currentUser.email || null, fromPhone: currentUser.phone || null, fromQq: currentUser.qqOpenid || null, fromGuest: currentUser.guestId || null, ...msgTargetFields(chatTarget), content:url, type:"image", time:nowTs(), read:false });
       await saveData(d);
       loading.close();
       renderChat();
@@ -3667,6 +3922,7 @@ function openCommentPage(postId){
   if (!currentUser){ needLogin(); return; }
   commentTargetPostId = postId;
   replyToCommentId = null;
+  spotlightOnOpen = true;
   $("commentInput").placeholder = "写下你的评论…";
   $("replyBar").classList.remove("show");
   $("commentPage").classList.add("open");
@@ -3724,6 +3980,15 @@ async function renderCommentPage(){
   }
   body.innerHTML = html;
   bindProfileLinks(body);
+  /* 从主页点某条投稿进来：目标卡片外圈转一道彩色光环，半秒后自己消失 */
+  if (spotlightOnOpen){
+    spotlightOnOpen = false;
+    const card = body.querySelector(".comment-original-post");
+    if (card){
+      card.classList.add("halo");
+      setTimeout(() => card.classList.remove("halo"), 560);
+    }
+  }
   body.querySelectorAll(".comment-item-reply-btn").forEach(btn => {
     btn.onclick = () => {
       replyToCommentId = btn.dataset.commentId;
@@ -3764,12 +4029,12 @@ $("commentSendBtn").onclick = async () => {
   if (!content || !commentTargetPostId) return;
   try {
     const d = await loadData(true);
-    const u = getUserByIdentifier(d, uidOf(currentUser)) || {};
+    const u = ensureGuestRecord(d, currentUser) || {};
     const isAnon = !!u.isAnonymous;
     d.comments.push({
       id: "c_" + Date.now(), postId: commentTargetPostId,
       authorEmail: currentUser.email || null, authorPhone: currentUser.phone || null,
-      authorQq: currentUser.qqOpenid || null,
+      authorQq: currentUser.qqOpenid || null, authorGuest: currentUser.guestId || null,
       authorName: isAnon ? "匿名" : u.nickname || displayId(uidOf(currentUser)),
       authorAvatar: isAnon ? "" : u.avatar || "", vBadge: isAnon ? null : u.vBadge || null,
       content: content, time: nowTs(), replyTo: replyToCommentId, isAnonymous: isAnon
@@ -4399,6 +4664,8 @@ window.addEventListener("beforeunload", () => { localStorage.setItem("music_paus
 })();
 
 /* ==================== 初始化 ==================== */
+/* 第一次进站默认就是游客身份，点「我的」随时可以切换成正式账号 */
+autoGuestLogin();
 initIcons();
 renderTypeGrid();
 renderTypeFilterChips();
