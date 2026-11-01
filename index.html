@@ -749,6 +749,26 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .music-controls button .ico{width:14px;height:14px}
 .music-play{width:38px!important;background:var(--primary)!important;color:#fff!important}
 .music-volume{width:62px!important;height:4px!important;accent-color:var(--primary)}
+.music-disc{position:relative;overflow:hidden}
+.music-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.music-qq{
+  width:100%;margin-top:9px;display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:10px;
+  border:none;background:var(--surface-2);color:var(--text);font-size:10.5px;font-weight:650;cursor:pointer;
+  font-family:inherit;text-align:left;transition:background .18s;
+}
+.music-qq:active{background:var(--border)}
+.music-qq .ico{width:12px;height:12px;color:var(--primary);flex-shrink:0}
+.music-qq-arrow{margin-left:auto;display:flex}
+.music-qq-arrow .ico{width:11px;height:11px;color:var(--muted)}
+.qq-track{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text)}
+.qq-track:last-child{border-bottom:none}
+.qq-track:active{opacity:.62}
+.qq-track .qq-cover{width:46px;height:46px;border-radius:11px;object-fit:cover;flex-shrink:0;background:var(--surface-2)}
+.qq-track-meta{flex:1;min-width:0}
+.qq-track-name{font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qq-track-sub{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.qq-track .qq-go{width:14px;height:14px;color:var(--muted);flex-shrink:0}
+.qq-note{font-size:11.5px;color:var(--muted);line-height:1.7;padding:14px 2px 4px;text-align:center}
 @media(max-width:380px){.music-float{right:8px;width:218px}}
 
 /* ---------- 弹窗 / 浮层 ---------- */
@@ -1682,7 +1702,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
     <div class="dialog-ico" data-ico="heart"></div>
     <div class="modal-title">制作不易，感谢支持</div>
     <div class="modal-sub">本网站所有功能免费，不存在付费功能</div>
-    <img class="modal-wx-img" src="wechat.png" alt="微信二维码">
+    <img class="modal-wx-img" src="wechat.png" alt="微信二维码" onerror="this.style.display='none'">
     <div class="modal-scroll" style="max-height:28vh;font-size:12.5px">
       <p>给此网站捐款，可以捐，也可以不捐。其他学校表白墙要红 V 标，在 QQ 搜索 2051392957，这是站长的 QQ。</p>
       <p>设置头像：点「我的」→ 点击自己的头像即可上传。</p>
@@ -1718,10 +1738,10 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
   <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器"><span data-ico="music"></span></button>
   <div class="music-panel">
     <div class="music-top">
-      <div class="music-disc"><span data-ico="music"></span></div>
+      <div class="music-disc"><img class="music-cover" id="musicCover" alt="" width="36" height="36"><span data-ico="music"></span></div>
       <div class="music-meta">
-        <div class="music-title" id="musicTitle">轻音乐</div>
-        <div class="music-sub" id="musicStatus">正在准备播放...</div>
+        <div class="music-title" id="musicTitle">晚自习</div>
+        <div class="music-sub" id="musicStatus">轻音乐 · 1 / 4</div>
       </div>
       <button class="music-collapse" id="musicCollapseBtn" aria-label="收起音乐播放器" data-ico="close"></button>
     </div>
@@ -1731,9 +1751,27 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
       <button id="musicNextBtn" aria-label="下一首" data-ico="next"></button>
       <input class="music-volume" id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.45" aria-label="音量">
     </div>
+    <button class="music-qq" id="musicQqBtn">
+      <span data-ico="music"></span><span>QQ 音乐 · 今日推荐</span>
+      <span class="music-qq-arrow" data-ico="chevron"></span>
+    </button>
   </div>
 </div>
 <audio id="bgMusic" preload="metadata"></audio>
+
+<!-- ============ QQ 音乐 · 今日推荐 ============ -->
+<div class="fullsheet from-bottom" id="musicPage">
+  <div class="fullsheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" id="musicPageBack" aria-label="返回" data-ico="back"></button>
+      <div class="sheet-head-info">
+        <div class="sheet-head-title">今日推荐</div>
+        <div class="sheet-head-sub" id="musicPageSub">来自 QQ 音乐</div>
+      </div>
+    </div>
+    <div class="sheet-body" id="musicPageBody"></div>
+  </div>
+</div>
 
 <div class="toast-root" id="toastRoot"></div>
 <script>
@@ -4873,119 +4911,54 @@ const welcomeCheck = async () => {
   }
 };
 
-/* ==================== QQ 音乐免费榜单播放器 ==================== */
-const FREE_MUSIC = [];
-let musicIndex = 0;
-let musicLoading = false;
-const QQ_HOT_URL = "https://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data=" + encodeURIComponent(JSON.stringify({
-  detail:{ module:"musicToplist.ToplistInfoServer", method:"GetDetail", param:{ topId:26, offset:0, num:30, period:"" } }
-}));
-const QQ_VKEY_URL = "https://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data=";
-function qqJsonp(url, timeout){
-  return new Promise((resolve, reject) => {
-    const name = "__qqMusicCb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-    let finished = false;
-    const timer = setTimeout(() => finish(new Error("QQ 接口请求超时")), timeout || 10000);
-    function finish(err, data){
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      try { delete window[name]; } catch (e) { window[name] = undefined; }
-      if (script.parentNode) script.parentNode.removeChild(script);
-      err ? reject(err) : resolve(data);
-    }
-    window[name] = data => finish(null, data);
-    script.onerror = () => finish(new Error("QQ 接口网络错误"));
-    script.src = url + "&format=jsonp&callback=" + encodeURIComponent(name);
-    document.head.appendChild(script);
-  });
-}
-async function loadQQFreeMusic(){
-  musicLoading = true;
-  $("musicStatus").textContent = "正在加载 QQ 音乐热歌榜...";
-  try {
-    const json = await qqJsonp(QQ_HOT_URL, 12000);
-    const detail = json && json.detail;
-    const data = detail && detail.data;
-    const inner = data && data.data;
-    const list = (data && data.songInfoList) || (inner && inner.songInfoList) || (data && data.song) || (inner && inner.song);
-    if (!Array.isArray(list)) throw new Error("QQ 音乐榜单格式发生变化");
-    list.forEach(item => {
-      const song = item.data || item;
-      const pay = song.pay || {};
-      const mid = song.mid || song.songmid || "";
-      if (!mid) return;
-      if (FREE_MUSIC.length >= 40) return;
-      const singer = Array.isArray(song.singer) && song.singer.length ? song.singer.map(s => s.name).join("/") : "未知歌手";
-      FREE_MUSIC.push({ title: song.name || song.songname || "未命名歌曲", artist: singer, mid: mid, url: "" });
-    });
-    if (!FREE_MUSIC.length) throw new Error("榜单暂时没有可用曲目");
-    musicIndex = Math.max(0, Math.min(FREE_MUSIC.length - 1, parseInt(localStorage.getItem("music_index"), 10) || 0));
-    await resolveQQOfficialUrl(musicIndex, true);
-  } catch (e) {
-    $("musicStatus").textContent = "QQ 热歌榜暂时无法加载，请检查网络";
-    musicLoading = false;
-  }
-}
-let musicFailStreak = 0;
-async function resolveQQOfficialUrl(index, autoplay){
-  const track = FREE_MUSIC[index];
-  if (!track) return;
-  musicIndex = index;
-  $("musicTitle").textContent = track.title;
-  $("musicStatus").textContent = "正在获取官方试听地址...";
-  try {
-    const payload = { req_0:{ module:"vkey.GetVkeyServer", method:"CgiGetVkey", param:{ guid:"10000", songmid:[track.mid], songtype:[0], uin:"0", loginflag:0, platform:"20", filename:[""] } }, comm:{ uin:0, format:"json", ct:24, cv:0 } };
-    const json = await qqJsonp(QQ_VKEY_URL + encodeURIComponent(JSON.stringify(payload)), 12000);
-    const info = json && json.req_0 && json.req_0.data && json.req_0.data.midurlinfo && json.req_0.data.midurlinfo[0];
-    const purl = info && info.purl;
-    if (!purl) throw new Error("该歌曲没有官方免费试听地址");
-    const sip = json.req_0.data.sip && json.req_0.data.sip[0] ? json.req_0.data.sip[0] : "https://ws.stream.qqmusic.qq.com/";
-    track.url = sip + purl;
-    musicFailStreak = 0;
-    localStorage.setItem("music_index", String(musicIndex));
-    bgMusic.src = track.url;
-    bgMusic.load();
-    updateMusicUI();
-    if (autoplay) bgMusic.play().catch(() => { $("musicStatus").textContent = "浏览器阻止自动播放，请点击播放"; });
-  } catch (e) {
-    /* 大部分热门歌受版权限制没有试听地址：先自动试几首，仍不行就把人送去 QQ 音乐 */
-    musicFailStreak++;
-    if (musicFailStreak <= 3 && FREE_MUSIC.length > 1){
-      $("musicStatus").textContent = "这首没有官方试听，换一首…";
-      setTimeout(() => nextFreeTrack(true), 700);
-    } else {
-      musicFailStreak = 0;
-      const h5 = "https://i2.y.qq.com/a/song/" + track.mid;
-      $("musicStatus").innerHTML = `版权限制无法试听，<a href="${h5}" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">去 QQ 音乐听</a>`;
-      $("musicTitle").textContent = track.title;
-    }
-  } finally { musicLoading = false; }
-}
-function nextFreeTrack(autoplay){
-  if (!FREE_MUSIC.length) return;
-  resolveQQOfficialUrl((musicIndex + 1) % FREE_MUSIC.length, autoplay);
-}
+/* ==================== 背景音乐：自托管轻音乐 ==================== */
+/* 站内音源为原创合成曲，无版权限制、可离线播放；QQ 音乐只做「今日推荐」入口。 */
+const MUSIC_TRACKS = [
+  { title:"晚自习",       artist:"轻音乐", src:"./music/wan-zixi.mp3", cover:"./music/cover-wan-zixi.jpg" },
+  { title:"走廊尽头的窗", artist:"轻音乐", src:"./music/zoulang.mp3",  cover:"./music/cover-zoulang.jpg" },
+  { title:"雨落操场",     artist:"白噪音", src:"./music/yuluo.mp3",    cover:"./music/cover-yuluo.jpg" },
+  { title:"信",           artist:"轻音乐", src:"./music/xin.mp3",      cover:"./music/cover-xin.jpg" },
+];
 const bgMusic = $("bgMusic");
 const musicFloat = $("musicFloat");
 const musicPlayBtn = $("musicPlayBtn");
 const musicVolume = $("musicVolume");
-function updateMusicUI(){
-  const track = FREE_MUSIC[musicIndex];
-  if (!track) return;
+let musicIndex = Math.max(0, Math.min(MUSIC_TRACKS.length - 1, parseInt(localStorage.getItem("music_index"), 10) || 0));
+let musicAutoplayTried = false;
+
+function loadTrack(i, autoplay){
+  musicIndex = ((i % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+  const track = MUSIC_TRACKS[musicIndex];
+  localStorage.setItem("music_index", String(musicIndex));
+  bgMusic.src = track.src;
+  bgMusic.load();
   $("musicTitle").textContent = track.title;
-  $("musicStatus").textContent = bgMusic.paused ? ("点击播放 · " + track.artist) : ("正在播放 · " + track.artist);
+  $("musicCover").src = track.cover;
+  $("musicCover").alt = track.title + " 封面";
+  updateMusicUI();
+  if (autoplay){
+    bgMusic.play().catch(() => { $("musicStatus").textContent = "点一下播放键开始"; });
+  }
+}
+function updateMusicUI(){
+  const track = MUSIC_TRACKS[musicIndex];
+  if (!track) return;
+  const pos = (musicIndex + 1) + " / " + MUSIC_TRACKS.length;
+  $("musicStatus").textContent = bgMusic.paused ? ("已暂停 · " + track.artist + " · " + pos) : ("正在播放 · " + track.artist + " · " + pos);
   musicPlayBtn.innerHTML = ico(bgMusic.paused ? "play" : "pause");
   musicFloat.classList.toggle("playing", !bgMusic.paused);
 }
 function toggleMusic(){
-  if (bgMusic.paused){ bgMusic.play().catch(() => { $("musicStatus").textContent = "播放失败，请检查网络"; }); }
-  else { bgMusic.pause(); }
+  if (bgMusic.paused){
+    if (!bgMusic.src) loadTrack(musicIndex, true);
+    else bgMusic.play().catch(() => { $("musicStatus").textContent = "播放失败，请检查网络"; });
+  } else {
+    bgMusic.pause();
+  }
 }
-$("musicPlayBtn").onclick = toggleMusic;
-$("musicPrevBtn").onclick = () => { if (FREE_MUSIC.length) resolveQQOfficialUrl((musicIndex - 1 + FREE_MUSIC.length) % FREE_MUSIC.length, true); };
-$("musicNextBtn").onclick = () => nextFreeTrack(true);
+musicPlayBtn.onclick = toggleMusic;
+$("musicPrevBtn").onclick = () => loadTrack(musicIndex - 1, true);
+$("musicNextBtn").onclick = () => loadTrack(musicIndex + 1, true);
 $("musicCollapseBtn").onclick = () => { musicFloat.classList.add("collapsed"); localStorage.setItem("music_collapsed", "1"); };
 $("musicExpandBtn").onclick = () => { musicFloat.classList.remove("collapsed"); localStorage.setItem("music_collapsed", "0"); };
 musicVolume.value = localStorage.getItem("music_volume") || "0.45";
@@ -4993,15 +4966,62 @@ bgMusic.volume = Number(musicVolume.value);
 musicVolume.oninput = () => { bgMusic.volume = Number(musicVolume.value); localStorage.setItem("music_volume", musicVolume.value); };
 bgMusic.onplay = updateMusicUI;
 bgMusic.onpause = updateMusicUI;
-bgMusic.onended = () => nextFreeTrack(true);
+bgMusic.onended = () => loadTrack(musicIndex + 1, true);
 bgMusic.onerror = () => {
-  if (musicLoading || !FREE_MUSIC.length) return;
-  $("musicStatus").textContent = "当前官方音源加载失败，正在换一首...";
-  setTimeout(() => nextFreeTrack(true), 1200);
+  if (!bgMusic.src) return;
+  $("musicStatus").textContent = "音源加载失败，换下一首";
+  setTimeout(() => loadTrack(musicIndex + 1, false), 800);
 };
 if (localStorage.getItem("music_collapsed") !== "0") musicFloat.classList.add("collapsed");
-loadQQFreeMusic();
+loadTrack(musicIndex, false);
+/* 首次交互后再尝试播放，避开浏览器自动播放限制 */
+["pointerdown","keydown"].forEach(evt => {
+  document.addEventListener(evt, e => {
+    if (musicAutoplayTried) return;
+    if (e.target && e.target.closest && e.target.closest("#musicFloat")) return; /* 别抢播放键的活 */
+    musicAutoplayTried = true;
+    if (localStorage.getItem("music_paused") === "1") return;
+    bgMusic.play().catch(() => {});
+  });
+});
 window.addEventListener("beforeunload", () => { localStorage.setItem("music_paused", bgMusic.paused ? "1" : "0"); });
+
+/* ==================== QQ 音乐 · 今日推荐 ==================== */
+let qqDailyData = null;
+async function openMusicPage(){
+  $("musicPage").classList.add("open");
+  if (qqDailyData){ renderMusicPage(); return; }
+  $("musicPageBody").innerHTML = '<div class="empty"><div class="empty-title">正在加载</div></div>';
+  try {
+    const res = await fetch("./qq-daily.json", { cache:"no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    qqDailyData = await res.json();
+    renderMusicPage();
+  } catch (e){
+    $("musicPageBody").innerHTML = '<div class="empty"><div class="empty-title">歌单暂时取不到</div><div class="empty-sub">稍后再试，或者直接打开 QQ 音乐</div></div>';
+  }
+}
+function renderMusicPage(){
+  const list = qqDailyData.tracks || [];
+  const hour = new Date().getHours();
+  const greet = hour < 11 ? "早上好" : hour < 18 ? "下午好" : "晚上好";
+  $("musicPageSub").textContent = greet + " · 为你挑了 " + list.length + " 首 · 点歌名去 QQ 音乐听";
+  if (!list.length){
+    $("musicPageBody").innerHTML = '<div class="empty"><div class="empty-title">今天没有推荐</div></div>';
+    return;
+  }
+  $("musicPageBody").innerHTML = list.map(t => `
+    <a class="qq-track" href="${escapeHtml(t.url)}" target="_blank" rel="noopener">
+      <img class="qq-cover" src="${escapeHtml(t.cover)}" alt="" loading="lazy" referrerpolicy="no-referrer">
+      <div class="qq-track-meta">
+        <div class="qq-track-name">${escapeHtml(t.name)}</div>
+        <div class="qq-track-sub">${escapeHtml(t.singer)}${t.album ? " · " + escapeHtml(t.album) : ""}</div>
+      </div>
+      ${ico("chevron", "qq-go")}
+    </a>`).join("") + `<div class="qq-note">歌曲版权归 QQ 音乐所有，点击在 QQ 音乐里播放完整版</div>`;
+}
+$("musicQqBtn").onclick = openMusicPage;
+$("musicPageBack").onclick = () => $("musicPage").classList.remove("open");
 
 /* ==================== 下拉刷新 ==================== */
 (function(){
