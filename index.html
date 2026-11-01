@@ -4905,11 +4905,12 @@ async function loadQQFreeMusic(){
       const song = item.data || item;
       const pay = song.pay || {};
       const mid = song.mid || song.songmid || "";
-      if (!mid || Number(pay.pay_play || pay.payplay || 0) !== 0) return;
+      if (!mid) return;
+      if (FREE_MUSIC.length >= 40) return;
       const singer = Array.isArray(song.singer) && song.singer.length ? song.singer.map(s => s.name).join("/") : "未知歌手";
       FREE_MUSIC.push({ title: song.name || song.songname || "未命名歌曲", artist: singer, mid: mid, url: "" });
     });
-    if (!FREE_MUSIC.length) throw new Error("榜单中暂时没有官方免费播放歌曲");
+    if (!FREE_MUSIC.length) throw new Error("榜单暂时没有可用曲目");
     musicIndex = Math.max(0, Math.min(FREE_MUSIC.length - 1, parseInt(localStorage.getItem("music_index"), 10) || 0));
     await resolveQQOfficialUrl(musicIndex, true);
   } catch (e) {
@@ -4917,6 +4918,7 @@ async function loadQQFreeMusic(){
     musicLoading = false;
   }
 }
+let musicFailStreak = 0;
 async function resolveQQOfficialUrl(index, autoplay){
   const track = FREE_MUSIC[index];
   if (!track) return;
@@ -4931,14 +4933,24 @@ async function resolveQQOfficialUrl(index, autoplay){
     if (!purl) throw new Error("该歌曲没有官方免费试听地址");
     const sip = json.req_0.data.sip && json.req_0.data.sip[0] ? json.req_0.data.sip[0] : "https://ws.stream.qqmusic.qq.com/";
     track.url = sip + purl;
+    musicFailStreak = 0;
     localStorage.setItem("music_index", String(musicIndex));
     bgMusic.src = track.url;
     bgMusic.load();
     updateMusicUI();
     if (autoplay) bgMusic.play().catch(() => { $("musicStatus").textContent = "浏览器阻止自动播放，请点击播放"; });
   } catch (e) {
-    $("musicStatus").textContent = "该歌曲无官方免费试听，正在尝试下一首...";
-    setTimeout(() => nextFreeTrack(true), 900);
+    /* 大部分热门歌受版权限制没有试听地址：先自动试几首，仍不行就把人送去 QQ 音乐 */
+    musicFailStreak++;
+    if (musicFailStreak <= 3 && FREE_MUSIC.length > 1){
+      $("musicStatus").textContent = "这首没有官方试听，换一首…";
+      setTimeout(() => nextFreeTrack(true), 700);
+    } else {
+      musicFailStreak = 0;
+      const h5 = "https://i2.y.qq.com/a/song/" + track.mid;
+      $("musicStatus").innerHTML = `版权限制无法试听，<a href="${h5}" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">去 QQ 音乐听</a>`;
+      $("musicTitle").textContent = track.title;
+    }
   } finally { musicLoading = false; }
 }
 function nextFreeTrack(autoplay){
