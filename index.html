@@ -880,41 +880,58 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
    只覆盖视觉，不动布局
    ============================================================ */
 
-/* ---------- ① 黑白：去彩色、去模糊、细边线 ---------- */
+/* ---------- ① 系统黑白：Windows 式灰阶，靠层次撑住，而不是靠颜色 ---------- */
 html[data-skin="mono"]{
-  --primary:#131416 !important;
-  --primary-soft:rgba(19,20,22,.07) !important;
-  --nav-active:#131416 !important;
+  --primary:#2b2b2b !important;
+  --primary-soft:rgba(20,20,22,.06) !important;
+  --nav-active:#111214 !important;
   --blur-amount:0px !important;
-  --card-border:rgba(17,18,20,.10) !important;
-  --shadow-sm:0 1px 0 rgba(17,18,20,.04);
-  --shadow-md:0 8px 24px -16px rgba(17,18,20,.22);
-  --shadow-lg:0 18px 44px -22px rgba(17,18,20,.3);
+  --card-border:rgba(20,20,22,.07) !important;
+  --shadow-sm:0 1px 2px rgba(20,20,22,.05),0 6px 16px -12px rgba(20,20,22,.16);
+  --shadow-md:0 10px 26px -16px rgba(20,20,22,.3);
+  --shadow-lg:0 20px 48px -22px rgba(20,20,22,.32);
 }
 html[data-skin="mono"][data-dark="1"]{
-  --primary:#f4f5f7 !important;
-  --primary-soft:rgba(244,245,247,.12) !important;
+  --primary:#e9eaec !important;
+  --primary-soft:rgba(255,255,255,.1) !important;
   --nav-active:#ffffff !important;
-  --card-border:rgba(255,255,255,.12) !important;
+  --card-border:rgba(255,255,255,.1) !important;
 }
 html[data-skin="mono"] .card,
 html[data-skin="mono"] .post,
 html[data-skin="mono"] .rows,
 html[data-skin="mono"] .modal-box,
 html[data-skin="mono"] .profile-card{backdrop-filter:none;-webkit-backdrop-filter:none}
-html[data-skin="mono"] .brand-mark{background:var(--primary);box-shadow:none}
+/* 头像不再是一颗颗黑点：浅灰盘 + 深色首字，整屏立刻透气 */
+html[data-skin="mono"] .avatar{background:linear-gradient(160deg,#e4e6ea,#d8dade);color:#2c2e33;box-shadow:0 0 0 1px rgba(20,20,22,.06),0 1px 2px rgba(20,20,22,.06)}
+html[data-skin="mono"][data-dark="1"] .avatar{background:linear-gradient(160deg,#3a3c40,#2e3034);color:#e6e7ea;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+html[data-skin="mono"] .brand-mark{background:linear-gradient(150deg,#3c3e43,#1e1f22);box-shadow:0 2px 8px -3px rgba(20,20,22,.42)}
+html[data-skin="mono"] .profile-avatar{background:linear-gradient(150deg,#3c3e43,#1e1f22);color:#fff}
+html[data-skin="mono"][data-dark="1"] .profile-avatar{background:linear-gradient(150deg,#f4f5f7,#dde0e4);color:#1b1d21}
 html[data-skin="mono"] .btn{letter-spacing:.01em}
-html[data-skin="mono"] .dock{box-shadow:0 12px 30px -18px rgba(17,18,20,.35)}
-/* 黑白皮肤下把彩色徽标也收进灰阶，避免破坏整体单色 */
-html[data-skin="mono"] .chip{background:var(--surface-2)!important;color:var(--text)!important;border-color:var(--border)!important;opacity:.85}
-html[data-skin="mono"] .rank-num{background:var(--surface-2)!important;color:var(--text)!important;box-shadow:none!important}
-html[data-skin="mono"] .rank-num.r1{background:var(--text)!important;color:var(--bg)!important}
-html[data-skin="mono"] .rank-num.r2{background:rgba(120,120,126,.55)!important;color:#fff!important}
-html[data-skin="mono"] .rank-num.r3{background:rgba(140,140,148,.42)!important;color:#fff!important}
-html[data-skin="mono"] .profile-cover{background:linear-gradient(160deg,#e4e6ea,#f3f4f6)}
+html[data-skin="mono"] .btn:not(.btn-ghost):not(.btn-danger){
+  background:linear-gradient(180deg,#35373b,#232427);color:#fff;
+  box-shadow:0 1px 2px rgba(20,20,22,.2),inset 0 1px 0 rgba(255,255,255,.14);
+}
+html[data-skin="mono"] .dock{box-shadow:0 10px 26px -16px rgba(20,20,22,.3),0 0 0 1px rgba(20,20,22,.05)}
+/* 标签不再刷成同一块灰：用三档明度拉开节奏 */
+html[data-skin="mono"] .chip{background:rgba(20,20,22,.055)!important;color:#3a3c40!important;border-color:transparent!important;font-weight:650!important}
+html[data-skin="mono"] .chip[data-t="表白"]{background:rgba(20,20,22,.115)!important;color:#17181a!important}
+html[data-skin="mono"] .chip[data-t="暗恋"]{background:rgba(20,20,22,.085)!important}
+html[data-skin="mono"] .chip[data-t="捞人"]{background:rgba(20,20,22,.042)!important}
+html[data-skin="mono"][data-dark="1"] .chip{background:rgba(255,255,255,.085)!important;color:#d5d7db!important}
+html[data-skin="mono"][data-dark="1"] .chip[data-t="表白"]{background:rgba(255,255,255,.16)!important;color:#f3f4f6!important}
+html[data-skin="mono"][data-dark="1"] .chip[data-t="暗恋"]{background:rgba(255,255,255,.12)!important}
+html[data-skin="mono"][data-dark="1"] .chip[data-t="捞人"]{background:rgba(255,255,255,.065)!important}
+html[data-skin="mono"] .rank-num{background:rgba(20,20,22,.06)!important;color:#2b2c2f!important;box-shadow:none!important}
+html[data-skin="mono"] .rank-num.r1{background:linear-gradient(160deg,#3c3e43,#1e1f22)!important;color:#fff!important}
+html[data-skin="mono"] .rank-num.r2{background:rgba(88,90,96,.66)!important;color:#fff!important}
+html[data-skin="mono"] .rank-num.r3{background:rgba(118,120,126,.44)!important;color:#fff!important}
+html[data-skin="mono"] .profile-cover{background:linear-gradient(160deg,#ecedf0,#f7f8f9)}
 html[data-skin="mono"][data-dark="1"] .profile-cover{background:linear-gradient(160deg,#2c2e34,#1b1d21)}
-html[data-skin="mono"] .music-disc{background:var(--text)!important;color:var(--bg)!important}
-html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:var(--text);color:var(--bg)}
+html[data-skin="mono"] .music-disc{background:linear-gradient(150deg,#3c3e43,#1e1f22)!important;color:#fff!important}
+html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:#2b2c2f;color:#fff}
+html[data-skin="mono"][data-dark="1"] .toast.ok,html[data-skin="mono"][data-dark="1"] .toast.err{background:#e9eaec;color:#1b1d21}
 
 /* ---------- ② 液态玻璃 ---------- */
 html[data-skin="glass"]{
@@ -929,13 +946,12 @@ html[data-skin="glass"] .app{
 }
 /* 玻璃后面必须有颜色可折射，否则糊成一片白 */
 html[data-skin="glass"] .app::before{
-  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:
     radial-gradient(56% 34% at 16% 0%,rgba(122,152,226,.62),rgba(122,152,226,0) 72%),
     radial-gradient(48% 32% at 92% 24%,rgba(178,138,222,.5),rgba(178,138,222,0) 72%),
     radial-gradient(58% 38% at 44% 102%,rgba(96,186,198,.45),rgba(96,186,198,0) 74%);
 }
-html[data-skin="glass"] .app > *{position:relative;z-index:1}
 html[data-skin="glass"][data-dark="1"] .app{background:linear-gradient(168deg,#141a26,#1d1828 46%,#111e22)}
 html[data-skin="glass"][data-dark="1"] .app::before{
   background:
@@ -1227,7 +1243,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
           <button class="row" id="skinSwitchRow">
             <span class="row-ico" data-ico="sparkles"></span>
             <span class="row-title">界面风格</span>
-            <span class="row-val"><span data-skin-label>黑白</span><span data-ico="chevron"></span></span>
+            <span class="row-val"><span data-skin-label>系统黑白</span><span data-ico="chevron"></span></span>
           </button>
           <button class="row" id="realnameRow">
             <span class="row-ico" data-ico="shield"></span>
@@ -1465,8 +1481,8 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
         <div class="skin-switch">
           <button class="skin-opt" data-skin-opt="mono" aria-pressed="false">
             <div class="skin-thumb mono"><i></i><i></i><i></i></div>
-            <div class="skin-name">黑白</div>
-            <div class="skin-desc">系统级单色，干净利落</div>
+            <div class="skin-name">系统黑白</div>
+            <div class="skin-desc">Windows 灰阶 · 雅黑中文</div>
           </button>
           <button class="skin-opt" data-skin-opt="glass" aria-pressed="false">
             <div class="skin-thumb glass"><i></i><i></i><i></i></div>
@@ -2029,7 +2045,7 @@ const THEMES = [
   { id:"dark", name:"暗夜黑", color:"#a78bfa", bg:"#121417", bgSolid:"#171310", light:false, animated:false },
   { id:"darkblue", name:"午夜蓝", color:"#60a5fa", bg:"linear-gradient(135deg,#0f172a,#1e293b,#0f172a)", bgSolid:"#141d2e", light:false, animated:false },
   { id:"darkpink", name:"夜樱", color:"#f472b6", bg:"linear-gradient(135deg,#1a0b18,#2d1530,#1a0b18)", bgSolid:"#21101f", light:false, animated:false },
-  { id:"system", name:"黑白", color:"#2563eb", bg:"#f0f2f5", bgSolid:"#f0f2f5", light:true, system:true, animated:false }
+  { id:"system", name:"系统黑白", color:"#2b2b2b", bg:"#f3f3f3", bgSolid:"#f3f3f3", light:true, system:true, animated:false }
 ];
 const FONTS = [
   { id:"default", name:"系统默认", css:"system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif", preview:"界面黑体 · 正文宋体" },
@@ -2053,14 +2069,17 @@ function hexToRgba(hex, alpha){
   return `rgba(${r},${g},${b},${alpha})`;
 }
 function getFontById(id){ return FONTS.find(f => f.id === id) || FONTS[0]; }
+const SANS_SYSTEM = "'Microsoft YaHei UI','Microsoft YaHei','微软雅黑','PingFang SC','Hiragino Sans GB','Segoe UI',system-ui,-apple-system,sans-serif";
 function applyFontFamily(){
   const s = getCustomSettings();
   const font = getFontById(s.fontFamily || "default");
   const root = document.documentElement;
-  document.body.style.fontFamily = font.css;
+  /* 系统黑白皮肤：正文也用雅黑，一屏宋体太像讣告 */
+  const systemSkin = currentSkin() === "mono" && font.id === "default";
+  document.body.style.fontFamily = systemSkin ? SANS_SYSTEM : font.css;
   if (font.id === "default"){
-    root.style.setProperty("--font-ui", "system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif");
-    root.style.setProperty("--font-serif", "'Noto Serif SC','Songti SC','STSong',serif");
+    root.style.setProperty("--font-ui", systemSkin ? SANS_SYSTEM : "system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif");
+    root.style.setProperty("--font-serif", systemSkin ? SANS_SYSTEM : "'Noto Serif SC','Songti SC','STSong',serif");
   } else {
     root.style.setProperty("--font-ui", font.css);
     root.style.setProperty("--font-serif", font.css);
@@ -2096,8 +2115,8 @@ function applyThemeBase(themeId){
   if (theme.system){
     const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     const c = systemDark
-      ? { bg:"#18191d", card:"#242526", text:"#e8eaed", border:"#3a3b3c", primary:"#f2f3f5", danger:"#ff6b6b", ok:"#4ade80", muted:"#9aa3ad", nav:"rgba(36,37,38,.88)", navText:"#9aa3ad", navActive:"#ffffff", btnActive:"#ffffff", btnActiveText:"#18191d", btnInactive:"rgba(255,255,255,.1)", btnInactiveText:"#e8eaed", surface:"rgba(255,255,255,.06)", sk:"rgba(255,255,255,.08)" }
-      : { bg:"#f0f2f5", card:"#ffffff", text:"#1c1e21", border:"#e4e6eb", primary:"#141518", danger:"#e5484d", ok:"#1a7f37", muted:"#8a919a", nav:"rgba(255,255,255,.88)", navText:"#333333", navActive:"#000000", btnActive:"#000000", btnActiveText:"#ffffff", btnInactive:"rgba(28,25,23,.06)", btnInactiveText:"#000000", surface:"rgba(28,25,23,.05)", sk:"rgba(255,255,255,.55)" };
+      ? { bg:"#1f1f1f", card:"#2b2b2b", text:"#e9e9e9", border:"#3d3d3d", primary:"#e9eaec", danger:"#f1707b", ok:"#6ccb5f", muted:"#a2a2a2", nav:"rgba(43,43,43,.92)", navText:"#adadad", navActive:"#ffffff", btnActive:"#e9eaec", btnActiveText:"#1b1b1b", btnInactive:"rgba(255,255,255,.07)", btnInactiveText:"#e3e3e3", surface:"rgba(255,255,255,.06)", sk:"rgba(255,255,255,.08)" }
+      : { bg:"#f3f3f3", card:"#ffffff", text:"#1b1b1b", border:"#e5e5e5", primary:"#2b2b2b", danger:"#c42b1c", ok:"#0f7b0f", muted:"#5f5f5f", nav:"rgba(252,252,252,.92)", navText:"#4a4a4a", navActive:"#111214", btnActive:"#2b2b2b", btnActiveText:"#ffffff", btnInactive:"rgba(20,20,22,.05)", btnInactiveText:"#3a3c40", surface:"rgba(20,20,22,.045)", sk:"rgba(255,255,255,.6)" };
     root.setAttribute("data-dark", systemDark ? "1" : "0");
     document.querySelector('meta[name="color-scheme"]').setAttribute("content", systemDark ? "dark" : "light");
     body.style.background = c.bg;
@@ -2222,9 +2241,10 @@ function setSkin(skin, opts){
   localStorage.setItem(SKIN_KEY, skin);
   document.documentElement.setAttribute("data-skin", skin);
   applyCustomTheme(localStorage.getItem("custom_theme") || "system");
+  applyFontFamily();
   syncSkinUI();
   if (!opts || !opts.silent){
-    toast(skin === "glass" ? "已切换：液态玻璃" : "已切换：黑白", "ok");
+    toast(skin === "glass" ? "已切换：液态玻璃" : "已切换：系统黑白", "ok");
     if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
   }
 }
@@ -2235,7 +2255,7 @@ function syncSkinUI(){
     el.setAttribute("aria-pressed", el.dataset.skinOpt === skin ? "true" : "false");
   });
   document.querySelectorAll("[data-skin-label]").forEach(el => {
-    el.textContent = skin === "glass" ? "液态玻璃" : "黑白";
+    el.textContent = skin === "glass" ? "液态玻璃" : "系统黑白";
   });
 }
 function renderThemeGrid(){
