@@ -3731,6 +3731,16 @@ $("realnameRow").onclick = async () => {
   openVerifyModal("realname");
 };
 
+/* 黑白皮肤下选彩色主色会自动切到玻璃，避免"选了没反应" */
+document.querySelectorAll(".color-swatch").forEach(sw => {
+  sw.addEventListener("click", () => {
+    if (currentSkin() === "mono" && sw.dataset.color && !/^#(1c1917|374151|6b7280|ffffff|e8eaed)$/i.test(sw.dataset.color)){
+      setSkin("glass", { silent: true });
+      toast("已切到液态玻璃，彩色主色才能显示", "ok", 3200);
+    }
+  });
+});
+
 /* 界面风格：随时在「黑白」与「液态玻璃」之间切换 */
 function toggleSkin(){ setSkin(currentSkin() === "glass" ? "mono" : "glass"); }
 $("skinSwitchRow").onclick = toggleSkin;
