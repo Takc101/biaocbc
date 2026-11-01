@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-skin="mono">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light">
 <title>华中表白墙 · 校园社区</title>
+<!-- 可安装的「软件版」：装到桌面后全屏运行，有独立图标 -->
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0f1114">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="表白墙">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- 字体异步加载：不阻塞首屏渲染，加载失败时回退系统字体（国内访问 Google Fonts 不稳定） -->
@@ -583,7 +592,7 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 }
 /* 评论页要盖在用户主页之上：两者同为 fullsheet(800)，主页在 DOM 里更靠后会反压 */
 #commentPage{z-index:900}
-/* 从主页点进投稿时，卡片外的彩色光环转一圈后淡出 */
+/* 从主页点进投稿时，卡片外的彩色光环只转 1 圈（×1）就淡出 */
 @property --halo-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
 .halo{position:relative}
 .halo::after{
@@ -592,10 +601,10 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
   background:conic-gradient(from var(--halo-angle),#f43f5e,#f59e0b,#22c55e,#3b82f6,#a855f7,#f43f5e);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
-  animation:haloSpin .5s linear forwards,haloFade .5s ease forwards;
+  animation:haloSpin .62s cubic-bezier(.3,.8,.4,1) 1 forwards,haloFade .62s ease-out 1 forwards;
 }
-@keyframes haloSpin{to{--halo-angle:360deg}}
-@keyframes haloFade{0%,62%{opacity:1}100%{opacity:0}}
+@keyframes haloSpin{from{--halo-angle:0deg}to{--halo-angle:360deg}}
+@keyframes haloFade{0%,55%{opacity:1}100%{opacity:0}}
 /* 游客身份标记 */
 .guest-tag{
   display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;
@@ -845,6 +854,215 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 /* 无障碍：键盘焦点可见 */
 :focus-visible{outline:2.5px solid var(--primary);outline-offset:2px;border-radius:6px}
 
+/* ============================================================
+   两套界面风格：mono（黑白，默认） / glass（液态玻璃）
+   只覆盖视觉，不动布局
+   ============================================================ */
+
+/* ---------- ① 黑白：去彩色、去模糊、细边线 ---------- */
+html[data-skin="mono"]{
+  --primary:#131416 !important;
+  --primary-soft:rgba(19,20,22,.07) !important;
+  --nav-active:#131416 !important;
+  --blur-amount:0px !important;
+  --card-border:rgba(17,18,20,.10) !important;
+  --shadow-sm:0 1px 0 rgba(17,18,20,.04);
+  --shadow-md:0 8px 24px -16px rgba(17,18,20,.22);
+  --shadow-lg:0 18px 44px -22px rgba(17,18,20,.3);
+}
+html[data-skin="mono"][data-dark="1"]{
+  --primary:#f4f5f7 !important;
+  --primary-soft:rgba(244,245,247,.12) !important;
+  --nav-active:#ffffff !important;
+  --card-border:rgba(255,255,255,.12) !important;
+}
+html[data-skin="mono"] .card,
+html[data-skin="mono"] .post,
+html[data-skin="mono"] .rows,
+html[data-skin="mono"] .modal-box,
+html[data-skin="mono"] .profile-card{backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-skin="mono"] .brand-mark{background:var(--primary);box-shadow:none}
+html[data-skin="mono"] .btn{letter-spacing:.01em}
+html[data-skin="mono"] .dock{box-shadow:0 12px 30px -18px rgba(17,18,20,.35)}
+/* 黑白皮肤下把彩色徽标也收进灰阶，避免破坏整体单色 */
+html[data-skin="mono"] .chip{background:var(--surface-2)!important;color:var(--text)!important;border-color:var(--border)!important;opacity:.85}
+html[data-skin="mono"] .rank-num{background:var(--surface-2)!important;color:var(--text)!important;box-shadow:none!important}
+html[data-skin="mono"] .rank-num.r1{background:var(--text)!important;color:var(--bg)!important}
+html[data-skin="mono"] .rank-num.r2{background:rgba(120,120,126,.55)!important;color:#fff!important}
+html[data-skin="mono"] .rank-num.r3{background:rgba(140,140,148,.42)!important;color:#fff!important}
+html[data-skin="mono"] .profile-cover{background:linear-gradient(135deg,var(--text) 0%,transparent 130%),var(--surface-2)}
+html[data-skin="mono"] .music-disc{background:var(--text)!important;color:var(--bg)!important}
+html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:var(--text);color:var(--bg)}
+
+/* ---------- ② 液态玻璃 ---------- */
+html[data-skin="glass"]{
+  --r-sm:12px;--r-md:18px;--r-lg:24px;--r-xl:30px;
+  --shadow-sm:0 4px 16px -10px rgba(12,14,20,.2);
+  --shadow-md:0 12px 30px -16px rgba(12,14,20,.26);
+  --shadow-lg:0 26px 62px -24px rgba(12,14,20,.38);
+}
+html[data-skin="glass"] .app{
+  position:relative;z-index:1;box-shadow:none;
+  background:linear-gradient(168deg,#dbe4f7,#ece2f6 46%,#dcf0f2);
+}
+/* 玻璃后面必须有颜色可折射，否则糊成一片白 */
+html[data-skin="glass"] .app::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(56% 34% at 16% 0%,rgba(122,152,226,.62),rgba(122,152,226,0) 72%),
+    radial-gradient(48% 32% at 92% 24%,rgba(178,138,222,.5),rgba(178,138,222,0) 72%),
+    radial-gradient(58% 38% at 44% 102%,rgba(96,186,198,.45),rgba(96,186,198,0) 74%);
+}
+html[data-skin="glass"] .app > *{position:relative;z-index:1}
+html[data-skin="glass"][data-dark="1"] .app{background:linear-gradient(168deg,#141a26,#1d1828 46%,#111e22)}
+html[data-skin="glass"][data-dark="1"] .app::before{
+  background:
+    radial-gradient(56% 34% at 16% 0%,rgba(74,104,178,.55),rgba(74,104,178,0) 72%),
+    radial-gradient(48% 32% at 92% 24%,rgba(126,84,178,.45),rgba(126,84,178,0) 72%),
+    radial-gradient(58% 38% at 44% 102%,rgba(40,116,128,.4),rgba(40,116,128,0) 74%);
+}
+/* 折射底：玻璃层得有东西可折射 */
+html[data-skin="glass"] body::before{
+  content:"";position:fixed;inset:-24%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(32% 24% at 14% 4%,#ffffff 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(40% 32% at 90% 2%,#a9c0ea 0%,rgba(169,192,234,0) 72%),
+    radial-gradient(46% 36% at 80% 86%,#cbb2e6 0%,rgba(203,178,230,0) 74%),
+    radial-gradient(38% 30% at 2% 76%,#a8d6de 0%,rgba(168,214,222,0) 74%);
+}
+html[data-skin="glass"][data-dark="1"] body::before{
+  background:
+    radial-gradient(38% 30% at 16% 12%,rgba(122,142,182,.34),transparent 70%),
+    radial-gradient(42% 34% at 88% 20%,rgba(150,120,200,.26),transparent 72%),
+    radial-gradient(48% 40% at 58% 92%,rgba(72,116,158,.24),transparent 74%);
+}
+html[data-skin="glass"] .card,
+html[data-skin="glass"] .post,
+html[data-skin="glass"] .rows,
+html[data-skin="glass"] .profile-card,
+html[data-skin="glass"] .comment-original-post,
+html[data-skin="glass"] .music-panel,
+html[data-skin="glass"] .modal-box,
+html[data-skin="glass"] .fullsheet-inner{
+  position:relative;
+  border:1px solid rgba(255,255,255,.58) !important;
+  background-image:linear-gradient(148deg,rgba(255,255,255,.46),rgba(255,255,255,0) 42%,rgba(255,255,255,.2));
+  backdrop-filter:blur(20px) saturate(200%);
+  -webkit-backdrop-filter:blur(20px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -1px 0 rgba(255,255,255,.28),
+    inset 1px 0 0 rgba(255,255,255,.4),
+    inset -1px 0 0 rgba(255,255,255,.4),
+    0 14px 34px -20px rgba(14,18,26,.4);
+  transition:transform .36s cubic-bezier(.34,1.38,.46,1),box-shadow .3s ease;
+}
+html[data-skin="glass"][data-dark="1"] .card,
+html[data-skin="glass"][data-dark="1"] .post,
+html[data-skin="glass"][data-dark="1"] .rows,
+html[data-skin="glass"][data-dark="1"] .profile-card,
+html[data-skin="glass"][data-dark="1"] .comment-original-post,
+html[data-skin="glass"][data-dark="1"] .music-panel,
+html[data-skin="glass"][data-dark="1"] .modal-box,
+html[data-skin="glass"][data-dark="1"] .fullsheet-inner{
+  border-color:rgba(255,255,255,.15) !important;
+  background-image:linear-gradient(148deg,rgba(255,255,255,.14),rgba(255,255,255,.02) 46%,rgba(255,255,255,.08));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(255,255,255,.05),
+    inset 1px 0 0 rgba(255,255,255,.08),
+    inset -1px 0 0 rgba(255,255,255,.08),
+    0 18px 42px -20px rgba(0,0,0,.62);
+}
+html[data-skin="glass"] .profile-cover{
+  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.1) 60%,rgba(180,196,226,.5)),var(--surface-2);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+html[data-skin="glass"][data-dark="1"] .profile-cover{
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.02) 60%,rgba(120,140,180,.25));
+  border-color:rgba(255,255,255,.14);
+}
+html[data-skin="glass"] .dock{
+  backdrop-filter:blur(26px) saturate(190%);
+  -webkit-backdrop-filter:blur(26px) saturate(190%);
+  border:1px solid rgba(255,255,255,.6);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 22px 46px -20px rgba(14,18,26,.46);
+}
+html[data-skin="glass"][data-dark="1"] .dock{
+  border-color:rgba(255,255,255,.14);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 24px 50px -20px rgba(0,0,0,.7);
+}
+html[data-skin="glass"] .fullsheet{background:transparent}
+html[data-skin="glass"] .fullsheet-inner{
+  background-color:rgba(244,246,252,.72);
+  border-radius:0;
+  backdrop-filter:blur(26px) saturate(180%);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);
+}
+html[data-skin="glass"][data-dark="1"] .fullsheet-inner{background-color:rgba(18,20,26,.78)}
+html[data-skin="glass"] .appbar{
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid rgba(255,255,255,.4);
+}
+html[data-skin="glass"][data-dark="1"] .appbar{border-bottom-color:rgba(255,255,255,.1)}
+html[data-skin="glass"] .btn:not(.btn-ghost){
+  background-image:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 62%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 22px -12px rgba(14,18,26,.5);
+}
+html[data-skin="glass"] .input,
+html[data-skin="glass"] .search,
+html[data-skin="glass"] select.input,
+html[data-skin="glass"] textarea.input{
+  background:rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.62);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+html[data-skin="glass"][data-dark="1"] .input,
+html[data-skin="glass"][data-dark="1"] .search,
+html[data-skin="glass"][data-dark="1"] textarea.input{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+html[data-skin="glass"] .row:active,
+html[data-skin="glass"] .card:active,
+html[data-skin="glass"] .post:active{transform:scale(.978)}
+html[data-skin="glass"] .dock-item:active .ico-box{transform:scale(.9)}
+html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezier(.34,1.4,.5,1),background .2s}
+
+/* 我的页：实名状态行 */
+.rn-done{color:var(--ok);font-weight:700;font-size:12.5px}
+.rn-chev{display:inline-flex;vertical-align:middle}
+.row.realnamed .row-ico{color:var(--ok)}
+
+/* ---------- 风格切换卡片（设置页 / 我的页入口） ---------- */
+.skin-switch{display:flex;gap:10px}
+.skin-opt{
+  flex:1;border:1.5px solid var(--border);border-radius:16px;background:transparent;
+  padding:12px 10px 11px;cursor:pointer;text-align:left;color:var(--text);font-family:var(--font-ui);
+  transition:.2s;position:relative;overflow:hidden;
+}
+.skin-opt .skin-thumb{height:52px;border-radius:11px;margin-bottom:9px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+.skin-opt .skin-name{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:5px}
+.skin-opt .skin-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.45}
+.skin-opt.active{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.skin-opt.active .skin-name::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--primary)}
+.skin-thumb.mono{background:linear-gradient(135deg,#f7f7f8,#e9e9ec)}
+.skin-thumb.mono i{position:absolute;left:8px;right:8px;height:9px;border-radius:4px;background:#fff;border:1px solid rgba(0,0,0,.09)}
+.skin-thumb.mono i:nth-child(1){top:8px;width:52%}
+.skin-thumb.mono i:nth-child(2){top:22px;right:22px}
+.skin-thumb.mono i:nth-child(3){top:36px;width:38%}
+.skin-thumb.glass{background:linear-gradient(135deg,#cfd8ea,#e8d9f2 55%,#cfe4ea)}
+.skin-thumb.glass i{position:absolute;left:8px;right:8px;height:11px;border-radius:6px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 1px 0 #fff,0 3px 8px -4px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
+.skin-thumb.glass i:nth-child(1){top:7px;width:54%}
+.skin-thumb.glass i:nth-child(2){top:22px;right:20px}
+.skin-thumb.glass i:nth-child(3){top:37px;width:40%}
+
 /* 减少动效 */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -965,6 +1183,16 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
             <span class="row-title">自定 UI</span>
             <span class="row-val">主题 · 字体 · 背景<span data-ico="chevron"></span></span>
           </button>
+          <button class="row" id="skinSwitchRow">
+            <span class="row-ico" data-ico="sparkles"></span>
+            <span class="row-title">界面风格</span>
+            <span class="row-val"><span data-skin-label>黑白</span><span data-ico="chevron"></span></span>
+          </button>
+          <button class="row" id="realnameRow">
+            <span class="row-ico" data-ico="shield"></span>
+            <span class="row-title">手机号实名</span>
+            <span class="row-val" id="realnameVal">未实名<span data-ico="chevron"></span></span>
+          </button>
           <div class="row" id="anonRow">
             <span class="row-ico" data-ico="mask"></span>
             <span class="row-title">匿名发布</span>
@@ -979,6 +1207,11 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
             <span class="row-ico" data-ico="edit"></span>
             <span class="row-title">修改用户名</span>
             <span class="row-val" data-ico="chevron"></span>
+          </button>
+          <button class="row" id="installAppRow">
+            <span class="row-ico" data-ico="plus"></span>
+            <span class="row-title">安装到桌面</span>
+            <span class="row-val">像 App 一样全屏打开<span data-ico="chevron"></span></span>
           </button>
           <button class="row" id="contactDevBtn">
             <span class="row-ico" data-ico="mail"></span>
@@ -1186,6 +1419,21 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
       </div>
     </div>
     <div class="sheet-body">
+      <div class="customize-section-title">界面风格 · 随时切换</div>
+      <div class="card">
+        <div class="skin-switch">
+          <button class="skin-opt" data-skin-opt="mono" aria-pressed="false">
+            <div class="skin-thumb mono"><i></i><i></i><i></i></div>
+            <div class="skin-name">黑白</div>
+            <div class="skin-desc">系统级单色，干净利落</div>
+          </button>
+          <button class="skin-opt" data-skin-opt="glass" aria-pressed="false">
+            <div class="skin-thumb glass"><i></i><i></i><i></i></div>
+            <div class="skin-name">液态玻璃</div>
+            <div class="skin-desc">半透明折射，弹性动效</div>
+          </button>
+        </div>
+      </div>
       <div class="customize-section-title">预设主题</div>
       <div class="card"><div class="theme-grid" id="themeGrid"></div></div>
 
@@ -1382,8 +1630,8 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 <div class="modal-overlay" id="verifyModal" style="display:none">
   <div class="modal-box">
     <div class="dialog-ico" data-ico="shield"></div>
-    <div class="modal-title">发布前认证一次</div>
-    <div class="modal-sub">填写手机号即可，认证后不再重复询问</div>
+    <div class="modal-title" id="verifyTitle">发布前认证一次</div>
+    <div class="modal-sub" id="verifySub">填写手机号即可，认证后不再重复询问</div>
     <div style="text-align:left">
       <input id="verifyPhone" type="tel" class="input" placeholder="手机号" maxlength="11" autocomplete="tel">
       <div style="height:8px"></div>
@@ -1722,7 +1970,7 @@ const THEMES = [
   { id:"dark", name:"暗夜黑", color:"#a78bfa", bg:"#121417", bgSolid:"#171310", light:false, animated:false },
   { id:"darkblue", name:"午夜蓝", color:"#60a5fa", bg:"linear-gradient(135deg,#0f172a,#1e293b,#0f172a)", bgSolid:"#141d2e", light:false, animated:false },
   { id:"darkpink", name:"夜樱", color:"#f472b6", bg:"linear-gradient(135deg,#1a0b18,#2d1530,#1a0b18)", bgSolid:"#21101f", light:false, animated:false },
-  { id:"system", name:"系统黑白", color:"#2563eb", bg:"#f0f2f5", bgSolid:"#f0f2f5", light:true, system:true, animated:false }
+  { id:"system", name:"黑白", color:"#2563eb", bg:"#f0f2f5", bgSolid:"#f0f2f5", light:true, system:true, animated:false }
 ];
 const FONTS = [
   { id:"default", name:"系统默认", css:"system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif", preview:"界面黑体 · 正文宋体" },
@@ -1765,7 +2013,7 @@ function updateFontDisplay(){
   const display = $("currentFontDisplay");
   if (display){ display.textContent = font.name; display.style.fontFamily = font.css; }
 }
-function applyCustomTheme(themeId){
+function applyThemeBase(themeId){
   let theme = THEMES.find(t => t.id === themeId);
   if (!theme){ theme = THEMES[0]; themeId = theme.id; }
   const root = document.documentElement;
@@ -1789,8 +2037,8 @@ function applyCustomTheme(themeId){
   if (theme.system){
     const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     const c = systemDark
-      ? { bg:"#18191d", card:"#242526", text:"#e8eaed", border:"#3a3b3c", primary:"#3b82f6", danger:"#ff6b6b", ok:"#4ade80", muted:"#9aa3ad", nav:"rgba(36,37,38,.88)", navText:"#9aa3ad", navActive:"#ffffff", btnActive:"#ffffff", btnActiveText:"#18191d", btnInactive:"rgba(255,255,255,.1)", btnInactiveText:"#e8eaed", surface:"rgba(255,255,255,.06)", sk:"rgba(255,255,255,.08)" }
-      : { bg:"#f0f2f5", card:"#ffffff", text:"#1c1e21", border:"#e4e6eb", primary:"#2563eb", danger:"#e5484d", ok:"#1a7f37", muted:"#8a919a", nav:"rgba(255,255,255,.88)", navText:"#333333", navActive:"#000000", btnActive:"#000000", btnActiveText:"#ffffff", btnInactive:"rgba(28,25,23,.06)", btnInactiveText:"#000000", surface:"rgba(28,25,23,.05)", sk:"rgba(255,255,255,.55)" };
+      ? { bg:"#18191d", card:"#242526", text:"#e8eaed", border:"#3a3b3c", primary:"#f2f3f5", danger:"#ff6b6b", ok:"#4ade80", muted:"#9aa3ad", nav:"rgba(36,37,38,.88)", navText:"#9aa3ad", navActive:"#ffffff", btnActive:"#ffffff", btnActiveText:"#18191d", btnInactive:"rgba(255,255,255,.1)", btnInactiveText:"#e8eaed", surface:"rgba(255,255,255,.06)", sk:"rgba(255,255,255,.08)" }
+      : { bg:"#f0f2f5", card:"#ffffff", text:"#1c1e21", border:"#e4e6eb", primary:"#141518", danger:"#e5484d", ok:"#1a7f37", muted:"#8a919a", nav:"rgba(255,255,255,.88)", navText:"#333333", navActive:"#000000", btnActive:"#000000", btnActiveText:"#ffffff", btnInactive:"rgba(28,25,23,.06)", btnInactiveText:"#000000", surface:"rgba(28,25,23,.05)", sk:"rgba(255,255,255,.55)" };
     root.setAttribute("data-dark", systemDark ? "1" : "0");
     document.querySelector('meta[name="color-scheme"]').setAttribute("content", systemDark ? "dark" : "light");
     body.style.background = c.bg;
@@ -1888,6 +2136,49 @@ function applyCustomTheme(themeId){
   applyFontFamily();
   updateFontDisplay();
 }
+
+/* ==================== 界面风格：黑白 / 液态玻璃 ==================== */
+const SKIN_KEY = "ui_skin";
+function currentSkin(){ return localStorage.getItem(SKIN_KEY) || "mono"; }
+function applySkinOverrides(){
+  const root = document.documentElement;
+  if (root.getAttribute("data-skin") !== "glass") return;
+  const dark = root.getAttribute("data-dark") === "1";
+  /* 玻璃体需要更透的底、更强的模糊，才能透出背后的柔光 */
+  root.style.setProperty("--blur-amount", "22px");
+  root.style.setProperty("--card-bg", dark ? "rgba(40,43,50,.46)" : "rgba(255,255,255,.42)");
+  root.style.setProperty("--card-border", dark ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.66)");
+  root.style.setProperty("--nav-bg", dark ? "rgba(28,30,36,.58)" : "rgba(255,255,255,.58)");
+  root.style.setProperty("--appbar-bg", dark ? "rgba(28,30,36,.5)" : "rgba(255,255,255,.52)");
+  root.style.setProperty("--surface-2", dark ? "rgba(255,255,255,.09)" : "rgba(255,255,255,.5)");
+  root.style.setProperty("--shadow-sm", "0 4px 16px -10px rgba(12,14,20,.2)");
+  root.style.setProperty("--shadow-md", "0 12px 30px -16px rgba(12,14,20,.26)");
+  root.style.setProperty("--shadow-lg", "0 26px 62px -24px rgba(12,14,20,.38)");
+}
+function applyCustomTheme(themeId){
+  applyThemeBase(themeId);
+  applySkinOverrides();
+}
+function setSkin(skin, opts){
+  localStorage.setItem(SKIN_KEY, skin);
+  document.documentElement.setAttribute("data-skin", skin);
+  applyCustomTheme(localStorage.getItem("custom_theme") || "system");
+  syncSkinUI();
+  if (!opts || !opts.silent){
+    toast(skin === "glass" ? "已切换：液态玻璃" : "已切换：黑白", "ok");
+    if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
+  }
+}
+function syncSkinUI(){
+  const skin = currentSkin();
+  document.querySelectorAll("[data-skin-opt]").forEach(el => {
+    el.classList.toggle("active", el.dataset.skinOpt === skin);
+    el.setAttribute("aria-pressed", el.dataset.skinOpt === skin ? "true" : "false");
+  });
+  document.querySelectorAll("[data-skin-label]").forEach(el => {
+    el.textContent = skin === "glass" ? "液态玻璃" : "黑白";
+  });
+}
 function renderThemeGrid(){
   const grid = $("themeGrid");
   if (!grid) return;
@@ -1900,7 +2191,7 @@ function renderThemeGrid(){
     item.onclick = () => { applyCustomTheme(t.id); updateBgPreview(); syncColorPickers(); };
     grid.appendChild(item);
   });
-  const cur = localStorage.getItem("custom_theme") || "blush";
+  const cur = localStorage.getItem("custom_theme") || "system";
   grid.querySelectorAll(".theme-item").forEach(el => el.classList.toggle("active", el.dataset.themeId === cur));
 }
 function updateBgPreview(){
@@ -1912,7 +2203,7 @@ function updateBgPreview(){
     preview.style.backgroundSize = "cover";
     preview.style.backgroundPosition = "center";
   } else {
-    const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "blush")) || THEMES[0];
+    const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "system")) || THEMES[0];
     preview.style.backgroundImage = currentTheme.bg;
     preview.style.backgroundSize = currentTheme.animated ? "300% 300%" : "cover";
     preview.style.backgroundPosition = "center";
@@ -1920,7 +2211,7 @@ function updateBgPreview(){
 }
 function syncColorPickers(){
   const settings = getCustomSettings();
-  const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "blush")) || THEMES[0];
+  const currentTheme = THEMES.find(t => t.id === (localStorage.getItem("custom_theme") || "system")) || THEMES[0];
   const cardOpacity = $("cardOpacity"), blurAmount = $("blurAmount"), darkToggle = $("darkModeToggle");
   if (cardOpacity) cardOpacity.value = settings.cardOpacity !== undefined ? settings.cardOpacity : 88;
   if (blurAmount) blurAmount.value = settings.blurAmount !== undefined ? settings.blurAmount : 16;
@@ -1966,7 +2257,7 @@ $("bgImageInput").onchange = e => {
   compressImage(f, 1280, 0.75, b64 => {
     try {
       localStorage.setItem("custom_bg", "data:image/jpeg;base64," + b64);
-      applyCustomTheme(localStorage.getItem("custom_theme") || "blush");
+      applyCustomTheme(localStorage.getItem("custom_theme") || "system");
       updateBgPreview();
       toast("背景图已设置", "ok");
     } catch (err) { toast("保存失败：" + err.message, "err"); }
@@ -1974,22 +2265,22 @@ $("bgImageInput").onchange = e => {
 };
 $("clearBgBtn").onclick = () => {
   localStorage.removeItem("custom_bg");
-  applyCustomTheme(localStorage.getItem("custom_theme") || "blush");
+  applyCustomTheme(localStorage.getItem("custom_theme") || "system");
   updateBgPreview();
   toast("已恢复主题背景", "ok");
 };
 document.querySelectorAll("#primaryPalette .color-swatch").forEach(sw => {
-  sw.onclick = () => { const s = getCustomSettings(); s.primaryColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
+  sw.onclick = () => { const s = getCustomSettings(); s.primaryColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
 });
 document.querySelectorAll("#textPalette .color-swatch").forEach(sw => {
-  sw.onclick = () => { const s = getCustomSettings(); s.textColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
+  sw.onclick = () => { const s = getCustomSettings(); s.textColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
 });
 document.querySelectorAll("#cardPalette .color-swatch").forEach(sw => {
-  sw.onclick = () => { const s = getCustomSettings(); s.cardColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
+  sw.onclick = () => { const s = getCustomSettings(); s.cardColor = sw.dataset.color; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
 });
-$("cardOpacity").oninput = e => { const s = getCustomSettings(); s.cardOpacity = parseInt(e.target.value); setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
-$("blurAmount").oninput = e => { const s = getCustomSettings(); s.blurAmount = parseInt(e.target.value); setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
-$("darkModeToggle").onchange = e => { const s = getCustomSettings(); s.darkMode = e.target.checked; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "blush"); };
+$("cardOpacity").oninput = e => { const s = getCustomSettings(); s.cardOpacity = parseInt(e.target.value); setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
+$("blurAmount").oninput = e => { const s = getCustomSettings(); s.blurAmount = parseInt(e.target.value); setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
+$("darkModeToggle").onchange = e => { const s = getCustomSettings(); s.darkMode = e.target.checked; setCustomSettings(s); applyCustomTheme(localStorage.getItem("custom_theme") || "system"); };
 document.querySelectorAll('input[name="cardStyle"]').forEach(r => {
   r.onchange = e => {
     const s = getCustomSettings();
@@ -2004,7 +2295,7 @@ document.querySelectorAll('input[name="cardStyle"]').forEach(r => {
       const input = el.querySelector("input");
       el.classList.toggle("active", input && input.checked);
     });
-    applyCustomTheme(localStorage.getItem("custom_theme") || "blush");
+    applyCustomTheme(localStorage.getItem("custom_theme") || "system");
   };
 });
 $("openFontPickerBtn").onclick = () => {
@@ -2018,13 +2309,13 @@ $("confirmFontBtn").onclick = () => {
   const s = getCustomSettings();
   s.fontFamily = pendingFontId;
   setCustomSettings(s);
-  applyCustomTheme(localStorage.getItem("custom_theme") || "blush");
+  applyCustomTheme(localStorage.getItem("custom_theme") || "system");
   $("fontPickerModal").style.display = "none";
   toast("字体已切换", "ok");
 };
 $("saveUIThemeBtn").onclick = () => {
   const settings = getCustomSettings();
-  const themeId = localStorage.getItem("custom_theme") || "blush";
+  const themeId = localStorage.getItem("custom_theme") || "system";
   localStorage.setItem("custom_settings", JSON.stringify(settings));
   localStorage.setItem("custom_theme", themeId);
   toast("UI 设置已保存到本机", "ok");
@@ -3012,7 +3303,7 @@ $("publishBtn").onclick = async () => {
     try { const d0 = await loadData(); meNow = resolveMe(d0); } catch (e) {}
     if (!meNow || !meNow.phone){
       pendingPublishAfterVerify = true;
-      openVerifyModal();
+      openVerifyModal("publish");
       return;
     }
   }
@@ -3332,7 +3623,12 @@ function clearAuthFields(){
 
 /* ==================== 游客发布前的手机号认证 ==================== */
 let pendingPublishAfterVerify = false;
-function openVerifyModal(){
+function openVerifyModal(mode){
+  const publishing = mode === "publish";
+  $("verifyTitle").textContent = publishing ? "发布前认证一次" : "手机号实名";
+  $("verifySub").textContent = publishing ? "填写手机号即可，认证后不再重复询问" : "实名后发布投稿、评论都不再重复填写";
+  $("verifySubmitBtn").textContent = publishing ? "认证并发布" : "完成实名";
+  $("verifyCancelBtn").textContent = publishing ? "先不发布" : "取消";
   $("verifyStatus").textContent = "";
   $("verifyStatus").className = "status";
   $("verifyPhone").value = "";
@@ -3404,6 +3700,22 @@ $("verifySubmitBtn").onclick = async () => {
     st.classList.add("error");
   }
 };
+
+/* 「我的」→ 手机号实名：已实名只展示，未实名直接打开认证 */
+$("realnameRow").onclick = async () => {
+  if (!currentUser){ needLogin(); return; }
+  let me = cachedData ? resolveMe(cachedData) : null;
+  if (!me){ try { me = resolveMe(await loadData(true)); } catch (e) {} }
+  if (me && me.phone){ toast("已实名：" + maskPhone(me.phone), "ok"); return; }
+  openVerifyModal("realname");
+};
+
+/* 界面风格：随时在「黑白」与「液态玻璃」之间切换 */
+function toggleSkin(){ setSkin(currentSkin() === "glass" ? "mono" : "glass"); }
+$("skinSwitchRow").onclick = toggleSkin;
+document.querySelectorAll("[data-skin-opt]").forEach(btn => {
+  btn.onclick = () => setSkin(btn.dataset.skinOpt);
+});
 
 /* ==================== QQ 一键注册 ==================== */
 function qqCfg(){
@@ -3644,8 +3956,23 @@ async function renderMe(force){
   $("myFollowers").querySelector(".stat-num").textContent = (me.followers || []).length;
   $("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => uidOf(p) === meId).reduce((s, p) => s + (p.likes || 0), 0);
   $("anonSetting").checked = !!me.isAnonymous;
+  renderRealnameRow(me);
   renderMeTab();
   updateMsgBadge(d);
+}
+/* 「我的」里的实名状态行：未实名可点，已实名显示打码号码 */
+function maskPhone(p){
+  return p ? p.slice(0, 3) + "****" + p.slice(-4) : "";
+}
+function renderRealnameRow(me){
+  const row = $("realnameRow"), val = $("realnameVal");
+  if (!row || !val) return;
+  const done = !!(me && me.phone);
+  row.classList.toggle("realnamed", done);
+  val.innerHTML = done
+    ? `<span class="rn-done">已实名 · ${maskPhone(me.phone)}</span>`
+    : `未实名<span class="rn-chev" data-ico="chevron"></span>`;
+  initIcons(val);
 }
 function renderMeTab(){
   const d = cachedData;
@@ -4617,7 +4944,7 @@ $("musicPlayBtn").onclick = toggleMusic;
 $("musicPrevBtn").onclick = () => { if (FREE_MUSIC.length) resolveQQOfficialUrl((musicIndex - 1 + FREE_MUSIC.length) % FREE_MUSIC.length, true); };
 $("musicNextBtn").onclick = () => nextFreeTrack(true);
 $("musicCollapseBtn").onclick = () => { musicFloat.classList.add("collapsed"); localStorage.setItem("music_collapsed", "1"); };
-$("musicExpandBtn").onclick = () => { musicFloat.classList.remove("collapsed"); localStorage.removeItem("music_collapsed"); };
+$("musicExpandBtn").onclick = () => { musicFloat.classList.remove("collapsed"); localStorage.setItem("music_collapsed", "0"); };
 musicVolume.value = localStorage.getItem("music_volume") || "0.45";
 bgMusic.volume = Number(musicVolume.value);
 musicVolume.oninput = () => { bgMusic.volume = Number(musicVolume.value); localStorage.setItem("music_volume", musicVolume.value); };
@@ -4629,7 +4956,7 @@ bgMusic.onerror = () => {
   $("musicStatus").textContent = "当前官方音源加载失败，正在换一首...";
   setTimeout(() => nextFreeTrack(true), 1200);
 };
-if (localStorage.getItem("music_collapsed") === "1") musicFloat.classList.add("collapsed");
+if (localStorage.getItem("music_collapsed") !== "0") musicFloat.classList.add("collapsed");
 loadQQFreeMusic();
 window.addEventListener("beforeunload", () => { localStorage.setItem("music_paused", bgMusic.paused ? "1" : "0"); });
 
@@ -4664,13 +4991,58 @@ window.addEventListener("beforeunload", () => { localStorage.setItem("music_paus
   });
 })();
 
+/* ==================== 软件版（PWA）：安装与离线 ==================== */
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  installPrompt = e;
+  const row = $("installAppRow");
+  if (row) row.hidden = false;
+});
+window.addEventListener("appinstalled", () => {
+  installPrompt = null;
+  const row = $("installAppRow");
+  if (row) row.hidden = true;
+  toast("已装到桌面，下次点图标直接进", "ok");
+});
+if ($("installAppRow")){
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  $("installAppRow").hidden = !!standalone;
+  $("installAppRow").onclick = async () => {
+    if (installPrompt){
+      installPrompt.prompt();
+      try { await installPrompt.userChoice; } catch (e) {}
+      installPrompt = null;
+      return;
+    }
+    const ua = navigator.userAgent;
+    if (/iphone|ipad|ipod/i.test(ua)) toast("Safari 底部「分享」→「添加到主屏幕」", "ok", 4600);
+    else toast("浏览器菜单里选「安装应用 / 添加到主屏幕」", "ok", 4600);
+  };
+}
+if ("serviceWorker" in navigator && location.protocol === "https:"){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+
+/* 桌面快捷方式：?go=publish / ?go=me 直接落到对应页 */
+(function(){
+  const go = new URLSearchParams(location.search).get("go");
+  if (go === "publish" || go === "me"){
+    setTimeout(() => { try { switchPage(go === "publish" ? "pagePublish" : "pageMe"); } catch (e) {} }, 60);
+  }
+})();
+
 /* ==================== 初始化 ==================== */
 /* 第一次进站默认就是游客身份，点「我的」随时可以切换成正式账号 */
 autoGuestLogin();
 initIcons();
 renderTypeGrid();
 renderTypeFilterChips();
-applyCustomTheme(localStorage.getItem("custom_theme") || "blush");
+document.documentElement.setAttribute("data-skin", currentSkin());
+applyCustomTheme(localStorage.getItem("custom_theme") || "system");
+syncSkinUI();
 updatePublishUI();
 updateNavActive();
 updateCounter();
