@@ -3990,7 +3990,7 @@ $("verifySubmitBtn").onclick = async () => {
     }
     const guestId = me.guestId;
     me.phone = phoneClean;
-    me.password = pwd;
+    if (!me.password) me.password = pwd;   /* 已有密码的老账号，实名不改密码 */
     me.isGuest = false;
     me.verifiedAt = Date.now();
     /* 身份升级：把游客 ID 下的投稿/评论/私信/关注关系全部迁到手机号，历史内容不丢 */
