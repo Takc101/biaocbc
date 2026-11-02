@@ -552,6 +552,7 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
   position:absolute;top:6px;right:8px;display:flex;align-items:center;gap:3px;
   font-size:10.5px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);z-index:2;
 }
+.pg-cell.no-thumb .pg-cell-likes{color:var(--muted);text-shadow:none}
 .pg-cell-likes .ico{width:12px;height:12px}
 .pg-cell-status{
   position:absolute;top:6px;left:6px;font-size:10px;font-weight:700;color:#fff;z-index:2;
@@ -927,7 +928,9 @@ html[data-skin="mono"] .rank-num{background:rgba(20,20,22,.06)!important;color:#
 html[data-skin="mono"] .rank-num.r1{background:linear-gradient(160deg,#3c3e43,#1e1f22)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r2{background:rgba(88,90,96,.66)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r3{background:rgba(118,120,126,.44)!important;color:#fff!important}
-html[data-skin="mono"] .profile-cover{background:linear-gradient(160deg,#ecedf0,#f7f8f9)}
+html[data-skin="mono"] .profile-cover{background:linear-gradient(160deg,#c7cdd6,#e7eaee)}
+html[data-skin="mono"] .up-cover{background:linear-gradient(140deg,#c2c8d1,#e4e8ec)}
+html[data-skin="mono"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#33363c,#22242a)}
 html[data-skin="mono"][data-dark="1"] .profile-cover{background:linear-gradient(160deg,#2c2e34,#1b1d21)}
 html[data-skin="mono"] .music-disc{background:linear-gradient(150deg,#3c3e43,#1e1f22)!important;color:#fff!important}
 html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:#2b2c2f;color:#fff}
@@ -1012,15 +1015,9 @@ html[data-skin="glass"][data-dark="1"] .fullsheet-inner{
     inset -1px 0 0 rgba(255,255,255,.08),
     0 18px 42px -20px rgba(0,0,0,.62);
 }
-html[data-skin="glass"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.1) 60%,rgba(180,196,226,.5)),var(--surface-2);
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
-}
-html[data-skin="glass"][data-dark="1"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.02) 60%,rgba(120,140,180,.25));
-  border-color:rgba(255,255,255,.14);
-}
+/* 个人主页背景是实心封面，不参与玻璃化（用户自定义的图不能被糊掉） */
+html[data-skin="glass"] .profile-cover{background:linear-gradient(140deg,#5b6ee1,#8f7ce0 62%,#b18ce6);border:none}
+html[data-skin="glass"][data-dark="1"] .profile-cover{background:linear-gradient(140deg,#39406e,#4d3f78 62%,#5b4a83);border:none}
 html[data-skin="glass"] .dock{
   backdrop-filter:blur(26px) saturate(190%);
   -webkit-backdrop-filter:blur(26px) saturate(190%);
@@ -1124,6 +1121,37 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* ---------- 个人主页背景：可自定义，不参与液态玻璃 ---------- */
+.profile-cover{cursor:pointer;height:118px;margin-bottom:0}
+.cover-edit{
+  position:absolute;right:8px;top:8px;z-index:2;display:inline-flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.42);
+  background:rgba(18,20,24,.46);color:#fff;font-size:11.5px;font-weight:700;font-family:var(--font-ui);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;
+}
+.cover-edit .ico{width:13px;height:13px;fill:currentColor;stroke:currentColor}
+.cover-edit:active{transform:scale(.94)}
+.profile-cover.has-img::after{background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.3))}
+
+/* 访客看到的用户主页封面带 */
+.up-cover{
+  height:104px;border-radius:18px;margin:0 0 -52px;overflow:hidden;position:relative;
+  background:linear-gradient(140deg,#8e9bb3,#c9d2df);background-size:cover;background-position:center;
+  box-shadow:var(--shadow-sm);
+}
+.up-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.24))}
+.up-hero{position:relative;z-index:1;align-items:flex-start}
+.up-hero .up-meta{padding-top:58px}
+.up-hero .up-avatar{border:3px solid var(--bg);box-shadow:var(--shadow-md);background-clip:padding-box}
+
+/* 背景选择面板 */
+.cover-preview{height:132px;border-radius:16px;background-size:cover;background-position:center;border:1px solid var(--card-border);margin-bottom:12px;position:relative;overflow:hidden}
+.cover-preview .cp-tip{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.cover-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cover-preset{height:64px;border-radius:12px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden}
+.cover-preset.on{border-color:var(--text)}
+.cover-preset span{position:absolute;left:7px;bottom:5px;font-size:10.5px;color:#fff;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 </style>
 </head>
 <body>
@@ -1221,7 +1249,9 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
       </div>
 
       <div id="loggedIn" hidden>
-        <div class="profile-cover"></div>
+        <div class="profile-cover" id="meCover">
+          <button class="cover-edit" id="coverEditBtn" aria-label="更换主页背景"><span data-ico="image"></span>背景</button>
+        </div>
         <div class="profile-card">
           <div class="profile-avatar" id="myAvatar" role="button" aria-label="更换头像">我<span class="cam" data-ico="image"></span></div>
           <input type="file" id="avatarFileInput" accept="image/*" hidden>
@@ -1462,6 +1492,28 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
       </div>
     </div>
     <div class="sheet-body" id="profileBody"></div>
+  </div>
+</div>
+
+<!-- ============ 个人主页背景 ============ -->
+<div class="fullsheet from-bottom" id="coverPage">
+  <div class="fullsheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" id="coverBackBtn" aria-label="返回" data-ico="back"></button>
+      <div class="sheet-head-info">
+        <div class="sheet-head-title">个人主页背景</div>
+        <div class="sheet-head-sub">访问你主页的人都会看到</div>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div class="cover-preview" id="coverPreview"><span class="cp-tip" id="coverPreviewTip">当前背景</span></div>
+      <button class="btn btn-block" id="coverUploadBtn"><span data-ico="image" style="width:16px;height:16px;display:inline-block;vertical-align:-3px;fill:currentColor;stroke:currentColor"></span> 从相册选图</button>
+      <input type="file" id="coverFileInput" accept="image/*" hidden>
+      <div class="customize-section-title">或者挑一个现成的</div>
+      <div class="cover-presets" id="coverPresets"></div>
+      <button class="btn btn-ghost btn-block" id="coverResetBtn" style="margin-top:14px">恢复默认</button>
+      <div class="hint" style="margin-top:10px">建议竖图或横图都行，会自动裁切铺满。图片会上传到站点图床，公开可见。</div>
+    </div>
   </div>
 </div>
 
@@ -2324,6 +2376,31 @@ function renderFontList(){
 const openCustomize = () => {
   renderThemeGrid(); updateBgPreview(); syncColorPickers();
   $("customizePage").classList.add("open");
+  raiseSheet($("customizePage"));
+};
+/* 个人主页背景 */
+$("coverEditBtn").onclick = e => { e.stopPropagation(); openCoverEditor(); };
+$("meCover").onclick = e => { if (e.target.closest("#coverEditBtn")) return; openCoverEditor(); };
+$("coverBackBtn").onclick = () => $("coverPage").classList.remove("open");
+$("coverResetBtn").onclick = () => saveCover("", "已恢复默认背景");
+$("coverUploadBtn").onclick = () => $("coverFileInput").click();
+$("coverFileInput").onchange = e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  e.target.value = "";
+  if (!f.size){ toast("这个文件是空的，换一张试试", "err"); return; }
+  if (f.size > 15 * 1024 * 1024){ toast("图片太大了，选一张 15MB 以内的", "err"); return; }
+  const loading = toast("正在压缩上传…", "load");
+  compressImage(f, 1440, 0.78, async b64 => {
+    try {
+      const url = await uploadImage(b64, "covers", "jpg");
+      loading.close();
+      await saveCover(url, "背景已更新");
+    } catch (err) {
+      loading.close();
+      toast("上传失败：" + err.message, "err");
+    }
+  });
 };
 $("openCustomizeBtn").onclick = openCustomize;
 $("openCustomizeBtnGuest").onclick = openCustomize;
@@ -2470,6 +2547,7 @@ async function loadData(force){
   if (!force) dataInflight = p;
   try {
     const d = await p;
+    ensureWallIds(d);
     cachedData = d;
     cachedAt = Date.now();
     persistDataCache(d);
@@ -2569,7 +2647,7 @@ async function uploadImage(base64, folder, ext){
 function getUserByIdentifier(d, id){
   if (!id) return null;
   const users = (d && d.users) || [];
-  return users.find(u => u.email === id || u.phone === id || u.qqOpenid === id || u.guestId === id) || null;
+  return users.find(u => u.email === id || u.phone === id || u.qqOpenid === id || u.guestId === id || u.wallId === id) || null;
 }
 /* 统一身份标识：邮箱 > 手机号 > QQ openid > 游客 ID
    对投稿/评论对象回退读取 authorEmail/authorPhone/authorQq/authorGuest */
@@ -2589,7 +2667,163 @@ function msgTargetFields(target){
   if (target.startsWith("g_")) return { toEmail:null, toPhone:null, toQq:null, toGuest: target };
   return { toEmail:null, toPhone:null, toQq: target, toGuest:null };
 }
-function displayId(id){ return !id ? "" : (id.includes("@") ? id.split("@")[0] : id); }
+/* 展示用昵称兜底：绝不把邮箱/手机号/游客串暴露出来 */
+function displayId(id){
+  if (!id) return "";
+  const v = String(id);
+  if (v.includes("@")) return "用户";
+  if (v.startsWith("g_")) return "游客";
+  return v;
+}
+
+/* ==================== 墙号：对外唯一标识（替掉手机号/邮箱） ==================== */
+function wallHash(str){
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h;
+}
+/* 由账号内部 ID 派生 8 位数字，稳定不变、互不重复；老账号无需手动迁移 */
+function ensureWallIds(d){
+  if (!d || !Array.isArray(d.users)) return d;
+  const used = new Set();
+  d.users.forEach(u => { if (u && /^\d{8}$/.test(String(u.wallId || ""))) used.add(String(u.wallId)); });
+  d.users.forEach(u => {
+    if (!u) return;
+    if (/^\d{8}$/.test(String(u.wallId || ""))) return;
+    const base = uidOf(u) || u.guestId || ("u_" + (u.nickname || "") + (u.createdAt || ""));
+    let n = 10000000 + (wallHash("bq-wall:" + base) % 90000000);
+    let guard = 0;
+    while (used.has(String(n)) && guard++ < 200) n = 10000000 + ((n - 10000000 + 7919) % 90000000);
+    u.wallId = String(n);
+    used.add(u.wallId);
+  });
+  return d;
+}
+function fmtWallId(id){ return id ? String(id).replace(/(\d{4})(?=\d)/g, "$1 ") : ""; }
+/* 对外一律用墙号，内部登录/私信/关注仍用 email/phone 这些真实标识 */
+function publicIdOf(u){ return u ? (u.wallId || "") : ""; }
+
+/* ==================== 手机号真实性校验（号段 + 规律号 + 占用） ==================== */
+const ALLOCATED_PHONE_PREFIX = (() => {
+  const set = new Set();
+  const addRange = (a, b) => { for (let i = a; i <= b; i++) set.add("1" + String(i).padStart(2, "0")); };
+  addRange(30, 39);   /* 130-139 移动/联通 */
+  addRange(45, 53);   /* 145-153 联通数据/电信 */
+  addRange(55, 59);   /* 155-159 */
+  addRange(62, 62);   /* 162 电信虚商 */
+  addRange(65, 67);   /* 165/166/167 */
+  addRange(70, 73);   /* 170-173 虚拟运营商/电信 */
+  addRange(75, 78);   /* 175-178 */
+  addRange(80, 89);   /* 180-189 */
+  addRange(90, 93);   /* 190-193 广电/电信 */
+  addRange(95, 99);   /* 195-199 */
+  return set;
+})();
+const PHONE_BLACKLIST = new Set(["13800138000","13800138001","13999999999","18888888888","13000000000"]);
+function validateChinaPhone(raw){
+  const phone = String(raw || "").replace(/\s|-/g, "");
+  if (!/^\d{11}$/.test(phone)) return { ok:false, reason:"格式", msg:"请输入 11 位手机号" };
+  if (!phone.startsWith("1")) return { ok:false, reason:"格式", msg:"手机号必须以 1 开头" };
+  if (!ALLOCATED_PHONE_PREFIX.has(phone.slice(0, 3)))
+    return { ok:false, reason:"空号", msg:"号码不存在（空号）：运营商没有分配 " + phone.slice(0, 3) + " 号段" };
+  const tail = phone.slice(3);
+  if (/^(\d)\1{7}$/.test(tail) || /^(\d)\1{10}$/.test(phone))
+    return { ok:false, reason:"空号", msg:"号码不存在（空号）：不要填重复数字" };
+  const seqs = ["01234567","12345678","23456789","98765432","87654321","76543210","2345678","34567890"];
+  if (seqs.some(q => tail.includes(q)))
+    return { ok:false, reason:"空号", msg:"号码不存在（空号）：不要填连续数字" };
+  if (PHONE_BLACKLIST.has(phone))
+    return { ok:false, reason:"空号", msg:"该号码是测试号，无法完成认证" };
+  if (/^(\d{3})0{5,}/.test(tail))
+    return { ok:false, reason:"空号", msg:"号码不存在（空号）：后几位不能全是 0" };
+  return { ok:true, phone };
+}
+
+/* ==================== 浮层层级：后打开的永远在上层 ==================== */
+function raiseSheet(el){
+  if (!el) return;
+  let max = 800;
+  document.querySelectorAll(".fullsheet.open").forEach(s => {
+    if (s === el) return;
+    const z = parseInt(s.style.zIndex || "0", 10);
+    if (z > max) max = z;
+  });
+  el.style.zIndex = String(Math.min(max + 10, 880));
+}
+
+/* ==================== 个人主页背景 ==================== */
+const COVER_PRESETS = [
+  { id:"grad:midnight", name:"午夜", css:"linear-gradient(140deg,#1f2937,#0b0f15)" },
+  { id:"grad:dusk",     name:"暮云", css:"linear-gradient(140deg,#6b7fa3,#c8d3e2)" },
+  { id:"grad:moss",     name:"苔原", css:"linear-gradient(140deg,#2f4f42,#8fae9b)" },
+  { id:"grad:sand",     name:"沙丘", css:"linear-gradient(140deg,#a9764f,#e3c8a9)" },
+  { id:"grad:sakura",   name:"樱",   css:"linear-gradient(140deg,#c2708a,#f3d6dd)" },
+  { id:"grad:ink",      name:"墨",   css:"linear-gradient(140deg,#26262a,#5b5b60)" }
+];
+function coverCss(u){
+  const c = u && u.cover;
+  if (!c) return "";
+  if (/^https?:\/\//.test(c)) return 'url("' + c + '")';
+  const p = COVER_PRESETS.find(x => x.id === c);
+  return p ? p.css : "";
+}
+function applyCover(el, u){
+  if (!el) return;
+  const css = coverCss(u);
+  if (!css){ el.style.background = ""; el.classList.remove("has-img"); return; }
+  if (css.startsWith("url(")){
+    el.style.background = css + " center/cover no-repeat";
+    el.classList.add("has-img");
+  } else {
+    el.style.background = css;
+    el.classList.remove("has-img");
+  }
+}
+let coverSaving = false;
+function openCoverEditor(){
+  if (!currentUser){ needLogin(); return; }
+  const me = cachedData ? resolveMe(cachedData) : null;
+  $("coverPage").classList.add("open");
+  raiseSheet($("coverPage"));
+  renderCoverEditor(me);
+}
+function renderCoverEditor(me){
+  const cur = me ? (me.cover || "") : "";
+  const prev = $("coverPreview");
+  applyCover(prev, me);
+  $("coverPreviewTip").textContent = cur ? (/^https?:/.test(cur) ? "当前：自定义图片" : "当前：预设背景") : "当前：默认背景";
+  const box = $("coverPresets");
+  box.innerHTML = COVER_PRESETS.map(p => {
+    const bg = p.css;
+    return `<button class="cover-preset${cur === p.id ? " on" : ""}" data-cover="${p.id}" style="background:${bg}"><span>${p.name}</span></button>`;
+  }).join("");
+  box.querySelectorAll("[data-cover]").forEach(b => {
+    b.onclick = () => saveCover(b.dataset.cover, "已换好背景");
+  });
+}
+async function saveCover(value, okText){
+  if (coverSaving) return;
+  coverSaving = true;
+  const loading = toast(value ? "正在保存背景…" : "正在恢复默认…", "load");
+  try {
+    const d = await loadData(true);
+    const me = ensureGuestRecord(d, currentUser);
+    if (!me) throw new Error("身份异常，请刷新后重试");
+    if (value) me.cover = value; else delete me.cover;
+    await saveData(d);
+    cachedData = d;
+    loading.close();
+    applyCover($("meCover"), me);
+    renderCoverEditor(me);
+    toast(okText || "背景已更新", "ok");
+  } catch (e) {
+    loading.close();
+    toast("保存失败：" + e.message, "err");
+  } finally {
+    coverSaving = false;
+  }
+}
+
 
 /* ==================== 游客身份 ==================== */
 const GUEST_ID_KEY = "guest_id";
@@ -2634,9 +2868,10 @@ function ensureGuestRecord(d, cu){
       isAnonymous:false, following:[], followers:[], likedPosts:[],
       vBadge:null, isDeleted:false, bannedUntil:0, banReason:"",
       isAdmin:false, adminClassName:"", adminRealName:"",
-      isGuest:true, createdAt: Date.now()
+      isGuest:true, createdAt: Date.now(), wallId:null, cover:""
     };
     d.users.push(u);
+    ensureWallIds(d);
   }
   return u;
 }
@@ -2755,15 +2990,15 @@ function renderPosts(posts, containerId, opts = {}){
     const followBtnText = getFollowBtnText(targetUser, meId || "");
     const commentCount = (cachedData && cachedData.comments ? cachedData.comments : []).filter(cm => cm.postId === p.id).length;
     const imgCount = (p.images || []).length;
-    const postUid = uidOf(p);
-    const canProfile = !p.isAnonymous && !!postUid;
+    const postPublicId = targetUser ? publicIdOf(targetUser) : "";
+    const canProfile = !p.isAnonymous && !!postPublicId;
     const div = document.createElement("article");
     div.className = "post card-anim";
     div.style.setProperty("--i", Math.min(idx, 10));
     div.dataset.id = p.id;
     div.innerHTML = `
       <div class="post-head">
-        <div class="avatar${canProfile ? " avatar-link" : ""}"${canProfile ? ` data-profile="${escapeHtml(postUid)}"` : ""}>${p.authorAvatar ? `<img src="${escapeHtml(p.authorAvatar)}" alt="">` : escapeHtml((p.authorName || "匿")[0])}${getMiniV(p.vBadge)}</div>
+        <div class="avatar${canProfile ? " avatar-link" : ""}"${canProfile ? ` data-profile="${escapeHtml(postPublicId)}"` : ""}>${p.authorAvatar ? `<img src="${escapeHtml(p.authorAvatar)}" alt="">` : escapeHtml((p.authorName || "匿")[0])}${getMiniV(p.vBadge)}</div>
         <div class="post-meta">
           <div class="post-name">${escapeHtml(p.authorName || "匿名")}${getVBadgeHtml(p.vBadge)}</div>
           <div class="post-sub">${typeChip(p.type)}<span class="sep">·</span><span>${formatTime(p.time)}</span></div>
@@ -2775,8 +3010,8 @@ function renderPosts(posts, containerId, opts = {}){
       ${(p.videos || []).length ? `<div class="post-videos">${p.videos.slice(0, 1).map(u => `<video src="${escapeHtml(u)}" controls playsinline preload="metadata"></video>`).join("")}</div>` : ""}
       <div class="post-actions">
         <button class="act ${liked ? "liked" : ""}" data-action="like" data-id="${p.id}">${ico("heart")}<span>${liked ? "已赞" : "点赞"}</span><span class="act-num">${p.likes || 0}</span></button>
-        ${!isSelf && currentUser && !p.isAnonymous && !(targetUser && targetUser.isAdmin) ? `<button class="act ${following ? "on" : ""}" data-action="follow" data-email="${escapeHtml(uidOf(p) || "")}">${ico("user")}<span>${followBtnText}</span></button>` : ""}
-        ${!isSelf && currentUser && !p.isAnonymous && targetUser && targetUser.isAdmin ? `<button class="act on" data-action="follow" data-email="${escapeHtml(uidOf(p) || "")}">${ico("chat")}<span>私信</span></button>` : ""}
+        ${!isSelf && currentUser && !p.isAnonymous && !(targetUser && targetUser.isAdmin) ? `<button class="act ${following ? "on" : ""}" data-action="follow" data-email="${escapeHtml(targetUser ? publicIdOf(targetUser) : "")}">${ico("user")}<span>${followBtnText}</span></button>` : ""}
+        ${!isSelf && currentUser && !p.isAnonymous && targetUser && targetUser.isAdmin ? `<button class="act on" data-action="follow" data-email="${escapeHtml(targetUser ? publicIdOf(targetUser) : "")}">${ico("chat")}<span>私信</span></button>` : ""}
         ${opts.showApprove ? `<button class="act ok-text" data-action="approve" data-id="${p.id}">${ico("check")}<span>通过</span></button><button class="act danger-text" data-action="reject" data-id="${p.id}">${ico("close")}<span>拒绝</span></button>` : ""}
         <div class="comment-entry" data-comment-post-id="${p.id}">${ico("chat")}<span>评论</span>${commentCount ? `<span class="ce-num">${commentCount}</span>` : ""}${ico("chevron")}</div>
       </div>`;
@@ -2852,17 +3087,18 @@ async function followOrChat(identifier){
   let d;
   try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const target = getUserByIdentifier(d, identifier);
-  if (target && target.isAdmin){ openChat(identifier); return; }
+  const targetId = target ? uidOf(target) : identifier;   /* 对外是墙号，内部存真实标识 */
+  if (target && target.isAdmin){ openChat(targetId); return; }
   const me = resolveMe(d);
   if (!me) return;
   const meId = uidOf(me);
   if (!me.following) me.following = [];
-  if (me.following.includes(identifier)){ openChat(identifier); return; }
-  me.following.push(identifier);
+  if (me.following.includes(targetId)){ openChat(targetId); return; }
+  me.following.push(targetId);
   if (target){ if (!target.followers) target.followers = []; target.followers.push(meId); }
   try { await saveData(d); } catch (e) { return toast("保存失败：" + e.message, "err"); }
   cachedData = d;
-  toast(target ? ("已关注 " + (target.nickname || identifier)) : "已关注", "ok");
+  toast(target ? ("已关注 " + (target.nickname || "对方")) : "已关注", "ok");
   triggerRefresh();
 }
 async function deletePost(id){
@@ -2950,6 +3186,7 @@ function clearSearchHistory(){
 }
 function openSearchPage(prefill){
   $("searchPage").classList.add("open");
+  raiseSheet($("searchPage"));
   $("searchPageInput").value = prefill || "";
   $("searchPageClear").hidden = !prefill;
   renderSearchHome();
@@ -2996,7 +3233,11 @@ async function doSearch(kw){
   }
   const lower = kw.toLowerCase();
   const posts = d.posts.filter(p => p.status === "approved" && ((p.content || "").toLowerCase().includes(lower) || (p.authorName || "").toLowerCase().includes(lower) || (p.type || "") === kw));
-  const users = d.users.filter(u => !u.isDeleted && ((u.nickname || "").toLowerCase().includes(lower) || (u.email || "").toLowerCase().includes(lower) || (u.phone || "").toLowerCase().includes(lower)));
+  const qDigits = lower.replace(/\s/g, "");
+  const users = d.users.filter(u => !u.isDeleted && (
+    (u.nickname || "").toLowerCase().includes(lower)
+    || (u.wallId && qDigits && String(u.wallId).includes(qDigits))
+  ));
   let html = "";
   if (users.length){
     html += `<div class="section-head"><h2>相关账号</h2><span class="section-sub">${users.length} 个</span></div><div id="searchPageUsers"></div>`;
@@ -3021,8 +3262,8 @@ function renderSearchUsers(users, containerId){
     const div = document.createElement("div");
     div.className = "card card-anim";
     div.innerHTML = `<div class="user-row">
-      <div class="avatar avatar-link" data-profile="${escapeHtml(uid || "")}">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
-      <div class="user-info" data-profile="${escapeHtml(uid || "")}"><b>${escapeHtml(u.nickname || displayId(uid))}${getVBadgeHtml(u.vBadge)}</b><div class="hint">${u.isAdmin ? "管理员" : (u.qqOpenid ? "QQ 账号" : escapeHtml(uid || ""))}</div></div>
+      <div class="avatar avatar-link" data-profile="${escapeHtml(publicIdOf(u))}">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
+      <div class="user-info" data-profile="${escapeHtml(publicIdOf(u))}"><b>${escapeHtml(u.nickname || displayId(uid))}${getVBadgeHtml(u.vBadge)}</b><div class="hint">${u.isAdmin ? "管理员 · " : ""}墙号 ${escapeHtml(fmtWallId(u.wallId))}</div></div>
       <button class="btn btn-ghost btn-sm">${escapeHtml(getFollowBtnText(u, meId || ""))}</button>
     </div>`;
     div.querySelector("button").onclick = () => followOrChat(uid);
@@ -3060,6 +3301,7 @@ async function openProfile(uid){
   profileUid = uidOf(u);
   profileTab = "posts";
   $("profilePage").classList.add("open");
+  raiseSheet($("profilePage"));
   renderProfile();
 }
 function closeProfile(){
@@ -3073,7 +3315,7 @@ function profileCellHtml(p, isSelf){
   const thumb = imgs.length ? `<div class="pg-cell-thumb"><img src="${escapeHtml(imgs[0])}" alt="" loading="lazy"></div>` : "";
   const statusBadge = isSelf && p.status !== "approved"
     ? `<span class="pg-cell-status ${p.status === "rejected" ? "no" : ""}">${p.status === "rejected" ? "未通过" : "审核中"}</span>` : "";
-  return `<div class="pg-cell" data-post-id="${p.id}">
+  return `<div class="pg-cell${thumb ? "" : " no-thumb"}" data-post-id="${p.id}">
     ${thumb}${statusBadge}
     ${hasVideo ? `<span class="pg-cell-video">${ico("video")}</span>` : ""}
     <span class="pg-cell-likes">${ico("heart")}${p.likes || 0}</span>
@@ -3106,7 +3348,7 @@ async function renderProfile(){
   let actionsHtml = "";
   if (isSelf){
     actionsHtml = `<button class="btn btn-ghost" id="profileEditBtn">编辑资料</button>
-      <button class="btn btn-ghost" id="profileCopyBtn">复制我的标识</button>`;
+      <button class="btn btn-ghost" id="profileCopyBtn">复制墙号</button>`;
   } else {
     const me = meId ? getUserByIdentifier(d, meId) : null;
     const iFollow = me && (me.following || []).includes(uid);
@@ -3119,11 +3361,13 @@ async function renderProfile(){
     ? [["posts", "投稿 " + myPosts.length], ["moments", "动态"]]
     : [["posts", "投稿 " + approved.length]];
   const gridPosts = isSelf ? myPosts.slice().sort((a, b) => b.time - a.time) : approved.slice().sort((a, b) => b.time - a.time);
-  let html = `<div class="up-hero">
+  const coverCss2 = coverCss(u);
+  let html = `<div class="up-cover"${coverCss2 ? ` style="background:${coverCss2.startsWith("url(") ? coverCss2 + " center/cover no-repeat" : coverCss2}"` : ""}></div>
+    <div class="up-hero">
       <div class="avatar up-avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
       <div class="up-meta">
         <div class="up-name">${escapeHtml(u.nickname || displayId(uid))}${getVBadgeHtml(u.vBadge)}</div>
-        <div class="up-id hint">${u.qqOpenid ? "QQ 账号" : escapeHtml(uid || "")}${u.isAdmin ? " · 管理员" : ""}</div>
+        <div class="up-id hint">墙号 ${escapeHtml(fmtWallId(u.wallId))}${u.isAdmin ? " · 管理员" : ""}</div>
       </div>
     </div>
     <div class="up-stats">
@@ -3169,7 +3413,7 @@ async function renderProfile(){
   if (isSelf){
     $("profileEditBtn").onclick = () => { closeProfile(); switchPage("pageMe"); };
     $("profileCopyBtn").onclick = async () => {
-      try { await navigator.clipboard.writeText(uid || ""); toast("标识已复制", "ok"); }
+      try { await navigator.clipboard.writeText(u.wallId || ""); toast("墙号已复制", "ok"); }
       catch (e) { toast("复制失败", "err"); }
     };
   } else {
@@ -3725,7 +3969,9 @@ $("verifySubmitBtn").onclick = async () => {
   const st = $("verifyStatus");
   st.className = "status";
   st.textContent = "";
-  if (!/^1\d{10}$/.test(phone)){ st.textContent = "请输入 11 位手机号"; st.classList.add("error"); return; }
+  const phoneCheck = validateChinaPhone(phone);
+  if (!phoneCheck.ok){ st.textContent = phoneCheck.msg; st.classList.add("error"); return; }
+  const phoneClean = phoneCheck.phone;
   if (pwd.length < 6){ st.textContent = "密码至少 6 位"; st.classList.add("error"); return; }
   const btn = $("verifySubmitBtn");
   btn.disabled = true;
@@ -3734,7 +3980,7 @@ $("verifySubmitBtn").onclick = async () => {
     const d = await loadData(true);
     const me = ensureGuestRecord(d, currentUser);
     if (!me){ throw new Error("身份异常，请刷新页面后重试"); }
-    const exist = d.users.find(u => u.phone === phone && u !== me);
+    const exist = d.users.find(u => u.phone === phoneClean && u !== me);
     if (exist){
       loading.close(); btn.disabled = false;
       st.textContent = "该手机号已有账号，请直接用「手机号 + 密码」登录";
@@ -3742,24 +3988,24 @@ $("verifySubmitBtn").onclick = async () => {
       return;
     }
     const guestId = me.guestId;
-    me.phone = phone;
+    me.phone = phoneClean;
     me.password = pwd;
     me.isGuest = false;
     me.verifiedAt = Date.now();
     /* 身份升级：把游客 ID 下的投稿/评论/私信/关注关系全部迁到手机号，历史内容不丢 */
-    (d.posts || []).forEach(p => { if (p.authorGuest === guestId){ p.authorGuest = null; p.authorPhone = phone; } });
-    (d.comments || []).forEach(c => { if (c.authorGuest === guestId){ c.authorGuest = null; c.authorPhone = phone; } });
+    (d.posts || []).forEach(p => { if (p.authorGuest === guestId){ p.authorGuest = null; p.authorPhone = phoneClean; } });
+    (d.comments || []).forEach(c => { if (c.authorGuest === guestId){ c.authorGuest = null; c.authorPhone = phoneClean; } });
     (d.messages || []).forEach(m => {
-      if (m.fromGuest === guestId){ m.fromGuest = null; m.fromPhone = phone; }
-      if (m.toGuest === guestId){ m.toGuest = null; m.toPhone = phone; }
+      if (m.fromGuest === guestId){ m.fromGuest = null; m.fromPhone = phoneClean; }
+      if (m.toGuest === guestId){ m.toGuest = null; m.toPhone = phoneClean; }
     });
     (d.users || []).forEach(u => {
       if (u === me) return;
-      u.following = (u.following || []).map(x => x === guestId ? phone : x);
-      u.followers = (u.followers || []).map(x => x === guestId ? phone : x);
+      u.following = (u.following || []).map(x => x === guestId ? phoneClean : x);
+      u.followers = (u.followers || []).map(x => x === guestId ? phoneClean : x);
     });
     await saveData(d);
-    currentUser = { email: null, phone, qqOpenid: null, nickname: me.nickname, avatar: me.avatar || "" };
+    currentUser = { email: null, phone: phoneClean, qqOpenid: null, nickname: me.nickname, avatar: me.avatar || "" };
     localStorage.setItem("email_user", JSON.stringify(currentUser));
     localStorage.removeItem(GUEST_ID_KEY);
     localStorage.removeItem(GUEST_OPTOUT_KEY);
@@ -4034,10 +4280,9 @@ async function renderMe(force){
   $("myNickname").style.cursor = "pointer";
   $("myNickname").title = "查看我的主页";
   $("myNickname").onclick = () => openProfile(meId);
-  $("myEmail").innerHTML = guest
-    ? `游客模式 · 未实名认证`
-    : (me.qqOpenid ? "QQ 账号" : escapeHtml(me.email || me.phone || ""));
+  $("myEmail").innerHTML = `墙号 <b style="font-variant-numeric:tabular-nums">${escapeHtml(fmtWallId(me.wallId))}</b>` + (guest ? " · 游客" : (me.phone ? " · 已实名" : ""));
   $("myAvatar").innerHTML = (me.avatar ? `<img src="${escapeHtml(me.avatar)}" alt="我的头像">` : escapeHtml((me.nickname || "我")[0])) + `<span class="cam">${ico("image")}</span>`;
+  applyCover($("meCover"), me);
   $("myVBadge").innerHTML = getVBadgeHtml(me.vBadge);
   $("guestSwitchBtn").hidden = !guest;
   $("logoutBtn").querySelector(".row-title").textContent = guest ? "退出游客模式" : "退出登录";
@@ -4095,8 +4340,8 @@ function renderUserCards(ids, containerId, meId, icon, title, sub){
     div.style.setProperty("--i", Math.min(i, 10));
     const cardUid = uidOf(u);
     div.innerHTML = `<div class="user-row">
-      <div class="avatar avatar-link" data-profile="${escapeHtml(cardUid || "")}">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
-      <div class="user-info" data-profile="${escapeHtml(cardUid || "")}"><b>${escapeHtml(u.nickname || displayId(uidOf(u)))}${getVBadgeHtml(u.vBadge)}</b><div class="hint">${u.qqOpenid ? "QQ 账号" : escapeHtml(uidOf(u) || "")}</div></div>
+      <div class="avatar avatar-link" data-profile="${escapeHtml(publicIdOf(u))}">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
+      <div class="user-info" data-profile="${escapeHtml(publicIdOf(u))}"><b>${escapeHtml(u.nickname || displayId(uidOf(u)))}${getVBadgeHtml(u.vBadge)}</b><div class="hint">墙号 ${escapeHtml(fmtWallId(u.wallId))}</div></div>
       <button class="btn btn-ghost btn-sm">${escapeHtml(getFollowBtnText(u, meId))}</button>
     </div>`;
     div.querySelector("button").onclick = () => followOrChat(uidOf(u));
@@ -4129,7 +4374,7 @@ function renderMsgSessions(me, meId){
     const div = document.createElement("div");
     div.className = "session-item card-anim";
     div.style.setProperty("--i", Math.min(i, 10));
-    div.innerHTML = `<div class="session-avatar${otherId ? " avatar-link" : ""}"${otherId ? ` data-profile="${escapeHtml(otherId)}"` : ""}>${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}" alt="">` : escapeHtml(otherName[0])}${getMiniV(otherV)}</div>
+    div.innerHTML = `<div class="session-avatar${otherUser ? " avatar-link" : ""}"${otherUser ? ` data-profile="${escapeHtml(publicIdOf(otherUser))}"` : ""}>${otherAvatar ? `<img src="${escapeHtml(otherAvatar)}" alt="">` : escapeHtml(otherName[0])}${getMiniV(otherV)}</div>
       <div class="session-info"><div class="session-name">${escapeHtml(otherName)}${getVBadgeHtml(otherV)}</div><div class="session-preview">${previewText}</div></div>
       <div class="session-right"><div class="session-time">${formatTime(lastMsg.time)}</div>${unreadCount > 0 ? `<span class="unread-dot">${unreadCount}</span>` : ""}</div>`;
     div.onclick = () => openChat(otherId);
@@ -4253,6 +4498,7 @@ function openChat(identifier){
   $("chatHeaderName").style.cursor = "pointer";
   $("chatHeaderName").onclick = () => openProfile(identifier);
   $("chatPage").classList.add("open");
+  raiseSheet($("chatPage"));
   renderChat();
 }
 async function renderChat(){
@@ -4343,6 +4589,7 @@ function openCommentPage(postId){
   $("commentInput").placeholder = "写下你的评论…";
   $("replyBar").classList.remove("show");
   $("commentPage").classList.add("open");
+  raiseSheet($("commentPage"));
   renderCommentPage();
 }
 async function renderCommentPage(){
@@ -4354,10 +4601,11 @@ async function renderCommentPage(){
   const body = $("commentBody");
   $("commentCountSub").textContent = comments.length ? (comments.length + " 条评论") : "还没有评论";
   if (!post){ body.innerHTML = '<p class="hint">投稿不存在或已删除</p>'; return; }
-  const postUid = uidOf(post);
-  const postCanProfile = !post.isAnonymous && !!postUid;
+  const postAuthor = getUserByIdentifier(d, uidOf(post));
+  const postPublicId = postAuthor ? publicIdOf(postAuthor) : "";
+  const postCanProfile = !post.isAnonymous && !!postPublicId;
   let html = `<div class="comment-original-post">
-    <div class="post-head"><div class="avatar${postCanProfile ? " avatar-link" : ""}"${postCanProfile ? ` data-profile="${escapeHtml(postUid)}"` : ""}>${post.authorAvatar ? `<img src="${escapeHtml(post.authorAvatar)}" alt="">` : escapeHtml((post.authorName || "匿")[0])}${getMiniV(post.vBadge)}</div>
+    <div class="post-head"><div class="avatar${postCanProfile ? " avatar-link" : ""}"${postCanProfile ? ` data-profile="${escapeHtml(postPublicId)}"` : ""}>${post.authorAvatar ? `<img src="${escapeHtml(post.authorAvatar)}" alt="">` : escapeHtml((post.authorName || "匿")[0])}${getMiniV(post.vBadge)}</div>
     <div style="flex:1;min-width:0"><div class="post-name">${escapeHtml(post.authorName || "匿名")}${getVBadgeHtml(post.vBadge)}</div>
     <div class="post-sub">${typeChip(post.type)}<span class="sep">·</span><span>${formatTime(post.time)}</span></div></div></div>
     <div class="post-content">${escapeHtml(post.content)}</div>
@@ -4373,7 +4621,8 @@ async function renderCommentPage(){
       const avatar = u ? u.avatar : "";
       const vBadge = u ? u.vBadge : null;
       const cmUid = uidOf(cm);
-      const cmCanProfile = name !== "匿名" && !!cmUid;
+      const cmPublicId = u ? publicIdOf(u) : "";
+      const cmCanProfile = name !== "匿名" && !!cmPublicId;
       let replyInfo = "";
       if (cm.replyTo){
         const replied = comments.find(x => x.id === cm.replyTo);
@@ -4383,7 +4632,7 @@ async function renderCommentPage(){
           replyInfo = `<span class="reply-info">回复 ${escapeHtml(rname)}：</span>`;
         }
       }
-      return `<div class="comment-item"><div class="avatar${cmCanProfile ? " avatar-link" : ""}"${cmCanProfile ? ` data-profile="${escapeHtml(cmUid)}"` : ""}>${avatar ? `<img src="${escapeHtml(avatar)}" alt="">` : escapeHtml(name[0])}${getMiniV(vBadge)}</div>
+      return `<div class="comment-item"><div class="avatar${cmCanProfile ? " avatar-link" : ""}"${cmCanProfile ? ` data-profile="${escapeHtml(cmPublicId)}"` : ""}>${avatar ? `<img src="${escapeHtml(avatar)}" alt="">` : escapeHtml(name[0])}${getMiniV(vBadge)}</div>
         <div class="comment-item-content">
           <div class="comment-item-name">${escapeHtml(name)}${getVBadgeHtml(vBadge)}</div>
           <div class="comment-item-text">${replyInfo}${escapeHtml(cm.content)}</div>
@@ -5010,6 +5259,7 @@ window.addEventListener("beforeunload", () => { localStorage.setItem("music_paus
 let qqDailyData = null;
 async function openMusicPage(){
   $("musicPage").classList.add("open");
+  raiseSheet($("musicPage"));
   if (qqDailyData){ renderMusicPage(); return; }
   $("musicPageBody").innerHTML = '<div class="empty"><div class="empty-title">正在加载</div></div>';
   try {
@@ -5134,6 +5384,7 @@ if (!checkDisclaimer()){ welcomeCheck(); }
 (async () => {
   const pc = readPersistedCache();
   if (pc){
+    ensureWallIds(pc);
     cachedData = pc;
     cachedAt = 0;
     renderHot();
