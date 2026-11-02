@@ -1147,7 +1147,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 
 /* 背景选择面板 */
 .cover-preview{height:132px;border-radius:16px;background-size:cover;background-position:center;border:1px solid var(--card-border);margin-bottom:12px;position:relative;overflow:hidden}
-.cover-preview .cp-tip{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.cover-preview .cp-tip{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:700;color:#fff;background:rgba(10,12,16,.46);padding:3px 9px;border-radius:999px;backdrop-filter:blur(6px)}
 .cover-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .cover-preset{height:64px;border-radius:12px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden}
 .cover-preset.on{border-color:var(--text)}
@@ -2791,6 +2791,7 @@ function renderCoverEditor(me){
   const cur = me ? (me.cover || "") : "";
   const prev = $("coverPreview");
   applyCover(prev, me);
+  if (!coverCss(me)) prev.style.background = getComputedStyle($("meCover")).background;
   $("coverPreviewTip").textContent = cur ? (/^https?:/.test(cur) ? "当前：自定义图片" : "当前：预设背景") : "当前：默认背景";
   const box = $("coverPresets");
   box.innerHTML = COVER_PRESETS.map(p => {
