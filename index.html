@@ -1642,8 +1642,6 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
               <input id="goldName" class="input" placeholder="网站创造者名字">
               <div style="height:8px"></div>
               <input id="goldEmail" class="input" placeholder="网站创造者电子邮箱">
-              <div style="height:8px"></div>
-              <input id="goldIdCard" class="input" placeholder="网站创造者身份证">
               <div style="height:12px"></div>
               <button class="btn btn-block" id="goldVerifyBtn">确认设置金色 V 标</button>
             </div>
@@ -2830,7 +2828,7 @@ async function fetchDataRemote(){
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
   if (res.status === 401 || res.status === 403) throw new Error("GitHub 拒绝访问（HTTP " + res.status + "）：Token 可能已过期或被撤销，去后台「设置 → GitHub Token」换一个");
-  if (res.status === 404) return { adminPassword:"admin123", posts:[], users:[], messages:[], comments:[], invites:[], reports:[], pendingRegistrations:[], adminCodes:[], goldVerify:{ name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ=="), idCard:_k("NDIxMjI0MjAxMTA2MDEzNzM0") }, welcomeModalDisabled:false, qqBot:{ enabled:false, workerUrl:"", shareUrl:"" }, sha:null };
+  if (res.status === 404) return { adminPassword:"admin123", posts:[], users:[], messages:[], comments:[], invites:[], reports:[], pendingRegistrations:[], adminCodes:[], goldVerify:{ name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ==") }, welcomeModalDisabled:false, qqBot:{ enabled:false, workerUrl:"", shareUrl:"" }, sha:null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
   let c = "", d = {};
@@ -2853,7 +2851,7 @@ async function fetchDataRemote(){
   if (!Array.isArray(d.reports)) d.reports = [];
   if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
   if (!Array.isArray(d.adminCodes)) d.adminCodes = [];
-  if (!d.goldVerify) d.goldVerify = { name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ=="), idCard:_k("NDIxMjI0MjAxMTA2MDEzNzM0") };
+  if (!d.goldVerify) d.goldVerify = { name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ==") };
   if (typeof d.welcomeModalDisabled !== "boolean") d.welcomeModalDisabled = false;
   if (!d.qqBot || typeof d.qqBot !== "object") d.qqBot = { enabled:false, workerUrl:"", shareUrl:"" };
   if (typeof d.qqBot.enabled !== "boolean") d.qqBot.enabled = false;
@@ -6077,8 +6075,7 @@ $("testQQBotBtn").onclick = async () => {
 $("goldVerifyBtn").onclick = async () => {
   const name = $("goldName").value.trim();
   const email = $("goldEmail").value.trim();
-  const idCard = $("goldIdCard").value.trim();
-  if (!name || !email || !idCard) return toast("请填写完整信息", "err");
+  if (!name || !email) return toast("请填写完整信息", "err");
   if (!currentUser) return needLogin();
   const loading = toast("正在验证…", "load");
   try {
@@ -6086,7 +6083,6 @@ $("goldVerifyBtn").onclick = async () => {
     if (!d.goldVerify){ loading.close(); return toast("金V验证数据不存在", "err"); }
     if (name !== d.goldVerify.name){ loading.close(); return toast("创造者名字不正确", "err"); }
     if (email !== d.goldVerify.email){ loading.close(); return toast("创造者邮箱不正确", "err"); }
-    if (idCard !== d.goldVerify.idCard){ loading.close(); return toast("创造者身份证不正确", "err"); }
     const u = getUserByIdentifier(d, uidOf(currentUser));
     if (!u){ loading.close(); return toast("当前账号不存在，请重新登录", "err"); }
     u.vBadge = { type: "gold", text: "网站开发者创始人" };
@@ -6096,7 +6092,6 @@ $("goldVerifyBtn").onclick = async () => {
     toast("金色 V 标已设置成功", "ok");
     $("goldName").value = "";
     $("goldEmail").value = "";
-    $("goldIdCard").value = "";
     renderMe();
   } catch (e) { loading.close(); toast("操作失败：" + e.message, "err"); }
 };
