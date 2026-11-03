@@ -935,6 +935,24 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .tab-switch .btn{flex:1}
 .tab-switch .btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 6px 14px -6px var(--primary)}
 
+/* 注册方式：自绘分段控件。原生 select 的下拉弹层会继承元素背景色，
+   在玻璃皮肤下是半透明的，底下的输入框会整片透上来糊成一团。 */
+.reg-seg-label{font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px}
+.reg-seg{display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(28,25,23,.06);margin-bottom:10px}
+html[data-dark="1"] .reg-seg{background:rgba(255,255,255,.1)}
+.reg-seg-btn{
+  flex:1;min-width:0;padding:9px 2px;border:0;border-radius:11px;
+  background:transparent;color:var(--muted);
+  font:600 12.5px/1.2 var(--font-ui);white-space:nowrap;cursor:pointer;
+  transition:background .18s,color .18s,box-shadow .18s;
+}
+.reg-seg-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,16,12,.16)}
+.reg-seg-btn:active{transform:scale(.97)}
+select.input{background:var(--card)}
+@media (max-width:360px){
+  .reg-seg-btn{font-size:11.5px;padding:9px 0}
+}
+
 /* ---------- QQ 一键注册 ---------- */
 .btn-qq{background:#12b7f5;color:#fff;box-shadow:0 8px 18px -8px rgba(18,183,245,.6)}
 .btn-qq:active{background:#0e9ad6;transform:scale(.97)}
@@ -1216,7 +1234,6 @@ html[data-skin="glass"] .btn:not(.btn-ghost){
 }
 html[data-skin="glass"] .input,
 html[data-skin="glass"] .search,
-html[data-skin="glass"] select.input,
 html[data-skin="glass"] textarea.input{
   background:rgba(255,255,255,.52);
   border:1px solid rgba(255,255,255,.62);
@@ -1229,6 +1246,24 @@ html[data-skin="glass"][data-dark="1"] textarea.input{
   background:rgba(255,255,255,.08);
   border-color:rgba(255,255,255,.14);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+/* 原生 select 的下拉层会继承元素背景色，半透明就会漏出底下内容，一律给实色 */
+html[data-skin="glass"] select.input{
+  background:var(--card);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+/* 弹窗是白卡，玻璃输入框的半透明白底在上面等于隐形 —— 弹窗内改用实色淡底 */
+html[data-skin="glass"] .modal-overlay .input,
+html[data-skin="glass"] .modal-overlay textarea.input{
+  background:rgba(28,25,23,.045);
+  border:1.5px solid rgba(28,25,23,.1);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+  box-shadow:none;
+}
+html[data-skin="glass"] .modal-overlay .input:focus{
+  background:rgba(28,25,23,.02);
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px var(--primary-soft);
 }
 html[data-skin="glass"] .row:active,
 html[data-skin="glass"] .card:active,
@@ -1948,11 +1983,12 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
     </div>
 
     <div id="registerForm" hidden style="text-align:left">
-      <select id="regType" class="input">
-        <option value="phone">手机号注册</option>
-        <option value="email">邮箱注册</option>
-        <option value="both">邮箱 + 手机号绑定</option>
-      </select>
+      <div class="reg-seg-label">注册方式</div>
+      <div class="reg-seg" id="regTypeSeg" data-value="phone">
+        <button type="button" class="reg-seg-btn active" data-v="phone">手机号</button>
+        <button type="button" class="reg-seg-btn" data-v="email">邮箱</button>
+        <button type="button" class="reg-seg-btn" data-v="both">手机号 + 邮箱</button>
+      </div>
       <div id="regEmailBox" style="margin-top:8px" hidden>
         <input id="regEmail" type="email" class="input" placeholder="邮箱">
         <div style="height:8px"></div>
@@ -4114,10 +4150,17 @@ $("guestSwitchBtn").onclick = () => {
   $("loginModal").style.display = "flex";
   switchAuthTab("login");
 };
-$("regType").onchange = () => {
-  const type = $("regType").value;
-  $("regEmailBox").hidden = type === "phone";
-  $("regPhoneBox").hidden = type === "email";
+function setRegType(v){
+  const seg = $("regTypeSeg");
+  if (!seg) return;
+  seg.dataset.value = v;
+  [...seg.children].forEach(b => b.classList.toggle("active", b.dataset.v === v));
+  $("regEmailBox").hidden = v === "phone";
+  $("regPhoneBox").hidden = v === "email";
+}
+$("regTypeSeg").onclick = (e) => {
+  const btn = e.target.closest(".reg-seg-btn");
+  if (btn) setRegType(btn.dataset.v);
 };
 $("loginPwdEye").onclick = () => togglePwd($("loginPassword"), $("loginPwdEye"));
 $("loginPwdEye2").onclick = () => togglePwd($("loginSecondPassword"), $("loginPwdEye2"));
@@ -4199,7 +4242,7 @@ $("loginBtn").onclick = async () => {
   }
 };
 $("registerBtn").onclick = async () => {
-  const regType = $("regType").value;
+  const regType = $("regTypeSeg").dataset.value;
   const email = $("regEmail").value.trim();
   const phone = $("regPhone").value.trim();
   const code = $("regCode").value.trim();
