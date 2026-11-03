@@ -396,6 +396,8 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .post-videos video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
 
 /* ---------- 我的：沉浸式个人主页（背景铺满、头像居中） ---------- */
+/* #pageMe 自己不带左右内边距，未登录态的留白全靠这块；id 写法兜住 class 被改动的情况 */
+#pageMe > #notLoggedIn{padding:14px 16px 8px}
 .me-guest{padding-top:8px}
 #pageMe{padding:0 0 8px}
 .profile-cover{
@@ -1442,7 +1444,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 
     <!-- ============ 我的页 ============ -->
     <section class="page" id="pageMe">
-      <div id="notLoggedIn">
+      <div id="notLoggedIn" class="me-guest">
         <div class="empty">
           <div class="empty-ico" data-ico="user"></div>
           <div class="empty-title">登录后查看你的主页</div>
