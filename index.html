@@ -395,32 +395,39 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .post-videos{margin-top:10px}
 .post-videos video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
 
-/* ---------- 我的：网易云式整块头图 ---------- */
+/* ---------- 我的：沉浸式个人主页（背景铺满、头像居中） ---------- */
 .me-guest{padding-top:8px}
+#pageMe{padding:0 0 8px}
 .profile-cover{
-  position:relative;overflow:hidden;height:240px;border-radius:0;margin:-14px -16px 0;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:0 18px 30px;
+  position:relative;overflow:hidden;cursor:pointer;
+  margin-top:-52px;
+  padding:92px 18px 34px;
+  min-height:min(500px,64vh);
+  display:flex;flex-direction:column;align-items:center;
   background:
-    radial-gradient(120% 84% at 86% 4%,rgba(255,255,255,.24),rgba(255,255,255,0) 58%),
+    radial-gradient(120% 84% at 86% 4%,rgba(255,255,255,.18),rgba(255,255,255,0) 58%),
     linear-gradient(158deg,color-mix(in srgb,var(--primary) 58%,#ff9a9a) 0%,var(--primary) 46%,color-mix(in srgb,var(--primary) 80%,#120708) 100%);
   background-size:cover;background-position:center;
 }
-/* 压一层暗角：换成照片背景时白字也读得清 */
+/* 顶部与底部压暗：换照片背景时白字仍然读得清 */
 .profile-cover::before{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,.38) 100%);
+  background:linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,.06) 24%,rgba(0,0,0,.2) 58%,rgba(0,0,0,.52) 100%);
 }
+/* 底边渐隐到页面底色，接住下面的设置卡片 */
 .profile-cover::after{
-  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(circle at 80% 14%,rgba(255,255,255,.2),transparent 46%);
+  content:"";position:absolute;left:0;right:0;bottom:0;height:76px;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.34));
 }
-.me-hero{position:relative;z-index:2;display:flex;align-items:center;gap:13px}
+.me-hero{
+  position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+  width:100%;margin-top:26px;
+}
 .profile-avatar{
-  width:72px;height:72px;border-radius:50%;margin:0;flex-shrink:0;
+  width:88px;height:88px;border-radius:50%;margin:0;flex-shrink:0;
   background:linear-gradient(150deg,#4a4d53,#26282c);color:#fff;
-  font-size:27px;font-weight:800;display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;
-  border:3px solid rgba(255,255,255,.92);box-shadow:0 10px 22px -12px rgba(0,0,0,.55);transition:transform .18s;
+  font-size:34px;font-weight:800;display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;
+  border:3px solid rgba(255,255,255,.95);box-shadow:0 12px 26px -12px rgba(0,0,0,.6);transition:transform .18s;
 }
 .profile-avatar:active{transform:scale(.95)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
@@ -429,22 +436,62 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 }
 .profile-avatar .cam .ico{width:22px;height:22px;color:#fff}
 .profile-avatar:hover .cam{opacity:1}
-.me-meta{flex:1;min-width:0;text-align:left}
-.profile-name-row{display:flex;align-items:center;justify-content:flex-start;gap:4px}
+.me-meta{flex:1;min-width:0;text-align:center;width:100%}
+.profile-name-row{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:14px}
 .profile-nickname{
-  color:#fff;font-weight:800;font-size:21px;letter-spacing:.01em;
-  text-shadow:0 1px 10px rgba(0,0,0,.24);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#fff;font-weight:800;font-size:23px;letter-spacing:.01em;
+  text-shadow:0 1px 3px rgba(0,0,0,.42),0 2px 16px rgba(0,0,0,.42);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72vw;
 }
-.profile-email{font-size:12px;color:rgba(255,255,255,.84);margin-top:4px;word-break:break-all}
-.profile-email b{color:#fff}
-.profile-stats{position:relative;z-index:2;display:flex;margin:20px 0 0}
-.stat-item{flex:1;text-align:left;cursor:pointer;padding:0;border-radius:0;background:none;transition:.18s}
+.profile-email{font-size:12.5px;color:rgba(255,255,255,.76);margin-top:7px;word-break:break-all;text-align:center}
+.profile-email b{color:rgba(255,255,255,.96);font-weight:700}
+.profile-stats{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;
+  gap:26px;margin-top:20px;width:100%;
+}
+.stat-item{
+  flex:0 0 auto;display:flex;align-items:baseline;gap:5px;
+  cursor:pointer;padding:0;border-radius:0;background:none;transition:.18s;text-align:center;
+}
 .stat-item:active{transform:scale(.96)}
-.stat-item .stat-num{font-size:17.5px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;line-height:1.2}
-.stat-item .stat-label{font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px}
-/* 内容区从封面下方浮起，压住头图底边 */
-.me-rows{position:relative;z-index:3;margin-top:-18px;border-radius:20px;box-shadow:0 -10px 26px -20px rgba(0,0,0,.45)}
+.stat-item .stat-num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;line-height:1.2}
+.stat-item .stat-label{font-size:12.5px;color:rgba(255,255,255,.74);margin:0}
+.me-level{font-size:12.5px;font-weight:800;color:rgba(255,255,255,.86);letter-spacing:.02em}
+/* 一排功能入口：半透明方块，压在背景上 */
+.me-quick{position:relative;z-index:2;display:flex;gap:9px;width:100%;margin-top:24px}
+.me-quick-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 2px 11px;border-radius:15px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.13);
+  color:#fff;font-size:11.5px;font-weight:700;font-family:var(--font-ui);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:.16s;
+}
+.me-quick-item:active{transform:scale(.95)}
+.me-quick-item .ico{width:19px;height:19px;stroke-width:2}
+/* 设置卡片：从渐隐区接上来，不再压边 */
+.me-rows{position:relative;z-index:3;margin:-16px 16px 0;border-radius:20px;box-shadow:0 12px 30px -18px rgba(0,0,0,.5)}
+/* 顶栏叠在背景图上：只在页面顶端透明，往下滚就恢复成实底 */
+.app.me-mode.at-top .appbar{
+  background:transparent;border-bottom-color:transparent;
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+.app.me-mode.at-top .appbar-brand,.app.me-mode.at-top .appbar-title{color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.45)}
+.app.me-mode.at-top .icon-btn{color:rgba(255,255,255,.94)}
+.app.me-mode.at-top .icon-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+.app.me-mode.at-top .brand-mark{background:rgba(255,255,255,.2);box-shadow:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* 未登录的我的页不受通栏影响 */
+#pageMe .me-guest{padding:14px 16px 8px}
+/* 封禁条浮在背景图上，不占布局 */
+.profile-cover .me-ban{
+  position:absolute;left:12px;right:12px;z-index:6;margin:0;
+  top:62px;
+  background:rgba(22,14,14,.68);border-color:rgba(255,124,124,.44);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.profile-cover .me-ban .ban-sub{color:rgba(255,255,255,.74)}
+.profile-cover.has-ban .cover-edit{display:none}
+.profile-cover.has-ban{padding-top:172px}
 
 /* ---------- 私信 / 评论 全屏抽屉 ---------- */
 .fullsheet{position:fixed;inset:0;z-index:800;display:none;flex-direction:column;background:var(--bg)}
@@ -938,7 +985,7 @@ html[data-skin="mono"] .rank-num{background:rgba(20,20,22,.06)!important;color:#
 html[data-skin="mono"] .rank-num.r1{background:linear-gradient(160deg,#3c3e43,#1e1f22)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r2{background:rgba(88,90,96,.66)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r3{background:rgba(118,120,126,.44)!important;color:#fff!important}
-html[data-skin="mono"] .profile-cover{background:linear-gradient(158deg,#61666f 0%,#3a3d43 52%,#22242a 100%)}
+html[data-skin="mono"] .profile-cover{background:linear-gradient(158deg,#5a606a 0%,#34373d 46%,#1c1e22 100%)}
 html[data-skin="mono"] .up-cover{background:linear-gradient(140deg,#8f959e,#c3cad2)}
 html[data-skin="mono"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#33363c,#22242a)}
 html[data-skin="mono"][data-dark="1"] .profile-cover{background:linear-gradient(158deg,#3b3f47 0%,#262930 52%,#16181c 100%)}
@@ -1161,7 +1208,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 /* ---------- 个人主页背景：可自定义，不参与液态玻璃 ---------- */
 .profile-cover{cursor:pointer}
 .cover-edit{
-  position:absolute;right:8px;top:8px;z-index:2;display:inline-flex;align-items:center;gap:5px;
+  position:absolute;right:12px;top:62px;z-index:5;display:inline-flex;align-items:center;gap:5px;
   padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.42);
   background:rgba(18,20,24,.46);color:#fff;font-size:11.5px;font-weight:700;font-family:var(--font-ui);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;
@@ -1301,14 +1348,14 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
       </div>
 
       <div id="loggedIn" hidden>
-        <div class="ban-banner" id="banBanner" hidden>
-          <span class="ban-ico" data-ico="ban"></span>
-          <div class="ban-body">
-            <div class="ban-title" id="banTitle">账号已被封禁</div>
-            <div class="ban-sub" id="banSub">封禁期间你仍然可以浏览别人的投稿，但不能发布、点赞、评论或私信。</div>
-          </div>
-        </div>
         <div class="profile-cover" id="meCover">
+          <div class="ban-banner me-ban" id="banBanner" hidden>
+            <span class="ban-ico" data-ico="ban"></span>
+            <div class="ban-body">
+              <div class="ban-title" id="banTitle">账号已被封禁</div>
+              <div class="ban-sub" id="banSub">封禁期间你仍然可以浏览别人的投稿，但不能发布、点赞、评论或私信。</div>
+            </div>
+          </div>
           <button class="cover-edit" id="coverEditBtn" aria-label="更换主页背景"><span data-ico="image"></span>背景</button>
           <div class="me-hero">
             <div class="profile-avatar" id="myAvatar" role="button" aria-label="更换头像">我<span class="cam" data-ico="image"></span></div>
@@ -1318,9 +1365,16 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
             </div>
           </div>
           <div class="profile-stats">
-            <div class="stat-item" id="myFollowing"><div class="stat-num">0</div><div class="stat-label">关注</div></div>
-            <div class="stat-item" id="myFollowers"><div class="stat-num">0</div><div class="stat-label">粉丝</div></div>
-            <div class="stat-item" id="myLikes"><div class="stat-num">0</div><div class="stat-label">获赞</div></div>
+            <div class="stat-item" id="myFollowing"><span class="stat-num">0</span><span class="stat-label">关注</span></div>
+            <div class="stat-item" id="myFollowers"><span class="stat-num">0</span><span class="stat-label">粉丝</span></div>
+            <div class="stat-item" id="myLikes"><span class="stat-num">0</span><span class="stat-label">获赞</span></div>
+            <span class="me-level" id="myLevel">Lv.1</span>
+          </div>
+          <div class="me-quick">
+            <button class="me-quick-item" data-me="publish"><span data-ico="plus"></span>投稿</button>
+            <button class="me-quick-item" data-me="posts"><span data-ico="heart"></span>动态</button>
+            <button class="me-quick-item" data-me="msgs"><span data-ico="mail"></span>私信</button>
+            <button class="me-quick-item" data-me="customize"><span data-ico="palette"></span>装扮</button>
           </div>
         </div>
         <input type="file" id="avatarFileInput" accept="image/*" hidden>
@@ -2441,7 +2495,7 @@ const openCustomize = () => {
 };
 /* 个人主页背景 */
 $("coverEditBtn").onclick = e => { e.stopPropagation(); openCoverEditor(); };
-$("meCover").onclick = e => { if (e.target.closest("#coverEditBtn")) return; openCoverEditor(); };
+$("meCover").onclick = e => { if (e.target.closest("#coverEditBtn") || e.target.closest(".me-quick")) return; openCoverEditor(); };
 $("coverBackBtn").onclick = () => $("coverPage").classList.remove("open");
 $("coverResetBtn").onclick = () => saveCover("", "已恢复默认背景");
 $("coverUploadBtn").onclick = () => $("coverFileInput").click();
@@ -3026,6 +3080,11 @@ function switchPage(id){
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   const pg = $(id);
   if (pg) pg.classList.add("active");
+  const app = document.querySelector(".app");
+  if (app){
+    app.classList.toggle("me-mode", id === "pageMe");
+    app.classList.toggle("at-top", window.scrollY < 8);
+  }
   updateNavActive();
   const meta = PAGE_META[id] || {};
   $("appbarTitle").textContent = meta.t || "";
@@ -3039,6 +3098,25 @@ function switchPage(id){
   if (id === "pageAdmin") renderAdmin();
   window.scrollTo({ top: 0 });
 }
+/* 我的页：顶栏只在页面顶端透明，滚下去恢复实底 */
+window.addEventListener("scroll", () => {
+  const app = document.querySelector(".app");
+  if (app && app.classList.contains("me-mode")) app.classList.toggle("at-top", window.scrollY < 8);
+}, { passive: true });
+/* 我的页快捷入口 */
+document.querySelectorAll(".me-quick-item").forEach(b => {
+  b.onclick = e => {
+    e.stopPropagation();
+    const k = b.dataset.me;
+    if (k === "publish"){ switchPage("pagePublish"); return; }
+    if (k === "customize"){ openCustomize(); return; }
+    meTab = k;
+    $("meSeg").querySelectorAll("button").forEach(x => x.classList.toggle("active", x.dataset.tab === k));
+    renderMeTab();
+    $("meSeg").scrollIntoView({ behavior:"smooth", block:"start" });
+  };
+});
+
 function updateNavActive(){
   const ap = document.querySelector(".page.active");
   document.querySelectorAll(".dock-item").forEach(n => n.classList.remove("active"));
@@ -4388,6 +4466,7 @@ async function renderMe(force){
   const guest = isGuestUser(me);
   const ban = banOf(me);
   $("banBanner").hidden = !ban;
+  $("meCover").classList.toggle("has-ban", !!ban);
   if (ban){
     $("banTitle").textContent = banHeadline(ban);
     $("banSub").textContent = "原因：" + ban.reason + "。封禁期间你仍然可以浏览别人的投稿，但不能发布、点赞、评论或私信。";
@@ -4404,7 +4483,11 @@ async function renderMe(force){
   $("logoutBtn").querySelector(".row-title").textContent = guest ? "退出游客模式" : "退出登录";
   $("myFollowing").querySelector(".stat-num").textContent = (me.following || []).length;
   $("myFollowers").querySelector(".stat-num").textContent = (me.followers || []).length;
-  $("myLikes").querySelector(".stat-num").textContent = d.posts.filter(p => uidOf(p) === meId).reduce((s, p) => s + (p.likes || 0), 0);
+  const myPostList = d.posts.filter(p => uidOf(p) === meId);
+  const myLikeCnt = myPostList.reduce((s, p) => s + (p.likes || 0), 0);
+  $("myLikes").querySelector(".stat-num").textContent = myLikeCnt;
+  const myLv = Math.max(1, Math.min(9, 1 + Math.floor((myPostList.length * 2 + myLikeCnt) / 12)));
+  if ($("myLevel")) $("myLevel").textContent = "Lv." + myLv;
   $("anonSetting").checked = !!me.isAnonymous;
   renderRealnameRow(me);
   renderMeTab();
