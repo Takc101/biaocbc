@@ -877,7 +877,7 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 :focus-visible{outline:2.5px solid var(--primary);outline-offset:2px;border-radius:6px}
 
 /* ============================================================
-   两套界面风格：mono（黑白，默认） / glass（高斯模糊）
+   两套界面风格：mono（黑白，默认） / glass（液态玻璃）
    只覆盖视觉，不动布局
    ============================================================ */
 
@@ -936,31 +936,47 @@ html[data-skin="mono"] .music-disc{background:linear-gradient(150deg,#3c3e43,#1e
 html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:#2b2c2f;color:#fff}
 html[data-skin="mono"][data-dark="1"] .toast.ok,html[data-skin="mono"][data-dark="1"] .toast.err{background:#e9eaec;color:#1b1d21}
 
-/* ---------- ② 高斯模糊：只留模糊，不要高光、不要彩色 ---------- */
+/* ---------- ② 液态玻璃 ---------- */
 html[data-skin="glass"]{
-  --blur-amount:20px;
-  --card-border:rgba(20,22,28,.06);
-  --shadow-sm:0 1px 2px rgba(16,18,22,.04);
-  --shadow-md:0 8px 24px -16px rgba(16,18,22,.22);
-  --shadow-lg:0 22px 50px -26px rgba(16,18,22,.3);
+  --r-sm:12px;--r-md:18px;--r-lg:24px;--r-xl:30px;
+  --shadow-sm:0 4px 16px -10px rgba(12,14,20,.2);
+  --shadow-md:0 12px 30px -16px rgba(12,14,20,.26);
+  --shadow-lg:0 26px 62px -24px rgba(12,14,20,.38);
 }
 html[data-skin="glass"] .app{
   position:relative;z-index:1;box-shadow:none;
-  background:
-    radial-gradient(closest-side at 18% 6%,#ffffff 0 68%,rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side at 92% 26%,#d7dee7 0 62%,rgba(215,222,231,0) 100%),
-    radial-gradient(closest-side at 38% 98%,#dbe1e8 0 66%,rgba(219,225,232,0) 100%),
-    #e9ecf0;
+  background:linear-gradient(168deg,#dbe4f7,#ece2f6 46%,#dcf0f2);
 }
-html[data-skin="glass"][data-dark="1"] .app{
+/* 玻璃后面必须有颜色可折射，否则糊成一片白 */
+html[data-skin="glass"] .app::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(closest-side at 16% 4%,rgba(255,255,255,.075) 0 66%,rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side at 94% 28%,rgba(126,142,166,.16) 0 60%,rgba(126,142,166,0) 100%),
-    radial-gradient(closest-side at 34% 98%,rgba(112,128,152,.12) 0 64%,rgba(112,128,152,0) 100%),
-    #17181b;
+    radial-gradient(56% 34% at 16% 0%,rgba(122,152,226,.62),rgba(122,152,226,0) 72%),
+    radial-gradient(48% 32% at 92% 24%,rgba(178,138,222,.5),rgba(178,138,222,0) 72%),
+    radial-gradient(58% 38% at 44% 102%,rgba(96,186,198,.45),rgba(96,186,198,0) 74%);
 }
-
-/* 卡片：半透明 + 高斯模糊。没有内高光、没有渐变、不提饱和度 */
+html[data-skin="glass"][data-dark="1"] .app{background:linear-gradient(168deg,#141a26,#1d1828 46%,#111e22)}
+html[data-skin="glass"][data-dark="1"] .app::before{
+  background:
+    radial-gradient(56% 34% at 16% 0%,rgba(74,104,178,.55),rgba(74,104,178,0) 72%),
+    radial-gradient(48% 32% at 92% 24%,rgba(126,84,178,.45),rgba(126,84,178,0) 72%),
+    radial-gradient(58% 38% at 44% 102%,rgba(40,116,128,.4),rgba(40,116,128,0) 74%);
+}
+/* 折射底：玻璃层得有东西可折射 */
+html[data-skin="glass"] body::before{
+  content:"";position:fixed;inset:-24%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(32% 24% at 14% 4%,#ffffff 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(40% 32% at 90% 2%,#a9c0ea 0%,rgba(169,192,234,0) 72%),
+    radial-gradient(46% 36% at 80% 86%,#cbb2e6 0%,rgba(203,178,230,0) 74%),
+    radial-gradient(38% 30% at 2% 76%,#a8d6de 0%,rgba(168,214,222,0) 74%);
+}
+html[data-skin="glass"][data-dark="1"] body::before{
+  background:
+    radial-gradient(38% 30% at 16% 12%,rgba(122,142,182,.34),transparent 70%),
+    radial-gradient(42% 34% at 88% 20%,rgba(150,120,200,.26),transparent 72%),
+    radial-gradient(48% 40% at 58% 92%,rgba(72,116,158,.24),transparent 74%);
+}
 html[data-skin="glass"] .card,
 html[data-skin="glass"] .post,
 html[data-skin="glass"] .rows,
@@ -970,13 +986,17 @@ html[data-skin="glass"] .music-panel,
 html[data-skin="glass"] .modal-box,
 html[data-skin="glass"] .fullsheet-inner{
   position:relative;
-  background-image:none !important;
-  background-color:var(--card) !important; /* 老浏览器兜底 */
-  background-color:color-mix(in srgb, var(--card), transparent 26%) !important;
-  border:1px solid rgba(255,255,255,.55) !important;
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
-  box-shadow:0 6px 22px -18px rgba(16,18,22,.3);
+  border:1px solid rgba(255,255,255,.58) !important;
+  background-image:linear-gradient(148deg,rgba(255,255,255,.46),rgba(255,255,255,0) 42%,rgba(255,255,255,.2));
+  backdrop-filter:blur(20px) saturate(200%);
+  -webkit-backdrop-filter:blur(20px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -1px 0 rgba(255,255,255,.28),
+    inset 1px 0 0 rgba(255,255,255,.4),
+    inset -1px 0 0 rgba(255,255,255,.4),
+    0 14px 34px -20px rgba(14,18,26,.4);
+  transition:transform .36s cubic-bezier(.34,1.38,.46,1),box-shadow .3s ease;
 }
 html[data-skin="glass"][data-dark="1"] .card,
 html[data-skin="glass"][data-dark="1"] .post,
@@ -986,94 +1006,115 @@ html[data-skin="glass"][data-dark="1"] .comment-original-post,
 html[data-skin="glass"][data-dark="1"] .music-panel,
 html[data-skin="glass"][data-dark="1"] .modal-box,
 html[data-skin="glass"][data-dark="1"] .fullsheet-inner{
-  background-color:var(--card) !important;
-  background-color:color-mix(in srgb, var(--card), transparent 10%) !important;
-  border-color:rgba(255,255,255,.09) !important;
-  box-shadow:0 10px 28px -20px rgba(0,0,0,.62);
+  border-color:rgba(255,255,255,.15) !important;
+  background-image:linear-gradient(148deg,rgba(255,255,255,.14),rgba(255,255,255,.02) 46%,rgba(255,255,255,.08));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(255,255,255,.05),
+    inset 1px 0 0 rgba(255,255,255,.08),
+    inset -1px 0 0 rgba(255,255,255,.08),
+    0 18px 42px -20px rgba(0,0,0,.62);
 }
-
-/* 顶栏、底栏、弹层：内容从下面滚过时，模糊在这里最看得出来 */
-html[data-skin="glass"] .appbar{
-  background:var(--bg);
-  background:color-mix(in srgb, var(--bg), transparent 22%);
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
-  border-bottom:1px solid rgba(20,22,28,.06);
+html[data-skin="glass"] .profile-cover{
+  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.1) 60%,rgba(180,196,226,.5)),var(--surface-2);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
 }
-html[data-skin="glass"][data-dark="1"] .appbar{border-bottom-color:rgba(255,255,255,.08)}
+html[data-skin="glass"][data-dark="1"] .profile-cover{
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.02) 60%,rgba(120,140,180,.25));
+  border-color:rgba(255,255,255,.14);
+}
+/* 别人主页的默认封面带：跟玻璃底色调和，不抢头像 */
+html[data-skin="glass"] .up-cover{background:linear-gradient(140deg,#a9b7d2,#dbe3f0 58%,#e6d9ec);box-shadow:none}
+html[data-skin="glass"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#28303f,#1c2330 58%,#2a2237)}
 html[data-skin="glass"] .dock{
-  background:var(--card);
-  background:color-mix(in srgb, var(--card), transparent 6%);
-  backdrop-filter:blur(26px);
-  -webkit-backdrop-filter:blur(26px);
-  border:1px solid rgba(255,255,255,.5);
-  box-shadow:0 14px 32px -22px rgba(16,18,22,.42);
+  backdrop-filter:blur(26px) saturate(190%);
+  -webkit-backdrop-filter:blur(26px) saturate(190%);
+  border:1px solid rgba(255,255,255,.6);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 22px 46px -20px rgba(14,18,26,.46);
 }
 html[data-skin="glass"][data-dark="1"] .dock{
-  border-color:rgba(255,255,255,.1);
-  box-shadow:0 18px 38px -22px rgba(0,0,0,.7);
+  border-color:rgba(255,255,255,.14);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.02));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 24px 50px -20px rgba(0,0,0,.7);
+}
+/* 玻璃模式下的音乐浮窗：圆形玻璃钮，不抢视觉 */
+html[data-skin="glass"] .music-float{
+  border:1px solid rgba(255,255,255,.62);
+  background-image:linear-gradient(150deg,rgba(255,255,255,.6),rgba(255,255,255,.1) 46%,rgba(255,255,255,.34));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 18px 40px -18px rgba(14,18,26,.45);
+}
+html[data-skin="glass"] .music-toggle{
+  background:linear-gradient(155deg,rgba(255,255,255,.85),rgba(255,255,255,.35));
+  color:#1b1d22;border:1px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 12px 26px -12px rgba(14,18,26,.55);
+  transition:transform .34s cubic-bezier(.34,1.4,.5,1);
+}
+html[data-skin="glass"] .music-toggle:active{transform:scale(.9)}
+html[data-skin="glass"][data-dark="1"] .music-toggle{
+  background:linear-gradient(155deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  color:#f2f3f5;border-color:rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 14px 30px -14px rgba(0,0,0,.7);
 }
 html[data-skin="glass"] .fullsheet{background:transparent}
 html[data-skin="glass"] .fullsheet-inner{
+  background-color:rgba(244,246,252,.72);
   border-radius:0;
-  background-color:var(--bg) !important;
-  background-color:color-mix(in srgb, var(--bg), transparent 16%) !important;
-  backdrop-filter:blur(28px);
-  -webkit-backdrop-filter:blur(28px);
+  backdrop-filter:blur(26px) saturate(180%);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);
 }
-
-/* 封面带：还是一层磨砂，但去掉白高光边 */
-html[data-skin="glass"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.16) 60%,rgba(200,210,224,.42)),var(--surface-2);
-  border:1px solid rgba(255,255,255,.5);
-  box-shadow:none;
+html[data-skin="glass"][data-dark="1"] .fullsheet-inner{background-color:rgba(18,20,26,.78)}
+html[data-skin="glass"] .appbar{
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid rgba(255,255,255,.4);
 }
-html[data-skin="glass"][data-dark="1"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.02) 60%,rgba(120,140,180,.18));
-  border-color:rgba(255,255,255,.12);
-}
-
-/* 音乐浮窗与按钮：磨砂圆钮，不做高光堆叠 */
-html[data-skin="glass"] .music-float{
-  border:1px solid rgba(255,255,255,.52);
-  background:color-mix(in srgb, var(--card), transparent 12%);
-  box-shadow:0 14px 32px -20px rgba(16,18,22,.42);
-}
-html[data-skin="glass"] .music-toggle{
-  background:color-mix(in srgb, var(--card), transparent 18%);
-  color:var(--text);
-  border:1px solid rgba(255,255,255,.5);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-}
-html[data-skin="glass"][data-dark="1"] .music-toggle{color:#f2f3f5;border-color:rgba(255,255,255,.14)}
-
+html[data-skin="glass"][data-dark="1"] .appbar{border-bottom-color:rgba(255,255,255,.1)}
 html[data-skin="glass"] .btn:not(.btn-ghost){
-  background-image:none;
-  box-shadow:0 6px 18px -14px rgba(16,18,22,.6);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 62%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 22px -12px rgba(14,18,26,.5);
 }
 html[data-skin="glass"] .input,
 html[data-skin="glass"] .search,
 html[data-skin="glass"] select.input,
 html[data-skin="glass"] textarea.input{
-  background:color-mix(in srgb, var(--card), transparent 34%);
-  border:1px solid rgba(20,22,28,.08);
+  background:rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.62);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  box-shadow:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
 }
 html[data-skin="glass"][data-dark="1"] .input,
 html[data-skin="glass"][data-dark="1"] .search,
 html[data-skin="glass"][data-dark="1"] textarea.input{
-  border-color:rgba(255,255,255,.1);
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
 }
-/* 反馈只做轻微下沉，不要弹性回弹 */
 html[data-skin="glass"] .row:active,
 html[data-skin="glass"] .card:active,
-html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(in srgb, var(--text), transparent 94%)}
+html[data-skin="glass"] .post:active{transform:scale(.978)}
+html[data-skin="glass"] .dock-item:active .ico-box{transform:scale(.9)}
+html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezier(.34,1.4,.5,1),background .2s}
 
 /* 我的页：实名状态行 */
 .rn-done{color:var(--ok);font-weight:700;font-size:12.5px}
 .rn-chev{display:inline-flex;vertical-align:middle}
 .row.realnamed .row-ico{color:var(--ok)}
+
+/* ---------- 封禁提示：能看，不能发 ---------- */
+.ban-banner{
+  display:flex;gap:11px;align-items:flex-start;
+  padding:13px 14px;border-radius:var(--r-md);margin-bottom:12px;
+  background:color-mix(in srgb, var(--danger), transparent 91%);
+  border:1px solid color-mix(in srgb, var(--danger), transparent 66%);
+}
+.ban-banner[hidden]{display:none}
+.ban-banner .ban-ico{color:var(--danger);flex:none;display:inline-flex;margin-top:1px}
+.ban-banner .ban-title{font-weight:800;font-size:13.5px;color:var(--danger);line-height:1.35}
+.ban-banner .ban-sub{font-size:12px;color:var(--muted);line-height:1.55;margin-top:3px}
+.publish-tip.ban{background:color-mix(in srgb, var(--danger), transparent 92%);color:var(--danger);border-color:color-mix(in srgb, var(--danger), transparent 70%)}
 
 /* ---------- 风格切换卡片（设置页 / 我的页入口） ---------- */
 .skin-switch{display:flex;gap:10px}
@@ -1092,8 +1133,8 @@ html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(i
 .skin-thumb.mono i:nth-child(1){top:8px;width:52%}
 .skin-thumb.mono i:nth-child(2){top:22px;right:22px}
 .skin-thumb.mono i:nth-child(3){top:36px;width:38%}
-.skin-thumb.glass{background:linear-gradient(135deg,#e2e6ec,#d3d9e2)}
-.skin-thumb.glass i{position:absolute;left:8px;right:8px;height:11px;border-radius:6px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);backdrop-filter:blur(6px)}
+.skin-thumb.glass{background:linear-gradient(135deg,#cfd8ea,#e8d9f2 55%,#cfe4ea)}
+.skin-thumb.glass i{position:absolute;left:8px;right:8px;height:11px;border-radius:6px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 1px 0 #fff,0 3px 8px -4px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
 .skin-thumb.glass i:nth-child(1){top:7px;width:54%}
 .skin-thumb.glass i:nth-child(2){top:22px;right:20px}
 .skin-thumb.glass i:nth-child(3){top:37px;width:40%}
@@ -1103,7 +1144,7 @@ html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(i
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
-/* ---------- 个人主页背景：可自定义，不参与模糊 ---------- */
+/* ---------- 个人主页背景：可自定义，不参与液态玻璃 ---------- */
 .profile-cover{cursor:pointer}
 .cover-edit{
   position:absolute;right:8px;top:8px;z-index:2;display:inline-flex;align-items:center;gap:5px;
@@ -1115,15 +1156,15 @@ html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(i
 .cover-edit:active{transform:scale(.94)}
 .profile-cover.has-img::after{background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(0,0,0,.02) 46%,rgba(0,0,0,.12))}
 
-/* 访客主页：只有对方设了自定义背景，才出现这条封面带 */
+/* 访客主页：封面带常驻，对方设了自定义背景就换成他的 */
 .up-cover{
-  height:96px;border-radius:var(--r-lg);margin:0 0 -44px;overflow:hidden;position:relative;
+  height:96px;border-radius:var(--r-lg);margin:0 0 14px;overflow:hidden;position:relative;
   background:linear-gradient(140deg,#8e9bb3,#c9d2df);background-size:cover;background-position:center;
   box-shadow:var(--shadow-sm);
 }
 .up-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.24))}
-.up-hero.has-cover{position:relative;z-index:1;align-items:flex-start}
-.up-hero.has-cover .up-meta{padding-top:52px}
+.up-cover.has-img::after{background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0) 44%,rgba(0,0,0,.18))}
+.up-hero.has-cover{position:relative;z-index:1;align-items:center}
 .up-hero.has-cover .up-avatar{border:3px solid var(--bg);box-shadow:var(--shadow-md);background-clip:padding-box}
 
 /* 背景选择面板 */
@@ -1230,6 +1271,13 @@ html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(i
       </div>
 
       <div id="loggedIn" hidden>
+        <div class="ban-banner" id="banBanner" hidden>
+          <span class="ban-ico" data-ico="ban"></span>
+          <div class="ban-body">
+            <div class="ban-title" id="banTitle">账号已被封禁</div>
+            <div class="ban-sub" id="banSub">封禁期间你仍然可以浏览别人的投稿，但不能发布、点赞、评论或私信。</div>
+          </div>
+        </div>
         <div class="profile-cover" id="meCover">
           <button class="cover-edit" id="coverEditBtn" aria-label="更换主页背景"><span data-ico="image"></span>背景</button>
         </div>
@@ -1519,8 +1567,8 @@ html[data-skin="glass"] .post:active{transform:none;background-color:color-mix(i
           </button>
           <button class="skin-opt" data-skin-opt="glass" aria-pressed="false">
             <div class="skin-thumb glass"><i></i><i></i><i></i></div>
-            <div class="skin-name">高斯模糊</div>
-            <div class="skin-desc">半透明磨砂 · 面板模糊</div>
+            <div class="skin-name">液态玻璃</div>
+            <div class="skin-desc">半透明折射，弹性动效</div>
           </button>
         </div>
       </div>
@@ -1992,7 +2040,7 @@ function banDialog(){
     ov.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true">
       <div class="dialog-ico danger">${ico("ban")}</div>
       <div class="modal-title">封禁账号</div>
-      <div class="modal-sub">0 天表示永久封禁</div>
+      <div class="modal-sub">0 天表示永久封禁。封禁期间对方仍能登录浏览，但不能投稿、点赞、评论、私信</div>
       <div style="text-align:left">
         <input class="input" id="__banDays" type="number" min="0" value="7" placeholder="封禁天数">
         <div style="height:8px"></div>
@@ -2248,7 +2296,7 @@ function applyThemeBase(themeId){
   updateFontDisplay();
 }
 
-/* ==================== 界面风格：黑白 / 高斯模糊 ==================== */
+/* ==================== 界面风格：黑白 / 液态玻璃 ==================== */
 const SKIN_KEY = "ui_skin";
 function currentSkin(){ return localStorage.getItem(SKIN_KEY) || "mono"; }
 function applySkinOverrides(){
@@ -2277,7 +2325,7 @@ function setSkin(skin, opts){
   applyFontFamily();
   syncSkinUI();
   if (!opts || !opts.silent){
-    toast(skin === "glass" ? "已切换：高斯模糊" : "已切换：系统黑白", "ok");
+    toast(skin === "glass" ? "已切换：液态玻璃" : "已切换：系统黑白", "ok");
     if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
   }
 }
@@ -2288,7 +2336,7 @@ function syncSkinUI(){
     el.setAttribute("aria-pressed", el.dataset.skinOpt === skin ? "true" : "false");
   });
   document.querySelectorAll("[data-skin-label]").forEach(el => {
-    el.textContent = skin === "glass" ? "高斯模糊" : "系统黑白";
+    el.textContent = skin === "glass" ? "液态玻璃" : "系统黑白";
   });
 }
 function renderThemeGrid(){
@@ -2763,6 +2811,7 @@ function applyCover(el, u){
 let coverSaving = false;
 function openCoverEditor(){
   if (!currentUser){ needLogin(); return; }
+  if (banBlock("更换背景")) return;
   const me = cachedData ? resolveMe(cachedData) : null;
   $("coverPage").classList.add("open");
   raiseSheet($("coverPage"));
@@ -2862,6 +2911,38 @@ function resolveMe(d){
   if (!d) d = cachedData;
   if (!currentUser || !d) return null;
   return getUserByIdentifier(d, uidOf(currentUser)) || (currentUser.guestId ? ensureGuestRecord(d, currentUser) : null);
+}
+
+/* ==================== 封禁：只看不发 ==================== */
+const BAN_FOREVER = 9999999998;
+function banOf(u){
+  if (!u || !u.bannedUntil) return null;
+  if (u.bannedUntil <= nowTs()) return null;
+  return { permanent: u.bannedUntil >= BAN_FOREVER, until: u.bannedUntil, reason: u.banReason || "违规操作" };
+}
+function fmtBanUntil(ts){
+  const d = new Date(ts * 1000);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function banHeadline(b){
+  return b.permanent ? "账号已被永久封禁" : "账号已被封禁至 " + fmtBanUntil(b.until);
+}
+/* 当前登录者是否在封禁中；未登录返回 null */
+function myBan(){
+  if (!currentUser) return null;
+  const me = resolveMe(cachedData);
+  return banOf(me);
+}
+/* 拦截互动：返回 true 表示已拦住，调用处直接 return */
+function blockByBan(u, action){
+  const b = banOf(u);
+  if (!b) return false;
+  toast(banHeadline(b) + "，暂时不能" + (action || "操作"), "err", 3200);
+  return true;
+}
+function banBlock(action){
+  return blockByBan(resolveMe(cachedData), action);
 }
 
 function getFollowBtnText(targetUser, meId){
@@ -3047,6 +3128,7 @@ async function likePost(id, btn){
   try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const u = resolveMe(d);
   if (!u) return toast("用户不存在", "err");
+  if (blockByBan(u, "点赞")) return;
   if (!u.likedPosts) u.likedPosts = [];
   if (u.likedPosts.includes(id)) return toast("已经赞过了");
   u.likedPosts.push(id);
@@ -3066,6 +3148,7 @@ async function likePost(id, btn){
 }
 async function followOrChat(identifier){
   if (!currentUser){ needLogin(); return; }
+  if (banBlock("关注或私信")) return;
   let d;
   try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const target = getUserByIdentifier(d, identifier);
@@ -3344,11 +3427,14 @@ async function renderProfile(){
     : [["posts", "投稿 " + approved.length]];
   const gridPosts = isSelf ? myPosts.slice().sort((a, b) => b.time - a.time) : approved.slice().sort((a, b) => b.time - a.time);
   const coverCss2 = coverCss(u);
-  const coverHtml = coverCss2
-    ? `<div class="up-cover" style="background:${coverCss2.startsWith("url(") ? coverCss2 + " center/cover no-repeat" : coverCss2}"></div>`
+  /* 封面带常驻：没设背景就显示默认渐变，设了就用对方的背景 */
+  const coverIsImg = coverCss2.startsWith("url(");
+  const coverInline = coverCss2
+    ? (coverIsImg ? coverCss2 + " center/cover no-repeat" : coverCss2)
     : "";
+  const coverHtml = `<div class="up-cover${coverIsImg ? " has-img" : ""}"${coverInline ? ` style="background:${coverInline}"` : ""}></div>`;
   let html = `${coverHtml}
-    <div class="up-hero${coverCss2 ? " has-cover" : ""}">
+    <div class="up-hero has-cover">
       <div class="avatar up-avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
       <div class="up-meta">
         <div class="up-name">${escapeHtml(u.nickname || displayId(uid))}${getVBadgeHtml(u.vBadge)}</div>
@@ -3526,6 +3612,13 @@ function updateCounter(){
 }
 function updatePublishUI(){
   const tip = $("publishLoginTip");
+  const b = currentUser ? banOf(resolveMe(cachedData)) : null;
+  if (b){
+    tip.className = "publish-tip ban";
+    tip.innerHTML = `${ico("ban")}<span>${escapeHtml(banHeadline(b))}，封禁期间只能浏览</span>`;
+    $("publishBtn").disabled = true;
+    return;
+  }
   if (!currentUser){
     tip.className = "publish-tip warn";
     tip.innerHTML = `${ico("alert")}<span>登录后才能发布投稿，点这里登录</span>`;
@@ -3600,6 +3693,7 @@ function renderImagePreview(){
 }
 $("publishBtn").onclick = async () => {
   if (!currentUser){ needLogin(); return; }
+  if (banBlock("发布投稿")) return;
   const content = $("content").value.trim();
   const status = $("publishStatus");
   status.className = "status";
@@ -3638,6 +3732,8 @@ $("publishBtn").onclick = async () => {
     }
     const d = await loadData(true);
     const u = ensureGuestRecord(d, currentUser) || {};
+    /* 拉最新数据后再确认一次，防止别处刚被封还在发 */
+    if (blockByBan(u, "发布投稿")){ loading.close(); btn.disabled = false; return; }
     const isAnon = !!u.isAnonymous;
     d.posts.push({
       id: "p_" + Date.now(),
@@ -3800,11 +3896,8 @@ $("loginBtn").onclick = async () => {
     const u = getUserByIdentifier(d, account);
     if (!u){ loading.close(); status.textContent = "账号不存在，请先注册"; status.classList.add("error"); return; }
     if (u.isDeleted){ loading.close(); status.textContent = "账号已被删除，请重新注册并等待审核"; status.classList.add("error"); return; }
-    if (u.bannedUntil && u.bannedUntil > nowTs()){
-      loading.close();
-      status.textContent = "账号已被封禁至 " + new Date(u.bannedUntil * 1000).toLocaleString() + "\n原因：" + (u.banReason || "违规操作");
-      status.classList.add("error"); return;
-    }
+    /* 封禁账号照常放行：能进来看，只是发不了、点不了 */
+    const ban = banOf(u);
     if (!u.password){ loading.close(); status.textContent = "这个账号还没设置密码，请用注册页补设"; status.classList.add("error"); return; }
     if (u.password !== password){ loading.close(); status.textContent = "密码错误"; status.classList.add("error"); return; }
     /* 二级密码只在账号确实设置过时才校验，新账号可以完全不设 */
@@ -3817,9 +3910,9 @@ $("loginBtn").onclick = async () => {
     localStorage.removeItem(GUEST_OPTOUT_KEY);
     cachedData = d;
     loading.close();
-    status.textContent = "登录成功";
-    status.classList.add("success");
-    toast("登录成功", "ok");
+    status.textContent = ban ? (banHeadline(ban) + "，仅可浏览") : "登录成功";
+    status.classList.add(ban ? "error" : "success");
+    toast(ban ? (banHeadline(ban) + "，仍可浏览投稿") : "登录成功", ban ? "err" : "ok", ban ? 3600 : undefined);
     setTimeout(() => {
       $("loginModal").style.display = "none";
       clearAuthFields();
@@ -4014,6 +4107,7 @@ $("verifySubmitBtn").onclick = async () => {
 /* 「我的」→ 手机号实名：已实名只展示，未实名直接打开认证 */
 $("realnameRow").onclick = async () => {
   if (!currentUser){ needLogin(); return; }
+  if (banBlock("实名认证")) return;
   let me = cachedData ? resolveMe(cachedData) : null;
   if (!me){ try { me = resolveMe(await loadData(true)); } catch (e) {} }
   if (me && me.phone){ toast("已实名：" + maskPhone(me.phone), "ok"); return; }
@@ -4025,12 +4119,12 @@ document.querySelectorAll(".color-swatch").forEach(sw => {
   sw.addEventListener("click", () => {
     if (currentSkin() === "mono" && sw.dataset.color && !/^#(1c1917|374151|6b7280|ffffff|e8eaed)$/i.test(sw.dataset.color)){
       setSkin("glass", { silent: true });
-      toast("已切到高斯模糊，彩色主色才能显示", "ok", 3200);
+      toast("已切到液态玻璃，彩色主色才能显示", "ok", 3200);
     }
   });
 });
 
-/* 界面风格：随时在「黑白」与「高斯模糊」之间切换 */
+/* 界面风格：随时在「黑白」与「液态玻璃」之间切换 */
 function toggleSkin(){ setSkin(currentSkin() === "glass" ? "mono" : "glass"); }
 $("skinSwitchRow").onclick = toggleSkin;
 document.querySelectorAll("[data-skin-opt]").forEach(btn => {
@@ -4224,17 +4318,14 @@ const QQBind = {
         u.nickname = qqName;
         await saveData(d);
       }
-      if (u.bannedUntil && u.bannedUntil > nowTs()){
-        loading.close();
-        this.renderError("账号已被封禁至 " + new Date(u.bannedUntil * 1000).toLocaleString() + (u.banReason ? "，原因：" + u.banReason : ""));
-        return;
-      }
+      /* 封禁账号同样放行登录，只保留浏览权限 */
+      const qqBan = banOf(u);
       currentUser = { email: u.email || null, phone: u.phone || null, qqOpenid: u.qqOpenid || null, nickname: u.nickname, avatar: u.avatar || "" };
       localStorage.setItem("email_user", JSON.stringify(currentUser));
       cachedData = d;
       loading.close();
       this.renderSuccess(u.nickname, isNew);
-      toast(isNew ? "注册成功，欢迎加入" : "登录成功", "ok");
+      toast(qqBan ? (banHeadline(qqBan) + "，仍可浏览投稿") : (isNew ? "注册成功，欢迎加入" : "登录成功"), qqBan ? "err" : "ok", qqBan ? 3600 : undefined);
       renderMe();
       updatePublishUI();
       if ($("pageHot").classList.contains("active")) renderHot();
@@ -4261,6 +4352,12 @@ async function renderMe(force){
   if (!me) return;
   const meId = uidOf(me);
   const guest = isGuestUser(me);
+  const ban = banOf(me);
+  $("banBanner").hidden = !ban;
+  if (ban){
+    $("banTitle").textContent = banHeadline(ban);
+    $("banSub").textContent = "原因：" + ban.reason + "。封禁期间你仍然可以浏览别人的投稿，但不能发布、点赞、评论或私信。";
+  }
   $("myNickname").textContent = me.nickname || meId;
   $("myNickname").style.cursor = "pointer";
   $("myNickname").title = "查看我的主页";
@@ -4389,6 +4486,7 @@ $("meSeg").querySelectorAll("button").forEach(b => {
 });
 $("editNameBtn").onclick = async () => {
   if (!currentUser) return;
+  if (banBlock("修改用户名")) return;
   const name = await promptDialog({ title:"修改用户名", value: currentUser.nickname || "", placeholder:"输入新用户名" });
   if (!name) return;
   try {
@@ -4405,6 +4503,7 @@ $("editNameBtn").onclick = async () => {
 };
 $("anonSetting").onchange = async e => {
   if (!currentUser) return;
+  if (banBlock("修改发布设置")){ e.target.checked = !e.target.checked; return; }
   try {
     const d = await loadData(true);
     const u = ensureGuestRecord(d, currentUser);
@@ -4437,9 +4536,11 @@ $("logoutBtn").onclick = async () => {
 $("contactDevBtn").onclick = () => window.open("https://user.qzone.qq.com/2051392957", "_blank");
 $("myAvatar").onclick = () => {
   if (!currentUser){ needLogin(); return; }
+  if (banBlock("更换头像")) return;
   $("avatarFileInput").click();
 };
 $("avatarFileInput").onchange = async e => {
+  if (banBlock("更换头像")) { e.target.value = ""; return; }
   const f = e.target.files[0];
   if (!f) return;
   e.target.value = "";
@@ -4531,6 +4632,7 @@ async function renderChat(){
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 $("chatSendBtn").onclick = async () => {
+  if (banBlock("发私信")) return;
   const v = $("chatInput").value.trim();
   if (!v || !chatTarget) return;
   try {
@@ -4544,6 +4646,7 @@ $("chatSendBtn").onclick = async () => {
 $("chatInput").onkeydown = e => { if (e.key === "Enter") $("chatSendBtn").click(); };
 $("chatImageBtn").onclick = () => $("chatImageInput").click();
 $("chatImageInput").onchange = async e => {
+  if (banBlock("发私信")) { e.target.value = ""; return; }
   const f = e.target.files[0];
   if (!f) return;
   e.target.value = "";
@@ -4681,6 +4784,7 @@ $("commentSendBtn").onclick = async () => {
   try {
     const d = await loadData(true);
     const u = ensureGuestRecord(d, currentUser) || {};
+    if (blockByBan(u, "评论")) return;
     const isAnon = !!u.isAnonymous;
     d.comments.push({
       id: "c_" + Date.now(), postId: commentTargetPostId,
