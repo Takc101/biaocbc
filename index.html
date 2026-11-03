@@ -395,26 +395,32 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .post-videos{margin-top:10px}
 .post-videos video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
 
-/* ---------- 我的 ---------- */
+/* ---------- 我的：网易云式整块头图 ---------- */
 .me-guest{padding-top:8px}
 .profile-cover{
-  height:96px;border-radius:var(--r-lg);margin-bottom:-44px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,var(--primary) 0%,transparent 140%),var(--surface-2);
+  position:relative;overflow:hidden;height:240px;border-radius:0;margin:-14px -16px 0;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 18px 30px;
+  background:
+    radial-gradient(120% 84% at 86% 4%,rgba(255,255,255,.24),rgba(255,255,255,0) 58%),
+    linear-gradient(158deg,color-mix(in srgb,var(--primary) 58%,#ff9a9a) 0%,var(--primary) 46%,color-mix(in srgb,var(--primary) 80%,#120708) 100%);
+  background-size:cover;background-position:center;
+}
+/* 压一层暗角：换成照片背景时白字也读得清 */
+.profile-cover::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,.38) 100%);
 }
 .profile-cover::after{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at 82% 18%,rgba(255,255,255,.28),transparent 46%),
-             radial-gradient(circle at 12% 88%,rgba(255,255,255,.16),transparent 40%);
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(circle at 80% 14%,rgba(255,255,255,.2),transparent 46%);
 }
-.profile-card{
-  position:relative;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--r-xl);
-  padding:0 16px 16px;text-align:center;box-shadow:var(--shadow-md);margin-bottom:14px;
-  backdrop-filter:blur(var(--blur-amount));-webkit-backdrop-filter:blur(var(--blur-amount));
-}
+.me-hero{position:relative;z-index:2;display:flex;align-items:center;gap:13px}
 .profile-avatar{
-  width:86px;height:86px;border-radius:50%;margin:-44px auto 10px;background:var(--primary);color:#fff;
-  font-size:31px;font-weight:800;display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;
-  border:4px solid var(--card-bg);box-shadow:var(--shadow-md);transition:transform .18s;
+  width:72px;height:72px;border-radius:50%;margin:0;flex-shrink:0;
+  background:linear-gradient(150deg,#4a4d53,#26282c);color:#fff;
+  font-size:27px;font-weight:800;display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;
+  border:3px solid rgba(255,255,255,.92);box-shadow:0 10px 22px -12px rgba(0,0,0,.55);transition:transform .18s;
 }
 .profile-avatar:active{transform:scale(.95)}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
@@ -423,16 +429,22 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 }
 .profile-avatar .cam .ico{width:22px;height:22px;color:#fff}
 .profile-avatar:hover .cam{opacity:1}
-.profile-name-row{display:flex;align-items:center;justify-content:center;gap:2px}
-.profile-nickname{font-weight:800;font-size:19px;letter-spacing:.01em}
-.profile-email{font-size:12.5px;color:var(--muted);margin-top:3px;word-break:break-all}
-.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 12px}
-.stat-item{
-  text-align:center;cursor:pointer;padding:9px 4px;border-radius:var(--r-md);background:var(--surface-2);transition:.18s;
+.me-meta{flex:1;min-width:0;text-align:left}
+.profile-name-row{display:flex;align-items:center;justify-content:flex-start;gap:4px}
+.profile-nickname{
+  color:#fff;font-weight:800;font-size:21px;letter-spacing:.01em;
+  text-shadow:0 1px 10px rgba(0,0,0,.24);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+.profile-email{font-size:12px;color:rgba(255,255,255,.84);margin-top:4px;word-break:break-all}
+.profile-email b{color:#fff}
+.profile-stats{position:relative;z-index:2;display:flex;margin:20px 0 0}
+.stat-item{flex:1;text-align:left;cursor:pointer;padding:0;border-radius:0;background:none;transition:.18s}
 .stat-item:active{transform:scale(.96)}
-.stat-item .stat-num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
-.stat-item .stat-label{font-size:11.5px;color:var(--muted);margin-top:1px}
+.stat-item .stat-num{font-size:17.5px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;line-height:1.2}
+.stat-item .stat-label{font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px}
+/* 内容区从封面下方浮起，压住头图底边 */
+.me-rows{position:relative;z-index:3;margin-top:-18px;border-radius:20px;box-shadow:0 -10px 26px -20px rgba(0,0,0,.45)}
 
 /* ---------- 私信 / 评论 全屏抽屉 ---------- */
 .fullsheet{position:fixed;inset:0;z-index:800;display:none;flex-direction:column;background:var(--bg)}
@@ -514,15 +526,13 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 /* ---------- 用户主页 ---------- */
 .up-hero{display:flex;align-items:center;gap:14px;padding:6px 2px 14px}
 .up-avatar{width:72px;height:72px;font-size:30px}
-.up-name{font-size:19px;font-weight:800;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.up-name{font-size:20px;font-weight:800;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
 .up-id{font-size:12px;margin-top:4px;word-break:break-all}
-.up-stats{display:flex;gap:8px;margin-bottom:14px}
-.up-stat{
-  flex:1;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--r-md);
-  padding:10px 6px;text-align:center;box-shadow:var(--shadow-sm);
-}
-.up-stat b{display:block;font-size:17px;font-weight:800;font-family:var(--font-ui)}
-.up-stat span{font-size:11px;color:var(--muted)}
+/* 快手式：数字直接排一行，不套卡片 */
+.up-stats{display:flex;gap:0;margin:2px 0 16px;padding:0 2px}
+.up-stat{flex:1;background:none;border:none;border-radius:0;padding:8px 4px;text-align:left;box-shadow:none}
+.up-stat b{display:block;font-size:18px;font-weight:800;font-family:var(--font-ui);line-height:1.25}
+.up-stat span{font-size:11.5px;color:var(--muted)}
 .up-actions{display:flex;gap:8px;margin-bottom:16px}
 .up-actions .btn{flex:1}
 .up-tabs{
@@ -928,10 +938,10 @@ html[data-skin="mono"] .rank-num{background:rgba(20,20,22,.06)!important;color:#
 html[data-skin="mono"] .rank-num.r1{background:linear-gradient(160deg,#3c3e43,#1e1f22)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r2{background:rgba(88,90,96,.66)!important;color:#fff!important}
 html[data-skin="mono"] .rank-num.r3{background:rgba(118,120,126,.44)!important;color:#fff!important}
-html[data-skin="mono"] .profile-cover{background:linear-gradient(160deg,#c7cdd6,#e7eaee)}
-html[data-skin="mono"] .up-cover{background:linear-gradient(140deg,#c2c8d1,#e4e8ec)}
+html[data-skin="mono"] .profile-cover{background:linear-gradient(158deg,#61666f 0%,#3a3d43 52%,#22242a 100%)}
+html[data-skin="mono"] .up-cover{background:linear-gradient(140deg,#8f959e,#c3cad2)}
 html[data-skin="mono"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#33363c,#22242a)}
-html[data-skin="mono"][data-dark="1"] .profile-cover{background:linear-gradient(160deg,#2c2e34,#1b1d21)}
+html[data-skin="mono"][data-dark="1"] .profile-cover{background:linear-gradient(158deg,#3b3f47 0%,#262930 52%,#16181c 100%)}
 html[data-skin="mono"] .music-disc{background:linear-gradient(150deg,#3c3e43,#1e1f22)!important;color:#fff!important}
 html[data-skin="mono"] .toast.ok,html[data-skin="mono"] .toast.err{background:#2b2c2f;color:#fff}
 html[data-skin="mono"][data-dark="1"] .toast.ok,html[data-skin="mono"][data-dark="1"] .toast.err{background:#e9eaec;color:#1b1d21}
@@ -1016,17 +1026,21 @@ html[data-skin="glass"][data-dark="1"] .fullsheet-inner{
     0 18px 42px -20px rgba(0,0,0,.62);
 }
 html[data-skin="glass"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.1) 60%,rgba(180,196,226,.5)),var(--surface-2);
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+  background:
+    radial-gradient(120% 84% at 86% 4%,rgba(255,255,255,.3),rgba(255,255,255,0) 58%),
+    linear-gradient(158deg,color-mix(in srgb,var(--primary) 48%,#ffa6b8) 0%,var(--primary) 44%,color-mix(in srgb,var(--primary) 84%,#12070c) 100%);
+  border:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
 }
 html[data-skin="glass"][data-dark="1"] .profile-cover{
-  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.02) 60%,rgba(120,140,180,.25));
-  border-color:rgba(255,255,255,.14);
+  background:
+    radial-gradient(120% 84% at 86% 4%,rgba(255,255,255,.16),rgba(255,255,255,0) 58%),
+    linear-gradient(158deg,color-mix(in srgb,var(--primary) 44%,#4a2030) 0%,color-mix(in srgb,var(--primary) 72%,#160c10) 46%,#141014 100%);
+  border:none;
 }
 /* 别人主页的默认封面带：跟玻璃底色调和，不抢头像 */
-html[data-skin="glass"] .up-cover{background:linear-gradient(140deg,#a9b7d2,#dbe3f0 58%,#e6d9ec);box-shadow:none}
-html[data-skin="glass"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#28303f,#1c2330 58%,#2a2237)}
+html[data-skin="glass"] .up-cover{background:linear-gradient(140deg,#7d90b6,#aebfd7 56%,#cbb8d9);box-shadow:none}
+html[data-skin="glass"][data-dark="1"] .up-cover{background:linear-gradient(140deg,#2b3445,#1d2532 56%,#2c2439)}
 html[data-skin="glass"] .dock{
   backdrop-filter:blur(26px) saturate(190%);
   -webkit-backdrop-filter:blur(26px) saturate(190%);
@@ -1157,15 +1171,31 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 .profile-cover.has-img::after{background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(0,0,0,.02) 46%,rgba(0,0,0,.12))}
 
 /* 访客主页：封面带常驻，对方设了自定义背景就换成他的 */
+/* 别人主页：快手式通栏头图，头像压在下沿 */
 .up-cover{
-  height:96px;border-radius:var(--r-lg);margin:0 0 14px;overflow:hidden;position:relative;
+  height:190px;border-radius:0;margin:-14px -14px 0;overflow:hidden;position:relative;
   background:linear-gradient(140deg,#8e9bb3,#c9d2df);background-size:cover;background-position:center;
-  box-shadow:var(--shadow-sm);
 }
-.up-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.24))}
-.up-cover.has-img::after{background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0) 44%,rgba(0,0,0,.18))}
-.up-hero.has-cover{position:relative;z-index:1;align-items:center}
-.up-hero.has-cover .up-avatar{border:3px solid var(--bg);box-shadow:var(--shadow-md);background-clip:padding-box}
+.up-cover::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,0) 46%,rgba(0,0,0,.24) 100%);
+}
+.up-cover.has-img::after{
+  background:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,0) 46%,rgba(0,0,0,.22) 100%);
+}
+/* 头像只压 38px，名字整块落到封面下方，别骑在渐变上 */
+.up-content{
+  position:relative;z-index:2;margin:-22px -14px -14px;display:flow-root;
+  background:var(--card);border-radius:18px 18px 0 0;
+  padding:0 14px 24px;min-height:calc(100dvh - 210px);
+  box-shadow:0 -8px 22px -16px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.up-hero.has-cover{position:relative;z-index:2;margin-top:-16px;align-items:flex-start;padding:0 2px 16px}
+.up-hero.has-cover .up-meta{padding-top:52px}
+.up-hero.has-cover .up-avatar{
+  width:78px;height:78px;font-size:32px;
+  border:3px solid rgba(255,255,255,.9);box-shadow:0 10px 24px -12px rgba(0,0,0,.45);background-clip:padding-box;
+}
 
 /* 背景选择面板 */
 .cover-preview{height:96px;border-radius:16px;background-size:cover;background-position:center;border:1px solid var(--card-border);margin-bottom:12px;position:relative;overflow:hidden}
@@ -1280,20 +1310,22 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
         </div>
         <div class="profile-cover" id="meCover">
           <button class="cover-edit" id="coverEditBtn" aria-label="更换主页背景"><span data-ico="image"></span>背景</button>
-        </div>
-        <div class="profile-card">
-          <div class="profile-avatar" id="myAvatar" role="button" aria-label="更换头像">我<span class="cam" data-ico="image"></span></div>
-          <input type="file" id="avatarFileInput" accept="image/*" hidden>
-          <div class="profile-name-row"><span class="profile-nickname" id="myNickname"></span><span id="myVBadge"></span></div>
-          <div class="profile-email" id="myEmail"></div>
+          <div class="me-hero">
+            <div class="profile-avatar" id="myAvatar" role="button" aria-label="更换头像">我<span class="cam" data-ico="image"></span></div>
+            <div class="me-meta">
+              <div class="profile-name-row"><span class="profile-nickname" id="myNickname"></span><span id="myVBadge"></span></div>
+              <div class="profile-email" id="myEmail"></div>
+            </div>
+          </div>
           <div class="profile-stats">
             <div class="stat-item" id="myFollowing"><div class="stat-num">0</div><div class="stat-label">关注</div></div>
             <div class="stat-item" id="myFollowers"><div class="stat-num">0</div><div class="stat-label">粉丝</div></div>
             <div class="stat-item" id="myLikes"><div class="stat-num">0</div><div class="stat-label">获赞</div></div>
           </div>
         </div>
+        <input type="file" id="avatarFileInput" accept="image/*" hidden>
 
-        <div class="rows">
+        <div class="rows me-rows">
           <button class="row" id="openCustomizeBtn">
             <span class="row-ico" data-ico="palette"></span>
             <span class="row-title">自定 UI</span>
@@ -3434,6 +3466,7 @@ async function renderProfile(){
     : "";
   const coverHtml = `<div class="up-cover${coverIsImg ? " has-img" : ""}"${coverInline ? ` style="background:${coverInline}"` : ""}></div>`;
   let html = `${coverHtml}
+    <div class="up-content">
     <div class="up-hero has-cover">
       <div class="avatar up-avatar">${u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="">` : escapeHtml((u.nickname || "?")[0])}${getMiniV(u.vBadge)}</div>
       <div class="up-meta">
@@ -3449,7 +3482,8 @@ async function renderProfile(){
     </div>
     <div class="up-actions">${actionsHtml}</div>
     <div class="up-tabs">${tabs.map(([k, t]) => `<button class="up-tab${profileTab === k ? " active" : ""}" data-tab="${k}">${t}</button>`).join("")}</div>
-    <div id="profileTabBody"></div>`;
+    <div id="profileTabBody"></div>
+    </div>`;
   body.innerHTML = html;
   body.querySelectorAll(".up-tab").forEach(b => {
     b.onclick = () => { profileTab = b.dataset.tab; renderProfile(); };
