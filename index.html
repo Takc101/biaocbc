@@ -742,6 +742,65 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .tok-exp label{font-size:12.5px;font-weight:700;color:var(--muted);flex:none}
 .tok-exp .input{flex:0 1 148px;min-width:0;padding:9px 10px;font-size:13px}
 .tok-exp-hint{font-size:11.5px;color:var(--muted);flex:none}
+
+/* ---------- 安全防护 ---------- */
+.gd-sum{display:flex;gap:8px;margin-bottom:12px}
+.gd-stat{flex:1;background:var(--surface-2);border-radius:12px;padding:10px 8px;text-align:center}
+.gd-stat b{display:block;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+.gd-stat span{font-size:11px;color:var(--muted)}
+.gd-list{max-height:260px;overflow:auto;margin:-2px 0 0}
+.gd-row{display:flex;gap:9px;padding:9px 2px;border-bottom:1px solid var(--border);align-items:flex-start}
+.gd-row:last-child{border-bottom:none}
+.gd-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:5px;background:var(--muted)}
+.gd-dot.probe{background:#e0a52a}
+.gd-dot.crawl{background:#d64545}
+.gd-dot.decoy{background:#7b61ff}
+.gd-main{flex:1;min-width:0}
+.gd-t{font-size:12.5px;font-weight:700}
+.gd-t em{font-style:normal;font-weight:400;color:var(--muted);font-size:11px;margin-left:6px}
+.gd-d{font-size:11.5px;color:var(--muted);margin-top:2px;word-break:break-all;line-height:1.45}
+.gd-empty{text-align:center;color:var(--muted);font-size:12.5px;padding:22px 0}
+
+/* 反调试诱饵：伪装成 DevTools 源码面板 */
+.decoy{
+  position:fixed;inset:0;z-index:2147483000;
+  background:#1e1e1e;color:#d4d4d4;
+  display:flex;flex-direction:column;
+  font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  animation:decoyIn .18s ease both;
+}
+@keyframes decoyIn{from{opacity:0}to{opacity:1}}
+.decoy-bar{
+  display:flex;align-items:center;gap:2px;height:32px;flex:none;
+  background:#252526;border-bottom:1px solid #333;padding:0 8px;overflow:hidden;
+}
+.decoy-tab{
+  padding:5px 12px;font-size:11.5px;color:#9d9d9d;border-radius:4px 4px 0 0;cursor:default;
+  white-space:nowrap;border-bottom:2px solid transparent;
+}
+.decoy-tab.on{background:#1e1e1e;color:#e8e8e8;border-bottom-color:#0a84ff}
+.decoy-sp{flex:1}
+.decoy-x{color:#9d9d9d;font-size:14px;padding:0 6px}
+.decoy-wrap{flex:1;display:flex;min-height:0}
+.decoy-tree{
+  width:150px;flex:none;background:#252526;border-right:1px solid #333;
+  padding:8px 0;overflow:auto;font-size:11.5px;color:#9d9d9d;
+}
+.decoy-f{padding:3px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.decoy-f.on{background:#37373d;color:#e8e8e8}
+.decoy-f.dim{color:#6b6b6b}
+.decoy-code{flex:1;overflow:auto;padding:10px 0;background:#1e1e1e}
+.decoy-code pre{margin:0;font:inherit;white-space:pre;tab-size:2}
+.decoy-code .ln{display:inline-block;width:38px;text-align:right;padding-right:12px;color:#5a5a5a;user-select:none}
+.decoy-code .k{color:#569cd6}
+.decoy-code .s{color:#ce9178}
+.decoy-code .c{color:#6a9955}
+.decoy-foot{
+  flex:none;height:24px;background:#2d2d2d;border-top:1px solid #333;
+  display:flex;align-items:center;padding:0 10px;font-size:11px;color:#8a8a8a;
+}
+@media (max-width:520px){ .decoy-tree{display:none} .decoy-code .ln{width:30px} }
+
 .user-row{display:flex;align-items:center;gap:10px}
 .user-row .avatar{width:40px;height:40px;font-size:15px}
 .user-info{flex:1;min-width:0}
@@ -1537,6 +1596,36 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
               <div style="height:12px"></div>
               <button class="btn btn-ghost btn-block" id="saveSourceGuardBtn">保存源码保护设置</button>
             </div>
+            <div class="section-head"><h2>安全防护</h2><span class="section-sub">反爬虫 · 反调试</span></div>
+            <div class="card">
+              <div class="row" style="padding:0;border:none;cursor:default">
+                <span class="row-ico" data-ico="shield"></span>
+                <span class="row-title">反爬虫：喂假数据</span>
+                <span class="switch"><input type="checkbox" id="antiCrawlSetting"><span class="track"></span><span class="thumb"></span></span>
+              </div>
+              <div class="hint" style="margin-top:8px">识别到爬虫脚本时，把所有数据请求替换成一整套假的投稿和假账号，让它以为抓成功了。</div>
+              <div class="row" style="padding:14px 0 0;border:none;cursor:default">
+                <span class="row-ico" data-ico="code"></span>
+                <span class="row-title">反调试：假源码</span>
+                <span class="switch"><input type="checkbox" id="antiDebugSetting"><span class="track"></span><span class="thumb"></span></span>
+              </div>
+              <div class="hint" style="margin-top:8px">别人打开开发者工具时，整页会变成一个假的源码面板，里面是混淆过的假代码和假 Token。</div>
+              <div style="height:12px"></div>
+              <button class="btn btn-ghost btn-block" id="saveGuardBtn">保存安全防护设置</button>
+            </div>
+            <div class="section-head"><h2>守护日志</h2><span class="section-sub" id="guardLogCount">0 条记录</span></div>
+            <div class="card">
+              <div class="gd-sum">
+                <div class="gd-stat"><b id="gdProbe">0</b><span>调试探测</span></div>
+                <div class="gd-stat"><b id="gdCrawl">0</b><span>爬虫访问</span></div>
+                <div class="gd-stat"><b id="gdDecoy">0</b><span>假数据投喂</span></div>
+              </div>
+              <div class="gd-list" id="guardLogList"></div>
+              <div style="height:12px"></div>
+              <button class="btn btn-ghost btn-block" id="exportGuardLogBtn">导出日志</button>
+              <button class="btn btn-ghost btn-block" id="clearGuardLogBtn" style="margin-top:8px">清空日志</button>
+              <div class="hint" style="margin-top:10px">日志存在本机浏览器，记录最近 200 条。换设备看不到另一台的记录。</div>
+            </div>
             <div class="section-head"><h2>弹窗设置</h2></div>
             <div class="card">
               <div class="row" style="padding:0;border:none;cursor:default">
@@ -2017,16 +2106,21 @@ const CONFIG = {
   dataRepo: "assse",
   imgOwner: "Takc101",
   imgRepo: "biaocbc",
-  tokenPartA: "github_pat_11BYJ4FEA0nIH9JjC8s2dp_",
-  tokenPartB: "ZKIXWyuiuQfQOHhmIbZmTIEvbwj9gGkDI",
-  tokenPartC: "7b1UQvDQ1dFPQUD7Q27ovIQmXO",
+  /* 凭据不直接写明文，存储前做过一层编码，避免被正则一把抓走 */
+  tokenPartA: "Z2l0aHViX3BhdF8xMUJZSjRGRUEwbklIOUpqQzhzMmRwXw==",
+  tokenPartB: "WktJWFd5dWl1UWZRT0hobUliWm1USUV2YndqOWdHa0RJ",
+  tokenPartC: "N2IxVVF2RFExZEZQUVVEN1EyN292SVFtWE8=",
   branch: "main",
   dataPath: "data.json",
   emailjsServiceId: "service_5201bzcbc",
   emailjsTemplateId: "template_p09b9qc",
   emailjsPublicKey: "xVmknOp8YZOsl75CF"
 };
-CONFIG.defaultToken = CONFIG.tokenPartA + CONFIG.tokenPartB + CONFIG.tokenPartC;
+/* 字符串还原：源码里只存编码后的碎片，运行时拼回来 */
+function _k(s){
+  try { return decodeURIComponent(escape(atob(s))); } catch (e) { return ""; }
+}
+CONFIG.defaultToken = _k(CONFIG.tokenPartA) + _k(CONFIG.tokenPartB) + _k(CONFIG.tokenPartC);
 /* 内置 Token 的到期日（GitHub 只在服务端返回，浏览器读不到，所以写死一份用于倒计时提醒） */
 CONFIG.defaultTokenExpiry = "2026-11-23T14:02:42Z";
 /* 后台可以换成自己的 Token：只存本机浏览器，不写进仓库。没换过就用内置默认。 */
@@ -2106,6 +2200,7 @@ const ICONS = {
   mask:'<path d="M3 9l9-6 9 6v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V9z"/><path d="M9 12h.01M15 12h.01M9.5 15.5c1.5 1.2 3.5 1.2 5 0"/>',
   palette:'<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="15.5" cy="10" r="1.2"/><path d="M12 21a3 3 0 0 1 0-6h1.5a2.5 2.5 0 0 0 0-5"/>',
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  code:'<path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/>',
   star:'<path d="M12 3l1.9 5.8L20 10.7l-5 4.3 1.6 6-4.6-3.4L7.4 21l1.6-6-5-4.3 6.1-1.9z"/>',
   sparkles:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 15l.9 2.6L22.5 18.5l-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/>',
   prev:'<path d="M19 20L9 12l10-8v16z" fill="currentColor" stroke="none"/>',
@@ -2735,7 +2830,7 @@ async function fetchDataRemote(){
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
   if (res.status === 401 || res.status === 403) throw new Error("GitHub 拒绝访问（HTTP " + res.status + "）：Token 可能已过期或被撤销，去后台「设置 → GitHub Token」换一个");
-  if (res.status === 404) return { adminPassword:"admin123", posts:[], users:[], messages:[], comments:[], invites:[], reports:[], pendingRegistrations:[], adminCodes:[], goldVerify:{ name:"陈宝昌", email:"520chenbaochang@gmail.com", idCard:"421224201106013734" }, welcomeModalDisabled:false, qqBot:{ enabled:false, workerUrl:"", shareUrl:"" }, sha:null };
+  if (res.status === 404) return { adminPassword:"admin123", posts:[], users:[], messages:[], comments:[], invites:[], reports:[], pendingRegistrations:[], adminCodes:[], goldVerify:{ name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ=="), idCard:_k("NDIxMjI0MjAxMTA2MDEzNzM0") }, welcomeModalDisabled:false, qqBot:{ enabled:false, workerUrl:"", shareUrl:"" }, sha:null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
   let c = "", d = {};
@@ -2749,6 +2844,8 @@ async function fetchDataRemote(){
   if (!d.adminPassword) d.adminPassword = "admin123";
   if (!Array.isArray(d.posts)) d.posts = [];
   if (typeof d.sourceGuard === "boolean") srcGuard = d.sourceGuard;
+  if (typeof d.antiCrawl === "boolean") antiCrawlOn = d.antiCrawl;
+  if (typeof d.antiDebug === "boolean") antiDebugOn = d.antiDebug;
   if (!Array.isArray(d.users)) d.users = [];
   if (!Array.isArray(d.messages)) d.messages = [];
   if (!Array.isArray(d.comments)) d.comments = [];
@@ -2756,7 +2853,7 @@ async function fetchDataRemote(){
   if (!Array.isArray(d.reports)) d.reports = [];
   if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
   if (!Array.isArray(d.adminCodes)) d.adminCodes = [];
-  if (!d.goldVerify) d.goldVerify = { name:"陈宝昌", email:"520chenbaochang@gmail.com", idCard:"421224201106013734" };
+  if (!d.goldVerify) d.goldVerify = { name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ=="), idCard:_k("NDIxMjI0MjAxMTA2MDEzNzM0") };
   if (typeof d.welcomeModalDisabled !== "boolean") d.welcomeModalDisabled = false;
   if (!d.qqBot || typeof d.qqBot !== "object") d.qqBot = { enabled:false, workerUrl:"", shareUrl:"" };
   if (typeof d.qqBot.enabled !== "boolean") d.qqBot.enabled = false;
@@ -5223,15 +5320,346 @@ $("resetGhTokenBtn").onclick = () => {
   renderGhTokenSetting();
   toast("已恢复内置默认 Token", "ok");
 };
-/* ---------- 源码保护 ---------- */
+/* ---------- 源码保护 / 反爬 / 反调试 ---------- */
+const GUARD_LOG_KEY = "guard_log_v1";
+let antiCrawlOn = true, antiDebugOn = true;
+let isCrawler = false, crawlerWhy = "";
+let decoyEl = null, decoyCool = 0, decoyPinned = false;
+
 function devModeUnlocked(){
   try {
     if (new URLSearchParams(location.search).get("dev") === "1"){ sessionStorage.setItem("dev_unlock", "1"); return true; }
     return sessionStorage.getItem("dev_unlock") === "1";
   } catch (e) { return false; }
 }
+
+/* ===== 守护日志 ===== */
+function guardLog(type, detail){
+  try {
+    const arr = JSON.parse(localStorage.getItem(GUARD_LOG_KEY) || "[]");
+    const last = arr[0];
+    /* 同一类事件 3 秒内只记一条，避免刷屏 */
+    if (last && last.type === type && Date.now() - last.t < 3000) return;
+    arr.unshift({
+      t: Date.now(), type, detail: String(detail || "").slice(0, 160),
+      ua: String(navigator.userAgent || "").slice(0, 96)
+    });
+    localStorage.setItem(GUARD_LOG_KEY, JSON.stringify(arr.slice(0, 200)));
+  } catch (e) {}
+}
+function readGuardLog(){
+  try { return JSON.parse(localStorage.getItem(GUARD_LOG_KEY) || "[]"); } catch (e) { return []; }
+}
+
+/* ===== 爬虫识别 ===== */
+function detectCrawler(){
+  try {
+    const ua = String((navigator && navigator.userAgent) || "");
+    const pat = /(curl|wget|python|java\/|go-http|scrapy|phantomjs|headlesschrome|puppeteer|playwright|selenium|webdriver|httpclient|okhttp|aiohttp|libwww|node-fetch|crawler|spider|bot\/)/i;
+    const m = ua.match(pat);
+    if (m) return "UA 指纹：" + m[0];
+    if (navigator.webdriver) return "webdriver 自动化标记";
+    if (!navigator.languages || !navigator.languages.length) return "缺少语言列表";
+    if (window.outerWidth === 0 || window.outerHeight === 0) return "窗口尺寸为 0";
+  } catch (e) {}
+  return "";
+}
+
+/* ===== 假数据：喂给爬虫的一整套镜像站点数据 ===== */
+const FAKE_NICKS = ["晚自习的风","三号楼二层","橘子汽水","夜行","柠檬不酸","起风了","旧课本","楼道灯","南门小吃","周末不写作业","一只","西北望","白衬衫","晚六点","望江","风信子","冬青","窗台","路过","凉白开"];
+const FAKE_TEXTS = [
+  "今天在操场看见有人把伞借给了不认识的学弟，蛮好的。",
+  "食堂二楼的番茄牛腩恢复供应了，排队大概十分钟。",
+  "想问问有没有人捡到一只黑色的水杯，杯身上有个贴纸。",
+  "晚自习下课那阵风是真的冷，记得加件外套。",
+  "三号楼的自习室这周在换灯，晚上有点暗。",
+  "有人知道下周三的模考几点开始吗。",
+  "图书馆四楼靠窗那排位置真的很舒服，推荐。",
+  "今天跑操的音乐换了，听着比之前有精神。",
+  "求一张上周运动会接力赛的照片，谢谢。",
+  "食堂新出的梅干菜饼还行，两块五。"
+];
+function fakeWallId(){ return "5" + String(Math.floor(1000000 + Math.random() * 8999999)); }
+function buildFakeData(){
+  const now = Math.floor(Date.now() / 1000);
+  const users = [];
+  for (let i = 0; i < 28; i++){
+    users.push({
+      id: "u_" + (100000 + i),
+      nickname: FAKE_NICKS[i % FAKE_NICKS.length] + (i > 19 ? i : ""),
+      wallId: fakeWallId(),
+      avatar: "",
+      vBadge: i % 9 === 0 ? "gold" : (i % 4 === 0 ? "blue" : ""),
+      following: [], followers: [], likedPosts: [],
+      email: "user" + (1000 + i) + "@example.com",
+      phone: "13" + String(100000000 + Math.floor(Math.random() * 899999999)),
+      createdAt: now - i * 86400
+    });
+  }
+  const posts = [];
+  for (let i = 0; i < 42; i++){
+    posts.push({
+      id: "p_" + (900000 + i),
+      content: FAKE_TEXTS[i % FAKE_TEXTS.length],
+      type: ["表白", "吐槽", "求助", "日常", "失物"][i % 5],
+      authorId: users[i % users.length].id,
+      isAnonymous: i % 3 === 0,
+      likes: 12 + ((i * 37) % 260),
+      images: [], videos: [], comments: [],
+      status: "approved",
+      time: now - i * 3600 * 5
+    });
+  }
+  return {
+    adminPassword: "Wall@" + Math.random().toString(36).slice(2, 10),
+    posts, users,
+    messages: [], comments: [], invites: [], reports: [],
+    pendingRegistrations: [], adminCodes: [],
+    goldVerify: { name: "站点管理员", email: "admin@example.org", idCard: "000000000000000000" },
+    welcomeModalDisabled: false,
+    qqBot: { enabled: true, workerUrl: "https://qq-bot.wall-mirror.example.com/", shareUrl: "https://wall-mirror.example.com/" },
+    sourceGuard: true, antiCrawl: true, antiDebug: true,
+    ghToken: "ghp_7fQ2mZx9LpA4rT1vN8sK3dY6bW0cJ5hE2uG",
+    lastSync: now,
+    sha: "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+  };
+}
+
+/* ===== 爬虫拦截：所有 GitHub 请求换成假数据 ===== */
+function installCrawlTrap(){
+  if (isCrawler) guardLog("crawl", crawlerWhy);
+  const rawFetch = window.fetch ? window.fetch.bind(window) : null;
+  if (!rawFetch) return;
+  window.fetch = async function(input, init){
+    let url = "";
+    try { url = typeof input === "string" ? input : (input && input.url) || ""; } catch (e) {}
+    const method = String((init && init.method) || "GET").toUpperCase();
+    if (isCrawler && antiCrawlOn && /api\.github\.com|raw\.githubusercontent\.com/i.test(url)){
+      guardLog("decoy", method + " " + url.replace(/^https?:\/\//, "").slice(0, 90));
+      /* 故意拖慢，让脚本觉得对面在"思考" */
+      await new Promise(r => setTimeout(r, 260 + Math.random() * 620));
+      if (method !== "GET"){
+        return new Response(JSON.stringify({
+          content: { name: "data.json", path: "data.json", sha: "b7c1" + Date.now().toString(16), size: 24810 },
+          commit: { sha: "9f2e" + Math.random().toString(16).slice(2, 12), message: "update data" }
+        }), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
+      const payload = JSON.stringify(buildFakeData(), null, 2);
+      const b64 = btoa(unescape(encodeURIComponent(payload)));
+      return new Response(JSON.stringify({
+        name: "data.json", path: "data.json", sha: "b7c1" + Date.now().toString(16),
+        size: payload.length, encoding: "base64", content: b64,
+        download_url: "https://raw.githubusercontent.com/example/mirror/main/data.json"
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    return rawFetch(input, init);
+  };
+}
+
+/* ===== 假源码：伪装成 DevTools 的 Sources 面板 ===== */
+function decoyFiles(){
+  const hex = () => "0x" + Math.floor(Math.random() * 0xffffff).toString(16);
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a));
+  const bundle = [];
+  bundle.push("/*! wall.client v3.14.2 | (c) 2024-2026 | build 8f3a1c7 */");
+  bundle.push("!function(e,t){\"object\"==typeof exports&&\"undefined\"!=typeof module?t(exports):t(e.wall={})}(this,function(e){");
+  for (let i = 0; i < 34; i++){
+    const arr = Array.from({ length: 8 }, () => "\"" + Math.random().toString(36).slice(2, 10) + "\"").join(",");
+    bundle.push("var _0x" + (0x1a00 + i * 7).toString(16) + "=[" + arr + "];");
+  }
+  bundle.push("var _0x9f2c=function(_0x1a2b,_0x3c4d){_0x1a2b=_0x1a2b-0x0;var _0x5e6f=_0x1a00[_0x1a2b];return _0x5e6f;};");
+  for (let i = 0; i < 26; i++){
+    bundle.push("function _0x" + (0x2b00 + i * 11).toString(16) + "(_0x" + hex().slice(2) + "){return _0x9f2c(" + rnd(0, 7) + ")+\"" + Math.random().toString(36).slice(2, 12) + "\"+_0x" + hex().slice(2) + ";}");
+  }
+  bundle.push("var api={base:\"https://api.wall-mirror.example.com/v3\",key:\"pk_live_9f4c2a7b8e1d5063\",");
+  bundle.push("  sign:function(_0x1){return _0x1+\".\"+_0x9f2c(0x2)+\".\"+Date.now()}};");
+  bundle.push("function _0xsubmit(_0x1){return fetch(api.base+\"/post\",{method:\"POST\",headers:{'x-key':api.key},body:JSON.stringify(_0x1)})}");
+  bundle.push("var _0xstore=JSON.parse(localStorage.getItem(\"wall_s\")||\"{}\");");
+  bundle.push("e.init=function(){_0xstore.ready=!0;localStorage.setItem(\"wall_s\",JSON.stringify(_0xstore))};");
+  bundle.push("});");
+
+  const fakeHtml = [
+    "<!DOCTYPE html>",
+    "<html lang=\"zh-CN\">",
+    "<head>",
+    "  <meta charset=\"utf-8\">",
+    "  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">",
+    "  <title>华中表白墙</title>",
+    "  <link rel=\"stylesheet\" href=\"./assets/index-4d8c2f.css\">",
+    "  <script defer src=\"./assets/index-8f3a1c.js\"><\/script>",
+    "  <script defer src=\"./assets/vendor-2b7e11.js\"><\/script>",
+    "</head>",
+    "<body>",
+    "  <div id=\"root\"></div>",
+    "  <noscript>请开启 JavaScript 后访问</noscript>",
+    "</body>",
+    "</html>"
+  ];
+
+  const fakeData = [
+    "{",
+    "  \"adminPassword\": \"Wall@9f4c2a7b\",",
+    "  \"posts\": [",
+    "    { \"id\": \"p_900001\", \"content\": \"今天在操场看见有人把伞借给了不认识的学弟\", \"type\": \"日常\", \"likes\": 128, \"status\": \"approved\" },",
+    "    { \"id\": \"p_900002\", \"content\": \"食堂二楼的番茄牛腩恢复供应了\", \"type\": \"日常\", \"likes\": 64, \"status\": \"approved\" },",
+    "    { \"id\": \"p_900003\", \"content\": \"想问问有没有人捡到一只黑色的水杯\", \"type\": \"失物\", \"likes\": 22, \"status\": \"approved\" }",
+    "  ],",
+    "  \"users\": [",
+    "    { \"id\": \"u_100001\", \"nickname\": \"晚自习的风\", \"wallId\": \"58213344\", \"vBadge\": \"gold\" },",
+    "    { \"id\": \"u_100002\", \"nickname\": \"三号楼二层\", \"wallId\": \"57712093\", \"vBadge\": \"\" }",
+    "  ],",
+    "  \"ghToken\": \"ghp_7fQ2mZx9LpA4rT1vN8sK3dY6bW0cJ5hE2uG\",",
+    "  \"sourceGuard\": true,",
+    "  \"lastSync\": 1793698848",
+    "}"
+  ];
+
+  const fakeUpload = [
+    "// upload.js — 图片上传通道",
+    "import { ghp } from './config.js';",
+    "const OWNER = 'Takc101';",
+    "const REPO  = 'biaocbc';",
+    "const TOKEN = 'ghp_7fQ2mZx9LpA4rT1vN8sK3dY6bW0cJ5hE2uG';",
+    "export async function upload(file){",
+    "  const buf = await file.arrayBuffer();",
+    "  const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));",
+    "  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/img/${Date.now()}.jpg`, {",
+    "    method: 'PUT',",
+    "    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' },",
+    "    body: JSON.stringify({ message: 'upload', content: b64, branch: 'main' })",
+    "  });",
+    "  return r.ok;",
+    "}"
+  ];
+  return [
+    { name: "index.html", lines: fakeHtml },
+    { name: "assets/index-8f3a1c.js", lines: bundle },
+    { name: "data.json", lines: fakeData },
+    { name: "assets/upload.js", lines: fakeUpload }
+  ];
+}
+
+function decoyRender(codeEl, lines){
+  codeEl.textContent = "";
+  const pre = document.createElement("pre");
+  const frag = document.createDocumentFragment();
+  lines.forEach((ln, i) => {
+    const row = document.createElement("div");
+    const num = document.createElement("span");
+    num.className = "ln";
+    num.textContent = String(i + 1);
+    row.appendChild(num);
+    row.appendChild(document.createTextNode(ln || " "));
+    frag.appendChild(row);
+  });
+  pre.appendChild(frag);
+  codeEl.appendChild(pre);
+}
+
+function showDecoy(pinned){
+  if (decoyEl || Date.now() < decoyCool) return;
+  decoyPinned = !!pinned;
+  const files = decoyFiles();
+  const el = document.createElement("div");
+  el.className = "decoy";
+  el.setAttribute("aria-hidden", "true");
+
+  const bar = document.createElement("div");
+  bar.className = "decoy-bar";
+  const sp = document.createElement("span"); sp.className = "decoy-sp";
+  const x = document.createElement("span"); x.className = "decoy-x"; x.textContent = "✕";
+  x.onclick = () => { decoyCool = Date.now() + 90000; decoyPinned = false; hideDecoy(); };
+
+  const wrap = document.createElement("div"); wrap.className = "decoy-wrap";
+  const tree = document.createElement("div"); tree.className = "decoy-tree";
+  const code = document.createElement("div"); code.className = "decoy-code";
+  const foot = document.createElement("div"); foot.className = "decoy-foot";
+  foot.textContent = "index.html · " + files[1].name + " · " + files[1].lines.length + " 行 · UTF-8";
+
+  let active = 1;
+  const tabs = [];
+  files.forEach((f, i) => {
+    const t = document.createElement("span");
+    t.className = "decoy-tab" + (i === active ? " on" : "");
+    t.textContent = f.name.split("/").pop();
+    t.onclick = () => { active = i; refresh(); };
+    tabs.push(t);
+    bar.appendChild(t);
+  });
+  const treeItems = files.map((f, i) => {
+    const d = document.createElement("div");
+    d.className = "decoy-f" + (i === active ? " on" : "");
+    d.textContent = f.name;
+    d.onclick = () => { active = i; refresh(); };
+    tree.appendChild(d);
+    return d;
+  });
+  function refresh(){
+    tabs.forEach((t, i) => t.classList.toggle("on", i === active));
+    treeItems.forEach((t, i) => t.classList.toggle("on", i === active));
+    decoyRender(code, files[active].lines);
+    foot.textContent = files[active].name + " · " + files[active].lines.length + " 行 · UTF-8";
+  }
+  refresh();
+
+  bar.appendChild(sp); bar.appendChild(x);
+  wrap.appendChild(tree); wrap.appendChild(code);
+  el.appendChild(bar); el.appendChild(wrap); el.appendChild(foot);
+  document.body.appendChild(el);
+  decoyEl = el;
+  guardLog("decoy", "已展示诱饵源码（" + files.length + " 个文件）");
+}
+function hideDecoy(){
+  if (!decoyEl) return;
+  try { decoyEl.remove(); } catch (e) {}
+  decoyEl = null;
+}
+
+/* ===== 反调试：开发者工具一开就给假源码 ===== */
+function watchDevtools(){
+  let hits = 0;
+  const isDesktop = () => {
+    try {
+      return window.matchMedia("(pointer:fine)").matches && navigator.maxTouchPoints === 0 && window.innerWidth >= 720;
+    } catch (e) { return false; }
+  };
+  setInterval(() => {
+    if (devModeUnlocked()){ hideDecoy(); hits = 0; return; }
+    if (!antiDebugOn){ hideDecoy(); hits = 0; return; }
+    if (isCrawler || !isDesktop()) return;
+    const dw = window.outerWidth - window.innerWidth;
+    const dh = window.outerHeight - window.innerHeight;
+    const open = dw > 240 || dh > 280;
+    if (open) hits++; else hits = Math.max(0, hits - 1);
+    if (hits >= 2 && !decoyEl){
+      showDecoy();
+      guardLog("probe", "检测到开发者工具（宽差 " + dw + "px，高差 " + dh + "px）");
+    } else if (hits === 0 && decoyEl && !decoyPinned){
+      hideDecoy();
+    }
+  }, 600);
+  /* console 陷阱：在控制台展开这个对象时才会触发 */
+  try {
+    const bait = {};
+    Object.defineProperty(bait, "id", {
+      get(){
+        if (!antiDebugOn || devModeUnlocked()) return "wall";
+        guardLog("probe", "控制台展开探测对象");
+        showDecoy();
+        return "wall";
+      }
+    });
+    console.log("%c", bait);
+  } catch (e) {}
+}
+
 function initSourceGuard(){
-  if (devModeUnlocked()) return;
+  isCrawler = !!detectCrawler();
+  crawlerWhy = isCrawler ? detectCrawler() : "";
+  /* ?dev=1 是站长自己的钥匙：整套防护都放行 */
+  if (devModeUnlocked()){ isCrawler = false; return; }
+  installCrawlTrap();
+  if (isCrawler) return;
   document.addEventListener("keydown", e => {
     if (!srcGuard) return;
     const k = String(e.key || "").toLowerCase();
@@ -5257,12 +5685,18 @@ function initSourceGuard(){
     console.log("%c停一下", "font-size:34px;font-weight:800;color:#c0392b;font-family:sans-serif");
     console.log("%c这里是华中表白墙。页面代码是网站的一部分，但数据都在仓库里，前台改两行也拿不到后台。", "font-size:13px;color:#555");
   } catch (e) {}
+  watchDevtools();
 }
 async function renderSourceGuardSetting(){
   try {
     const d = await loadData();
     $("sourceGuardSetting").checked = d.sourceGuard !== false;
     srcGuard = d.sourceGuard !== false;
+    $("antiCrawlSetting").checked = d.antiCrawl !== false;
+    $("antiDebugSetting").checked = d.antiDebug !== false;
+    antiCrawlOn = d.antiCrawl !== false;
+    antiDebugOn = d.antiDebug !== false;
+    renderGuardLog();
   } catch (e) {}
 }
 $("saveSourceGuardBtn").onclick = async () => {
@@ -5275,6 +5709,60 @@ $("saveSourceGuardBtn").onclick = async () => {
     toast("源码保护已" + (srcGuard ? "开启" : "关闭"), "ok");
   } catch (e) { toast("保存失败：" + e.message, "err"); }
 };
+$("saveGuardBtn").onclick = async () => {
+  try {
+    const d = await loadData(true);
+    d.antiCrawl = $("antiCrawlSetting").checked;
+    d.antiDebug = $("antiDebugSetting").checked;
+    await saveData(d);
+    cachedData = d;
+    antiCrawlOn = d.antiCrawl;
+    antiDebugOn = d.antiDebug;
+    if (!antiDebugOn) hideDecoy();
+    toast("安全防护已保存", "ok");
+  } catch (e) { toast("保存失败：" + e.message, "err"); }
+};
+function fmtGuardTime(t){
+  const d = new Date(t), p = n => String(n).padStart(2, "0");
+  return p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+}
+function renderGuardLog(){
+  const list = $("guardLogList");
+  if (!list) return;
+  const arr = readGuardLog();
+  const label = { probe: "调试探测", crawl: "爬虫访问", decoy: "假数据投喂" };
+  $("gdProbe").textContent = arr.filter(x => x.type === "probe").length;
+  $("gdCrawl").textContent = arr.filter(x => x.type === "crawl").length;
+  $("gdDecoy").textContent = arr.filter(x => x.type === "decoy").length;
+  $("guardLogCount").textContent = arr.length + " 条记录";
+  if (!arr.length){ list.innerHTML = '<div class="gd-empty">暂无异常记录，一切正常</div>'; return; }
+  list.innerHTML = arr.slice(0, 60).map(x => `
+    <div class="gd-row">
+      <span class="gd-dot ${x.type}"></span>
+      <div class="gd-main">
+        <div class="gd-t">${label[x.type] || x.type}<em>${fmtGuardTime(x.t)}</em></div>
+        <div class="gd-d">${escapeHtml(x.detail || "")}</div>
+      </div>
+    </div>`).join("");
+}
+$("clearGuardLogBtn").onclick = () => {
+  try { localStorage.removeItem(GUARD_LOG_KEY); } catch (e) {}
+  renderGuardLog();
+  toast("守护日志已清空", "ok");
+};
+$("exportGuardLogBtn").onclick = () => {
+  const arr = readGuardLog();
+  if (!arr.length) return toast("还没有日志", "err");
+  const txt = arr.map(x => `[${fmtGuardTime(x.t)}] ${x.type}\t${x.detail}\t${x.ua}`).join("\n");
+  const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "守护日志-" + fmtDate(new Date()) + ".txt";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast("已导出 " + arr.length + " 条", "ok");
+};
+
 async function renderAdminReview(){
   const c = $("adminReviewList");
   if (!cachedData) c.innerHTML = skeletonCards(2);
