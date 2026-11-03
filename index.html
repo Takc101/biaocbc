@@ -724,6 +724,24 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .admin-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
 .admin-tab.active .tab-dot{background:#fff}
 .admin-pane{animation:pageIn .25s ease both}
+/* GitHub Token：三段输入 + 状态灯 */
+.tok-parts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tok-in{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;
+  text-align:center;padding:11px 6px;letter-spacing:0;
+}
+.tok-state{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;margin-bottom:12px;color:var(--muted)}
+.tok-state .tok-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.tok-state.ok{color:var(--ok)}
+.tok-state.ok .tok-dot{background:var(--ok)}
+.tok-state.err{color:var(--danger)}
+.tok-state.err .tok-dot{background:var(--danger)}
+.tok-state.warn{color:#b07b12}
+.tok-state.warn .tok-dot{background:#e0a52a}
+.tok-exp{display:flex;align-items:center;gap:8px;margin:12px 0}
+.tok-exp label{font-size:12.5px;font-weight:700;color:var(--muted);flex:none}
+.tok-exp .input{flex:0 1 148px;min-width:0;padding:9px 10px;font-size:13px}
+.tok-exp-hint{font-size:11.5px;color:var(--muted);flex:none}
 .user-row{display:flex;align-items:center;gap:10px}
 .user-row .avatar{width:40px;height:40px;font-size:15px}
 .user-info{flex:1;min-width:0}
@@ -1487,6 +1505,38 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
             <div id="adminPendingRegList"></div>
           </div>
           <div class="admin-pane" data-pane="settings" hidden>
+            <div class="section-head"><h2>GitHub Token</h2><span class="section-sub">数据读写凭据</span></div>
+            <div class="card">
+              <div class="tok-state" id="ghTokenState">
+                <span class="tok-dot"></span><span id="ghTokenStateText">未检测</span>
+              </div>
+              <div class="tok-parts">
+                <input class="input tok-in" id="ghTokA" maxlength="32" placeholder="第 1 段" autocomplete="off" spellcheck="false" autocapitalize="off">
+                <input class="input tok-in" id="ghTokB" maxlength="32" placeholder="第 2 段" autocomplete="off" spellcheck="false" autocapitalize="off">
+                <input class="input tok-in" id="ghTokC" maxlength="32" placeholder="第 3 段" autocomplete="off" spellcheck="false" autocapitalize="off">
+              </div>
+              <div class="hint" style="margin-top:10px">整串粘进第一个框，会自动切成三段；也可以照 GitHub 页面显示的分段逐个贴。</div>
+              <div class="tok-exp">
+                <label for="ghTokenExpiry">到期日</label>
+                <input type="date" class="input" id="ghTokenExpiry">
+                <span class="tok-exp-hint">可留空</span>
+              </div>
+              <button class="btn btn-block" id="checkGhTokenBtn">检测并保存</button>
+              <button class="btn btn-ghost btn-block" id="resetGhTokenBtn" style="margin-top:8px">恢复内置默认</button>
+              <div class="status" id="ghTokenMsg"></div>
+              <div class="hint" style="margin-top:10px">Token 只存在当前这台设备的浏览器里，不会写进仓库。换手机或换浏览器要重新填一次。</div>
+            </div>
+            <div class="section-head"><h2>源码保护</h2><span class="section-sub">提高扒代码门槛</span></div>
+            <div class="card">
+              <div class="row" style="padding:0;border:none;cursor:default">
+                <span class="row-ico" data-ico="shield"></span>
+                <span class="row-title">开启源码保护</span>
+                <span class="switch"><input type="checkbox" id="sourceGuardSetting"><span class="track"></span><span class="thumb"></span></span>
+              </div>
+              <div class="hint" style="margin-top:10px">拦截 F12、Ctrl+Shift+I、Ctrl+U 和右键菜单。对自己人无效；要临时调试，在网址后面加 <b>?dev=1</b>。</div>
+              <div style="height:12px"></div>
+              <button class="btn btn-ghost btn-block" id="saveSourceGuardBtn">保存源码保护设置</button>
+            </div>
             <div class="section-head"><h2>弹窗设置</h2></div>
             <div class="card">
               <div class="row" style="padding:0;border:none;cursor:default">
@@ -1976,7 +2026,15 @@ const CONFIG = {
   emailjsTemplateId: "template_p09b9qc",
   emailjsPublicKey: "xVmknOp8YZOsl75CF"
 };
-CONFIG.token = CONFIG.tokenPartA + CONFIG.tokenPartB + CONFIG.tokenPartC;
+CONFIG.defaultToken = CONFIG.tokenPartA + CONFIG.tokenPartB + CONFIG.tokenPartC;
+/* 内置 Token 的到期日（GitHub 只在服务端返回，浏览器读不到，所以写死一份用于倒计时提醒） */
+CONFIG.defaultTokenExpiry = "2026-11-23T14:02:42Z";
+/* 后台可以换成自己的 Token：只存本机浏览器，不写进仓库。没换过就用内置默认。 */
+const GH_TOKEN_KEY = "gh_token_v1";
+function readStoredGhToken(){
+  try { return localStorage.getItem(GH_TOKEN_KEY) || ""; } catch (e) { return ""; }
+}
+CONFIG.token = readStoredGhToken() || CONFIG.defaultToken;
 CONFIG.dataApiUrl = `https://api.github.com/repos/${CONFIG.dataOwner}/${CONFIG.dataRepo}/contents/${CONFIG.dataPath}`;
 CONFIG.imgApiBase = `https://api.github.com/repos/${CONFIG.imgOwner}/${CONFIG.imgRepo}/contents`;
 CONFIG.imgRawBase = `https://raw.githubusercontent.com/${CONFIG.imgOwner}/${CONFIG.imgRepo}/${CONFIG.branch}`;
@@ -2007,6 +2065,7 @@ let postsFilterType = "全部";
 let postsSortNew = true;
 let meTab = "posts";
 let adminTab = "review";
+let srcGuard = true;            // 源码保护总开关（远端 data.json 的 sourceGuard 字段）
 
 const $ = id => document.getElementById(id);
 const nowTs = () => Math.floor(Date.now() / 1000);
@@ -2675,6 +2734,7 @@ async function fetchDataRemote(){
   const res = await fetch(CONFIG.dataApiUrl, {
     headers: { Authorization: `token ${CONFIG.token}`, Accept: "application/vnd.github.v3+json" }
   });
+  if (res.status === 401 || res.status === 403) throw new Error("GitHub 拒绝访问（HTTP " + res.status + "）：Token 可能已过期或被撤销，去后台「设置 → GitHub Token」换一个");
   if (res.status === 404) return { adminPassword:"admin123", posts:[], users:[], messages:[], comments:[], invites:[], reports:[], pendingRegistrations:[], adminCodes:[], goldVerify:{ name:"陈宝昌", email:"520chenbaochang@gmail.com", idCard:"421224201106013734" }, welcomeModalDisabled:false, qqBot:{ enabled:false, workerUrl:"", shareUrl:"" }, sha:null };
   if (!res.ok) throw new Error("GitHub读取失败: HTTP " + res.status);
   const j = await res.json();
@@ -2688,6 +2748,7 @@ async function fetchDataRemote(){
   }
   if (!d.adminPassword) d.adminPassword = "admin123";
   if (!Array.isArray(d.posts)) d.posts = [];
+  if (typeof d.sourceGuard === "boolean") srcGuard = d.sourceGuard;
   if (!Array.isArray(d.users)) d.users = [];
   if (!Array.isArray(d.messages)) d.messages = [];
   if (!Array.isArray(d.comments)) d.comments = [];
@@ -2737,6 +2798,8 @@ async function saveData(d){
   if (!res.ok){
     let detail = "";
     try { detail = (await res.json()).message || ""; } catch (e) {}
+    if (res.status === 401 || res.status === 403)
+      throw new Error("没有写入权限（HTTP " + res.status + "）：Token 可能已过期或缺少 Contents 写权限");
     throw new Error("GitHub保存失败: HTTP " + res.status + (detail ? " - " + detail : ""));
   }
   const result = await res.json();
@@ -4947,6 +5010,9 @@ $("adminLoginBtn").onclick = async () => {
     if (pwd === d.adminPassword){
       adminLoggedIn = true;
       cachedData = d;
+      /* 管理员自己调试时不再拦 F12，免得改东西还要加 ?dev=1 */
+      try { sessionStorage.setItem("dev_unlock", "1"); } catch (e) {}
+      srcGuard = false;
       loading.close();
       toast("登录成功", "ok");
       renderAdmin();
@@ -4998,8 +5064,217 @@ function renderAdminPane(){
   else if (adminTab === "invites") renderAdminInviteList();
   else if (adminTab === "reports") renderAdminReports();
   else if (adminTab === "regs") renderAdminPendingRegs();
-  else if (adminTab === "settings"){ renderWelcomeModalSetting(); renderQQBotSetting(); }
+  else if (adminTab === "settings"){ renderGhTokenSetting(); renderSourceGuardSetting(); renderWelcomeModalSetting(); renderQQBotSetting(); }
 }
+function fmtDate(d){
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+/* ---------- GitHub Token：三段填写 + 检测 ---------- */
+const GH_TOKEN_INPUTS = ["ghTokA", "ghTokB", "ghTokC"];
+function ghTokenSplit(tok){
+  if (!tok) return ["", "", ""];
+  const n = Math.ceil(tok.length / 3);
+  /* 均分点附近找下划线断开，别把 github_pat_xxx_ 这段切碎 */
+  const nearUnderscore = i => {
+    for (let d = 0; d <= 6; d++){
+      if (tok[i + d] === "_") return i + d + 1;
+      if (tok[i - d] === "_") return i - d + 1;
+    }
+    return i;
+  };
+  const p1 = Math.min(nearUnderscore(n), tok.length - 16);
+  const p2 = Math.min(Math.max(nearUnderscore(n * 2), p1 + 8), tok.length - 6);
+  return [tok.slice(0, p1), tok.slice(p1, p2), tok.slice(p2)];
+}
+function fillGhTokenInputs(tok){
+  const p = ghTokenSplit(tok || "");
+  GH_TOKEN_INPUTS.forEach((id, i) => { const el = $(id); if (el) el.value = p[i] || ""; });
+}
+function readGhTokenInputs(){
+  return GH_TOKEN_INPUTS.map(id => ($(id) ? $(id).value : "")).join("").replace(/\s+/g, "");
+}
+function ghTokenStatusUI(kind, text){
+  const el = $("ghTokenState");
+  if (!el) return;
+  el.className = "tok-state" + (kind ? " " + kind : "");
+  $("ghTokenStateText").textContent = text;
+}
+/* GitHub 的到期时间是 UTC 字符串，形如 2026-11-23 14:02:42 UTC */
+function parseGhExp(s){
+  if (!s) return null;
+  const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})\s*(UTC|Z)?$/);
+  if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+function ghDaysLeft(t){ return Math.ceil((t.getTime() - Date.now()) / 86400000); }
+function ghExpText(t){
+  const days = ghDaysLeft(t);
+  if (days <= 0) return "已于 " + fmtDate(t) + " 过期";
+  if (days <= 7) return fmtDate(t) + " 到期，只剩 " + days + " 天";
+  return "有效期至 " + fmtDate(t) + "（剩 " + days + " 天）";
+}
+function ghExpKind(t){
+  const days = ghDaysLeft(t);
+  return days <= 0 ? "err" : (days <= 7 ? "warn" : "ok");
+}
+function renderGhTokenSetting(){
+  const stored = readStoredGhToken();
+  const savedExp = (() => { try { return localStorage.getItem("gh_token_exp") || ""; } catch (e) { return ""; } })();
+  if ($("ghTokenExpiry")) $("ghTokenExpiry").value = savedExp;
+  if (stored){
+    fillGhTokenInputs(stored);
+    const t = savedExp ? new Date(savedExp + "T23:59:59") : null;
+    if (t && !isNaN(t.getTime())) ghTokenStatusUI(ghExpKind(t), "自定义 Token · " + ghExpText(t));
+    else ghTokenStatusUI("ok", "自定义 Token · 到期时间未知");
+  } else {
+    fillGhTokenInputs("");
+    const t = new Date(CONFIG.defaultTokenExpiry);
+    ghTokenStatusUI(ghExpKind(t), "内置默认 Token · " + ghExpText(t));
+  }
+  const msg = $("ghTokenMsg");
+  if (msg){ msg.textContent = ""; msg.className = "status"; }
+}
+/* 整串粘贴时自动切成三段 */
+GH_TOKEN_INPUTS.forEach((id, idx) => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener("paste", ev => {
+    const text = ((ev.clipboardData || window.clipboardData).getData("text") || "").replace(/\s+/g, "");
+    if (!text) return;
+    ev.preventDefault();
+    if (text.length > 32){ fillGhTokenInputs(text); }
+    else { el.value = text; }
+  });
+  el.addEventListener("keydown", e => {
+    if (e.key === "Enter") $("checkGhTokenBtn").click();
+    /* 退格删空时退回上一段，分段粘贴更顺手 */
+    if (e.key === "Backspace" && !el.value && idx > 0) $(GH_TOKEN_INPUTS[idx - 1]).focus();
+  });
+});
+$("checkGhTokenBtn").onclick = async () => {
+  const tok = readGhTokenInputs();
+  const msg = $("ghTokenMsg");
+  msg.className = "status"; msg.textContent = "";
+  if (tok.length < 20){
+    msg.textContent = "Token 太短，GitHub 的 Token 一般是 40 位以上";
+    msg.classList.add("error");
+    return;
+  }
+  const loading = toast("正在检测 Token…", "load");
+  try {
+    const r = await fetch("https://api.github.com/user", {
+      headers: { Authorization: `token ${tok}`, Accept: "application/vnd.github+json" }
+    });
+    if (r.status === 401){ throw new Error("Token 无效、已撤销，或复制时少了字符"); }
+    if (!r.ok){ throw new Error("检测失败：HTTP " + r.status); }
+    const me = await r.json();
+    const exp = (r.headers.get("github-authentication-token-expiration") || "").trim();
+    const scopes = (r.headers.get("x-oauth-scopes") || "").trim();
+    /* 顺便确认对数据仓库有写权限 */
+    const rr = await fetch(`https://api.github.com/repos/${CONFIG.dataOwner}/${CONFIG.dataRepo}`, {
+      headers: { Authorization: `token ${tok}`, Accept: "application/vnd.github+json" }
+    });
+    let canWrite = false, repoNote = "";
+    if (rr.ok){
+      const repo = await rr.json();
+      canWrite = !!(repo.permissions && repo.permissions.push);
+      if (!canWrite) repoNote = "，但对 " + CONFIG.dataOwner + "/" + CONFIG.dataRepo + " 没有写权限";
+    } else if (rr.status === 404){
+      repoNote = "，但看不到 " + CONFIG.dataOwner + "/" + CONFIG.dataRepo;
+    }
+    if (!canWrite) throw new Error("Token 有效" + (repoNote || "，但缺少仓库写权限") + "，请给它 Contents 读写权限");
+
+    /* 有效期：响应头 → 手填日期 → 内置 Token 的已知到期日 */
+    let expDate = parseGhExp(exp);
+    const manualExp = $("ghTokenExpiry") ? $("ghTokenExpiry").value : "";
+    if (!expDate && manualExp) expDate = new Date(manualExp + "T23:59:59");
+    if (!expDate && tok === CONFIG.defaultToken) expDate = new Date(CONFIG.defaultTokenExpiry);
+    let expText = "到期时间未知", expKind = "ok", expStore = "";
+    if (expDate && !isNaN(expDate.getTime())){
+      expText = ghExpText(expDate);
+      expKind = ghExpKind(expDate);
+      expStore = fmtDate(expDate);
+      if ($("ghTokenExpiry")) $("ghTokenExpiry").value = expStore;
+      if (expKind === "err") throw new Error("这个 Token " + expText + "，请重新生成一个");
+    }
+    /* 写入本机 */
+    localStorage.setItem(GH_TOKEN_KEY, tok);
+    if (expStore) localStorage.setItem("gh_token_exp", expStore);
+    else { try { localStorage.removeItem("gh_token_exp"); } catch (e) {} }
+    CONFIG.token = tok;
+    loading.close();
+    ghTokenStatusUI(expKind, "@" + (me.login || "?") + " · " + expText);
+    msg.className = "status " + (expKind === "warn" ? "" : "success");
+    msg.textContent = "检测通过，已保存到本机" +
+      (expText === "到期时间未知" ? "。GitHub 不向网页公开到期时间，可在上面手填，方便提前提醒。" : "");
+    toast("Token 已更新", "ok");
+  } catch (e) {
+    loading.close();
+    msg.className = "status error";
+    msg.textContent = e.message;
+    ghTokenStatusUI("err", "检测未通过");
+  }
+};
+$("resetGhTokenBtn").onclick = () => {
+  try { localStorage.removeItem(GH_TOKEN_KEY); localStorage.removeItem("gh_token_exp"); } catch (e) {}
+  CONFIG.token = CONFIG.defaultToken;
+  renderGhTokenSetting();
+  toast("已恢复内置默认 Token", "ok");
+};
+/* ---------- 源码保护 ---------- */
+function devModeUnlocked(){
+  try {
+    if (new URLSearchParams(location.search).get("dev") === "1"){ sessionStorage.setItem("dev_unlock", "1"); return true; }
+    return sessionStorage.getItem("dev_unlock") === "1";
+  } catch (e) { return false; }
+}
+function initSourceGuard(){
+  if (devModeUnlocked()) return;
+  document.addEventListener("keydown", e => {
+    if (!srcGuard) return;
+    const k = String(e.key || "").toLowerCase();
+    const mod = e.ctrlKey || e.metaKey;
+    const hit = e.key === "F12"
+      || (mod && e.shiftKey && ["i", "j", "c"].includes(k))
+      || (mod && !e.shiftKey && (k === "u" || k === "s"))
+      || (e.metaKey && e.altKey && ["i", "j", "c"].includes(k));
+    if (hit){ e.preventDefault(); e.stopPropagation(); }
+  }, true);
+  document.addEventListener("contextmenu", e => {
+    if (!srcGuard) return;
+    /* 选中了文字就放行：长按复制投稿内容不该被挡 */
+    const sel = window.getSelection ? String(window.getSelection()).trim() : "";
+    if (sel) return;
+    if (e.target.closest("input,textarea,[contenteditable='true']")) return;
+    e.preventDefault();
+  }, true);
+  document.addEventListener("dragstart", e => {
+    if (srcGuard && e.target.closest && e.target.closest("img")) e.preventDefault();
+  }, true);
+  try {
+    console.log("%c停一下", "font-size:34px;font-weight:800;color:#c0392b;font-family:sans-serif");
+    console.log("%c这里是华中表白墙。页面代码是网站的一部分，但数据都在仓库里，前台改两行也拿不到后台。", "font-size:13px;color:#555");
+  } catch (e) {}
+}
+async function renderSourceGuardSetting(){
+  try {
+    const d = await loadData();
+    $("sourceGuardSetting").checked = d.sourceGuard !== false;
+    srcGuard = d.sourceGuard !== false;
+  } catch (e) {}
+}
+$("saveSourceGuardBtn").onclick = async () => {
+  try {
+    const d = await loadData(true);
+    d.sourceGuard = $("sourceGuardSetting").checked;
+    await saveData(d);
+    cachedData = d;
+    srcGuard = d.sourceGuard;
+    toast("源码保护已" + (srcGuard ? "开启" : "关闭"), "ok");
+  } catch (e) { toast("保存失败：" + e.message, "err"); }
+};
 async function renderAdminReview(){
   const c = $("adminReviewList");
   if (!cachedData) c.innerHTML = skeletonCards(2);
@@ -5577,6 +5852,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:"){
 /* 第一次进站默认就是游客身份，点「我的」随时可以切换成正式账号 */
 autoGuestLogin();
 initIcons();
+initSourceGuard();
 renderTypeGrid();
 renderTypeFilterChips();
 document.documentElement.setAttribute("data-skin", currentSkin());
