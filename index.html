@@ -529,7 +529,7 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 .up-name{font-size:20px;font-weight:800;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
 .up-id{font-size:12px;margin-top:4px;word-break:break-all}
 /* 快手式：数字直接排一行，不套卡片 */
-.up-stats{display:flex;gap:0;margin:2px 0 16px;padding:0 2px}
+.up-stats{display:flex;gap:0;margin:2px 0 16px;padding:0 6px}
 .up-stat{flex:1;background:none;border:none;border-radius:0;padding:8px 4px;text-align:left;box-shadow:none}
 .up-stat b{display:block;font-size:18px;font-weight:800;font-family:var(--font-ui);line-height:1.25}
 .up-stat span{font-size:11.5px;color:var(--muted)}
@@ -1173,7 +1173,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 /* 访客主页：封面带常驻，对方设了自定义背景就换成他的 */
 /* 别人主页：快手式通栏头图，头像压在下沿 */
 .up-cover{
-  height:190px;border-radius:0;margin:-14px -14px 0;overflow:hidden;position:relative;
+  height:200px;border-radius:0;margin:-14px -14px 0;overflow:hidden;position:relative;
   background:linear-gradient(140deg,#8e9bb3,#c9d2df);background-size:cover;background-position:center;
 }
 .up-cover::after{
@@ -1190,8 +1190,8 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
   padding:0 14px 24px;min-height:calc(100dvh - 210px);
   box-shadow:0 -8px 22px -16px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.07);
 }
-.up-hero.has-cover{position:relative;z-index:2;margin-top:-16px;align-items:flex-start;padding:0 2px 16px}
-.up-hero.has-cover .up-meta{padding-top:52px}
+.up-hero.has-cover{position:relative;z-index:2;margin-top:-2px;align-items:flex-start;padding:0 6px 16px}
+.up-hero.has-cover .up-meta{padding-top:34px}
 .up-hero.has-cover .up-avatar{
   width:78px;height:78px;font-size:32px;
   border:3px solid rgba(255,255,255,.9);box-shadow:0 10px 24px -12px rgba(0,0,0,.45);background-clip:padding-box;
