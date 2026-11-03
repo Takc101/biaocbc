@@ -3700,7 +3700,9 @@ async function renderProfile(){
   const coverInline = coverCss2
     ? (coverIsImg ? coverCss2 + " center/cover no-repeat" : coverCss2)
     : "";
-  const coverHtml = `<div class="up-cover${coverIsImg ? " has-img" : ""}"${coverInline ? ` style="background:${coverInline}"` : ""}></div>`;
+  /* url("...") 里带双引号，直接塞进 style="..." 会被 HTML 解析截断，
+     必须转义成 &quot;，否则别人主页只剩 background:url( 这半截 */
+  const coverHtml = `<div class="up-cover${coverIsImg ? " has-img" : ""}"${coverInline ? ` style="background:${escapeHtml(coverInline)}"` : ""}></div>`;
   let html = `${coverHtml}
     <div class="up-content">
     <div class="up-hero has-cover">
