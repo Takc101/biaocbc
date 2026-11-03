@@ -416,8 +416,8 @@ html[data-dark="1"] .chip[data-t="其他"]{color:#a8a29e}
 }
 /* 底边渐隐到页面底色，接住下面的设置卡片 */
 .profile-cover::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:76px;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.34));
+  content:"";position:absolute;left:0;right:0;bottom:0;height:150px;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.14) 44%,rgba(0,0,0,.22) 74%,rgba(0,0,0,.26) 90%,var(--bg) 100%);
 }
 .me-hero{
   position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
@@ -2868,7 +2868,7 @@ function raiseSheet(el){
 
 /* ==================== 个人主页背景 ==================== */
 const COVER_PRESETS = [
-  { id:"grad:midnight", name:"午夜", css:"linear-gradient(140deg,#1f2937,#0b0f15)" },
+  { id:"grad:midnight", name:"午夜", css:"linear-gradient(140deg,#26364d,#121a26)" },
   { id:"grad:dusk",     name:"暮云", css:"linear-gradient(140deg,#6b7fa3,#c8d3e2)" },
   { id:"grad:moss",     name:"苔原", css:"linear-gradient(140deg,#2f4f42,#8fae9b)" },
   { id:"grad:sand",     name:"沙丘", css:"linear-gradient(140deg,#a9764f,#e3c8a9)" },
