@@ -1661,7 +1661,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
                 <small>mp3 / m4a / wav / ogg，可一次选多首<br>单首不超过 25MB</small>
               </button>
               <div class="music-upq" id="musicUpQueue"></div>
-              <div class="hint" style="margin-top:10px">文件直接传到仓库 <b>music/</b> 目录，传完自动进列表，用户刷新页面就能听。</div>
+              <div class="hint" style="margin-top:10px">文件直接传到仓库 <b>music/</b> 目录，传完自动进列表。GitHub Pages 发布新文件要 1–2 分钟，这之前前台会提示「音源加载失败」，等一下刷新就好。</div>
             </div>
             <div class="section-head"><h2>曲目列表</h2><span class="section-sub" id="musicListCount">还没有音乐</span></div>
             <div class="card"><div id="musicAdminList"></div></div>
@@ -6327,6 +6327,7 @@ const musicPlayBtn = $("musicPlayBtn");
 const musicVolume = $("musicVolume");
 let musicIndex = Math.max(0, parseInt(localStorage.getItem("music_index"), 10) || 0);
 let musicAutoplayTried = false;
+let musicErrStreak = 0;
 
 function renderMusicEmpty(){
   musicFloat.classList.remove("playing");
@@ -6397,9 +6398,17 @@ bgMusic.onpause = updateMusicUI;
 bgMusic.onended = () => loadTrack(musicIndex + 1, true);
 bgMusic.onerror = () => {
   if (!bgMusic.src) return;
+  musicErrStreak++;
+  /* 每首都轮过一遍还是不行，说明音源真的取不到（比如刚上传、Pages 还在构建），别再反复打请求 */
+  if (musicErrStreak >= Math.max(1, MUSIC_TRACKS.length)){
+    $("musicStatus").textContent = "音源加载失败，稍后重试";
+    musicFloat.classList.remove("playing");
+    return;
+  }
   $("musicStatus").textContent = "音源加载失败，换下一首";
   setTimeout(() => loadTrack(musicIndex + 1, false), 800);
 };
+bgMusic.addEventListener("playing", () => { musicErrStreak = 0; });
 /* 曲目列表跟着 data.json 走：数据回来后再决定是空态还是正常播放 */
 function syncMusicFromData(d){
   const arr = (d && Array.isArray(d.music) ? d.music : []).filter(t => t && t.src);
@@ -6491,6 +6500,13 @@ async function deleteRepoFile(path, message){
   if (!del.ok) throw new Error("HTTP " + del.status);
 }
 
+/* 写操作不该每次强制拉一遍远端：有缓存和 sha 就直接用，省掉 3–5 秒的等待。
+   只有缓存里没有 sha（比如刚从本地存储恢复）时才去远端取一次。 */
+async function musicDataForWrite(){
+  let d = cachedData;
+  if (!d || !d.sha || !Array.isArray(d.music)) d = await loadData(true);
+  return d;
+}
 function renderMusicAdmin(){
   const box = $("musicAdminList");
   if (!box) return;
@@ -6537,7 +6553,7 @@ function previewMusic(i){
 async function moveMusic(i, dir){
   const j = i + dir;
   let d;
-  try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  try { d = await musicDataForWrite(); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const arr = d.music || [];
   if (j < 0 || j >= arr.length) return;
   [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -6550,7 +6566,7 @@ async function moveMusic(i, dir){
 }
 async function removeMusic(i){
   let d;
-  try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  try { d = await musicDataForWrite(); } catch (e) { return toast("网络错误：" + e.message, "err"); }
   const arr = d.music || [];
   const t = arr[i];
   if (!t) return;
@@ -6606,7 +6622,7 @@ async function uploadMusicFiles(files){
   renderMusicQueue(q);
 
   let d, ok = 0;
-  try { d = await loadData(true); } catch (e) {
+  try { d = await musicDataForWrite(); } catch (e) {
     musicUpBusy = false; $("musicPickBtn").disabled = false;
     renderMusicQueue([]);
     return toast("读取数据失败：" + e.message, "err");
