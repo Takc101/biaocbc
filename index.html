@@ -6578,14 +6578,15 @@ async function removeMusic(i){
     await saveData(d);
     cachedData = d;
     syncMusicFromData(d);
-    const p = String(t.src || "").replace(/^\.?\//, "");
-    if (p.indexOf("music/") === 0){
-      try { await deleteRepoFile(p, "delete music"); } catch (e) { console.warn("音频文件删除失败：", e.message); }
-    }
+    renderMusicAdmin();          /* 列表先更新，别让人盯着旧数据等 */
     loading.close();
-    renderMusicAdmin();
     toast("已删除", "ok");
-  } catch (e) { loading.close(); toast("删除失败：" + e.message, "err"); }
+  } catch (e) { loading.close(); toast("删除失败：" + e.message, "err"); return; }
+  /* 仓库文件放最后删：删不掉也不影响列表，下次清理还有机会 */
+  const p = String(t.src || "").replace(/^\.?\//, "");
+  if (p.indexOf("music/") === 0){
+    try { await deleteRepoFile(p, "delete music"); } catch (e) { console.warn("音频文件删除失败：", e.message); }
+  }
 }
 function renderMusicQueue(items){
   const box = $("musicUpQueue");
