@@ -6406,7 +6406,7 @@ bgMusic.onerror = () => {
   musicErrStreak++;
   /* 每首都轮过一遍还是不行，说明音源真的取不到（比如刚上传、Pages 还在构建），别再反复打请求 */
   if (musicErrStreak >= Math.max(1, MUSIC_TRACKS.length)){
-    $("musicStatus").textContent = "音源加载失败，稍后重试";
+    $("musicStatus").textContent = "音源还没就绪，稍后再试";
     musicFloat.classList.remove("playing");
     return;
   }
