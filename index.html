@@ -913,6 +913,44 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .music-float.empty .music-disc{background:linear-gradient(150deg,#9aa1ad,#6b7280);animation:none}
 html[data-skin="mono"] .music-float.empty .music-disc{background:linear-gradient(150deg,#b4b8bf,#8b9099)!important;color:#fff!important}
 @media(max-width:380px){.music-float{right:8px;width:218px}}
+/* ---------- 后台：音乐管理 ---------- */
+.music-drop{
+  width:100%;display:flex;flex-direction:column;align-items:center;gap:7px;padding:22px 14px;
+  border:1.5px dashed var(--border);border-radius:16px;background:var(--surface-2);
+  color:var(--text);cursor:pointer;font-family:inherit;transition:border-color .18s,background .18s;
+}
+.music-drop:active{border-color:var(--primary)}
+.music-drop:disabled{opacity:.5;cursor:default}
+.music-drop-ico{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:#fff;margin-bottom:2px}
+.music-drop-ico .ico{width:17px;height:17px}
+.music-drop b{font-size:13.5px;font-weight:700}
+.music-drop small{font-size:11px;color:var(--muted);line-height:1.65;text-align:center}
+.music-upq{margin-top:12px;display:flex;flex-direction:column;gap:9px}
+.music-upq:empty{display:none}
+.muq{padding:9px 11px;border-radius:12px;background:var(--surface-2)}
+.muq-top{display:flex;align-items:center;gap:8px;font-size:11.5px}
+.muq-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.muq-state{flex-shrink:0;color:var(--muted);font-variant-numeric:tabular-nums}
+.muq-bar{height:3px;border-radius:2px;background:var(--border);margin-top:7px;overflow:hidden}
+.muq-bar i{display:block;height:100%;width:0;background:var(--primary);border-radius:2px;transition:width .2s}
+.muq.ok .muq-state{color:#1f9d55}
+.muq.err .muq-state{color:#c0392b}
+.muq.err .muq-bar i{background:#c0392b}
+.muq-err{font-size:10.5px;color:#c0392b;margin-top:5px;line-height:1.5}
+.mtr{display:flex;align-items:center;gap:7px;padding:9px 0;border-bottom:1px solid var(--border)}
+.mtr:last-child{border-bottom:none}
+.mtr-idx{width:18px;flex-shrink:0;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:center}
+.mtr-meta{flex:1;min-width:0}
+.mtr-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtr-sub{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtr-btn{width:29px;height:29px;flex-shrink:0;padding:0;border:none;border-radius:9px;background:var(--surface-2);color:var(--text);cursor:pointer;display:grid;place-items:center}
+.mtr-btn .ico{width:13px;height:13px}
+.mtr-btn:active{transform:scale(.92)}
+.mtr-btn:disabled{opacity:.26;cursor:default}
+.mtr-btn:disabled:active{transform:none}
+.mtr-btn.danger{color:#c0392b}
+.mtr-empty{padding:22px 4px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.9}
+.mtr-empty small{font-size:11px;opacity:.8}
 
 /* ---------- 弹窗 / 浮层 ---------- */
 .modal-overlay{
@@ -1613,6 +1651,22 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
             <div class="section-head"><h2>注册审核</h2><span class="section-sub">曾被删账号的重新注册</span></div>
             <div id="adminPendingRegList"></div>
           </div>
+          <div class="admin-pane" data-pane="music" hidden>
+            <div class="section-head"><h2>背景音乐</h2><span class="section-sub">前台右下角播放器</span></div>
+            <div class="card">
+              <input type="file" id="musicFileInput" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+              <button class="music-drop" id="musicPickBtn" type="button">
+                <span class="music-drop-ico" data-ico="plus"></span>
+                <b>选择音频文件</b>
+                <small>mp3 / m4a / wav / ogg，可一次选多首<br>单首不超过 25MB</small>
+              </button>
+              <div class="music-upq" id="musicUpQueue"></div>
+              <div class="hint" style="margin-top:10px">文件直接传到仓库 <b>music/</b> 目录，传完自动进列表，用户刷新页面就能听。</div>
+            </div>
+            <div class="section-head"><h2>曲目列表</h2><span class="section-sub" id="musicListCount">还没有音乐</span></div>
+            <div class="card"><div id="musicAdminList"></div></div>
+            <div class="hint">列表顺序就是播放顺序，前台会从第 1 首开始放。删掉一首，仓库里的音频文件也会一起删掉。</div>
+          </div>
           <div class="admin-pane" data-pane="settings" hidden>
             <div class="section-head"><h2>GitHub Token</h2><span class="section-sub">数据读写凭据</span></div>
             <div class="card">
@@ -2256,6 +2310,8 @@ const ICONS = {
   next:'<path d="M5 4l10 8-10 8V4z" fill="currentColor" stroke="none"/>',
   play:'<path d="M6 4l14 8-14 8V4z" fill="currentColor" stroke="none"/>',
   pause:'<path d="M7 4h3v16H7zM14 4h3v16h-3z" fill="currentColor" stroke="none"/>',
+  up:'<path d="M12 19V6M6 12l6-6 6 6"/>',
+  down:'<path d="M12 5v13M18 12l-6 6-6-6"/>',
   qq:'<path d="M12 2.6c-2.9 0-4.8 1.8-5.8 4.4-1 2.6-1.7 5.7-1.7 8.4 0 2.9 1.4 4.8 3.4 4.8 1 0 1.9-.5 2.5-1.2.6.8 1.2 1.2 1.6 1.2s1-.4 1.6-1.2c.6.7 1.5 1.2 2.5 1.2 2 0 3.4-1.9 3.4-4.8 0-2.7-.7-5.8-1.7-8.4C16.8 4.4 14.9 2.6 12 2.6z"/><path d="M8.3 1.9l.7 2.3M15.7 1.9l-.7 2.3"/><circle cx="9.9" cy="9.4" r=".95" fill="currentColor" stroke="none"/><circle cx="14.1" cy="9.4" r=".95" fill="currentColor" stroke="none"/><path d="M12 10.9l1.15 1-1.15 1-1.15-1 1.15-1z" fill="currentColor" stroke="none"/><path d="M8.7 13.5c.85.85 2 1.3 3.3 1.3s2.45-.45 3.3-1.3"/>'
 };
 function ico(name, cls){
@@ -2902,6 +2958,7 @@ async function fetchDataRemote(){
   if (!Array.isArray(d.reports)) d.reports = [];
   if (!Array.isArray(d.pendingRegistrations)) d.pendingRegistrations = [];
   if (!Array.isArray(d.adminCodes)) d.adminCodes = [];
+  if (!Array.isArray(d.music)) d.music = [];
   if (!d.goldVerify) d.goldVerify = { name:_k("6ZmI5a6d5piM"), email:_k("NTIwY2hlbmJhb2NoYW5nQGdtYWlsLmNvbQ==") };
   if (typeof d.welcomeModalDisabled !== "boolean") d.welcomeModalDisabled = false;
   if (!d.qqBot || typeof d.qqBot !== "object") d.qqBot = { enabled:false, workerUrl:"", shareUrl:"" };
@@ -2932,7 +2989,7 @@ async function fetchDataRemote(){
   return d;
 }
 async function saveData(d){
-  const json = JSON.stringify({ adminPassword:d.adminPassword, posts:d.posts, users:d.users, messages:d.messages, comments:d.comments, invites:d.invites, reports:d.reports, pendingRegistrations:d.pendingRegistrations, goldVerify:d.goldVerify, welcomeModalDisabled:d.welcomeModalDisabled, adminCodes:d.adminCodes, qqBot:d.qqBot }, null, 2);
+  const json = JSON.stringify({ adminPassword:d.adminPassword, posts:d.posts, users:d.users, messages:d.messages, comments:d.comments, invites:d.invites, reports:d.reports, pendingRegistrations:d.pendingRegistrations, goldVerify:d.goldVerify, welcomeModalDisabled:d.welcomeModalDisabled, adminCodes:d.adminCodes, qqBot:d.qqBot, music:d.music || [], sourceGuard:d.sourceGuard !== false, antiCrawl:d.antiCrawl !== false, antiDebug:d.antiDebug !== false }, null, 2);
   const b64 = btoa(unescape(encodeURIComponent(json)));
   const body = { message:"update data", content:b64, branch:CONFIG.branch };
   if (d.sha) body.sha = d.sha;
@@ -5259,7 +5316,7 @@ function renderAdminTabs(){
     reports: d.reports.filter(r => r.status === "pending").length,
     regs: (d.pendingRegistrations || []).length
   };
-  const tabs = [ ["review","投稿审核"], ["content","内容管理"], ["users","用户管理"], ["invites","邀请码"], ["reports","举报处理"], ["regs","注册审核"], ["settings","设置"] ];
+  const tabs = [ ["review","投稿审核"], ["content","内容管理"], ["music","音乐"], ["users","用户管理"], ["invites","邀请码"], ["reports","举报处理"], ["regs","注册审核"], ["settings","设置"] ];
   $("adminTabs").innerHTML = tabs.map(([id, name]) => `<button class="admin-tab ${adminTab === id ? "active" : ""}" data-tab="${id}">${name}${dots[id] ? `<span class="tab-dot"></span>` : ""}</button>`).join("");
   $("adminTabs").querySelectorAll(".admin-tab").forEach(b => {
     b.onclick = () => { adminTab = b.dataset.tab; renderAdminTabs(); renderAdminPane(); };
@@ -5269,6 +5326,7 @@ function renderAdminPane(){
   document.querySelectorAll(".admin-pane").forEach(p => p.hidden = p.dataset.pane !== adminTab);
   if (adminTab === "review") renderAdminReview();
   else if (adminTab === "content") renderAdminManage();
+  else if (adminTab === "music") renderMusicAdmin();
   else if (adminTab === "users") renderAdminUserList();
   else if (adminTab === "invites") renderAdminInviteList();
   else if (adminTab === "reports") renderAdminReports();
@@ -6258,16 +6316,16 @@ const welcomeCheck = async () => {
   }
 };
 
-/* ==================== 背景音乐：音源留空，等站主自己上传 ==================== */
-/* 列表为空时播放器显示「暂时无法播放」，不做任何网络请求、不占带宽。
-   上传后在下方 MUSIC_TRACKS 里补一条即可：
-   { title:"歌名", artist:"作者", src:"./music/xxx.mp3", cover:"./music/xxx.jpg" } */
-const MUSIC_TRACKS = [];
+/* ==================== 背景音乐 ==================== */
+/* 曲目列表不写死在代码里，存在 data.json 的 music 数组，由后台「音乐」页上传维护。
+   单条结构：{ id, title, artist, src:"./music/xxx.mp3", cover:"", size, addedAt }
+   列表为空时播放器显示「暂时无法播放」，一个 /music/ 请求都不发。 */
+let MUSIC_TRACKS = [];
 const bgMusic = $("bgMusic");
 const musicFloat = $("musicFloat");
 const musicPlayBtn = $("musicPlayBtn");
 const musicVolume = $("musicVolume");
-let musicIndex = 0;
+let musicIndex = Math.max(0, parseInt(localStorage.getItem("music_index"), 10) || 0);
 let musicAutoplayTried = false;
 
 function renderMusicEmpty(){
@@ -6295,9 +6353,15 @@ function loadTrack(i, autoplay){
   bgMusic.load();
   $("musicTitle").textContent = track.title;
   const cover = $("musicCover");
-  cover.style.display = "";
-  cover.src = track.cover;
-  cover.alt = track.title + " 封面";
+  if (track.cover){
+    cover.style.display = "";
+    cover.src = track.cover;
+    cover.alt = track.title + " 封面";
+  } else {
+    cover.removeAttribute("src");
+    cover.style.display = "none";
+    cover.alt = "";
+  }
   updateMusicUI();
   if (autoplay){
     bgMusic.play().catch(() => { $("musicStatus").textContent = "点一下播放键开始"; });
@@ -6336,8 +6400,25 @@ bgMusic.onerror = () => {
   $("musicStatus").textContent = "音源加载失败，换下一首";
   setTimeout(() => loadTrack(musicIndex + 1, false), 800);
 };
+/* 曲目列表跟着 data.json 走：数据回来后再决定是空态还是正常播放 */
+function syncMusicFromData(d){
+  const arr = (d && Array.isArray(d.music) ? d.music : []).filter(t => t && t.src);
+  MUSIC_TRACKS = arr;
+  if (!arr.length){ renderMusicEmpty(); return; }
+  if (musicIndex >= arr.length) musicIndex = 0;
+  const cur = bgMusic.currentSrc || bgMusic.src || "";
+  let target = "";
+  try { target = new URL(arr[musicIndex].src, location.href).href; } catch (e) { target = arr[musicIndex].src; }
+  if (cur && target && cur === target){   /* 已经在放这首了，只同步 UI，别打断 */
+    musicFloat.classList.remove("empty");
+    updateMusicUI();
+    return;
+  }
+  loadTrack(musicIndex, false);
+}
 if (localStorage.getItem("music_collapsed") !== "0") musicFloat.classList.add("collapsed");
-loadTrack(musicIndex, false);
+renderMusicEmpty();
+loadData().then(syncMusicFromData).catch(() => renderMusicEmpty());
 /* 首次交互后再尝试播放，避开浏览器自动播放限制 */
 ["pointerdown","keydown"].forEach(evt => {
   document.addEventListener(evt, e => {
@@ -6349,6 +6430,241 @@ loadTrack(musicIndex, false);
   });
 });
 window.addEventListener("beforeunload", () => { localStorage.setItem("music_paused", bgMusic.paused ? "1" : "0"); });
+
+/* ==================== 后台：音乐管理 ==================== */
+const MUSIC_MAX_BYTES = 25 * 1024 * 1024;
+const MUSIC_EXT_OK = ["mp3", "m4a", "aac", "wav", "ogg", "oga", "flac", "weba"];
+let musicUpBusy = false;
+
+function fmtMusicSize(n){
+  if (!n) return "";
+  if (n < 1024) return n + " B";
+  if (n < 1048576) return Math.round(n / 1024) + " KB";
+  return (n / 1048576).toFixed(1) + " MB";
+}
+function musicTitleFromFile(name){
+  return String(name || "").replace(/\.[^.]+$/, "").replace(/_+/g, " ").replace(/\s+/g, " ").trim().slice(0, 40) || "未命名";
+}
+function readFileBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error("文件读取失败"));
+    r.onload = () => {
+      const s = String(r.result || "");
+      const i = s.indexOf(",");
+      resolve(i >= 0 ? s.slice(i + 1) : s);
+    };
+    r.readAsDataURL(file);
+  });
+}
+/* 用 XHR 而不是 fetch：只有 upload.onprogress 能拿到上传进度 */
+function putRepoFile(path, base64, onProgress){
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", CONFIG.imgApiBase + "/" + path);
+    xhr.setRequestHeader("Authorization", "token " + CONFIG.token);
+    xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.timeout = 180000;
+    xhr.upload.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) return resolve(true);
+      let m = "";
+      try { m = JSON.parse(xhr.responseText || "{}").message || ""; } catch (e) {}
+      reject(new Error("HTTP " + xhr.status + (m ? " · " + m : "")));
+    };
+    xhr.onerror = () => reject(new Error("网络中断"));
+    xhr.ontimeout = () => reject(new Error("上传超时"));
+    xhr.send(JSON.stringify({ message: "upload music", content: base64, branch: CONFIG.branch }));
+  });
+}
+async function deleteRepoFile(path, message){
+  const url = CONFIG.imgApiBase + "/" + path;
+  const g = await fetch(url + "?ref=" + encodeURIComponent(CONFIG.branch), { headers: { Authorization: "token " + CONFIG.token, Accept: "application/vnd.github.v3+json" } });
+  if (!g.ok) throw new Error("HTTP " + g.status);
+  const j = await g.json();
+  const del = await fetch(url, {
+    method: "DELETE",
+    headers: { Authorization: "token " + CONFIG.token, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ message, sha: j.sha, branch: CONFIG.branch })
+  });
+  if (!del.ok) throw new Error("HTTP " + del.status);
+}
+
+function renderMusicAdmin(){
+  const box = $("musicAdminList");
+  if (!box) return;
+  const arr = (cachedData && Array.isArray(cachedData.music)) ? cachedData.music : [];
+  $("musicListCount").textContent = arr.length ? ("共 " + arr.length + " 首") : "还没有音乐";
+  if (!arr.length){
+    box.innerHTML = '<div class="mtr-empty">还没有上传音乐<br><small>前台播放器现在显示「暂时无法播放」</small></div>';
+    return;
+  }
+  box.innerHTML = arr.map((t, i) => `
+    <div class="mtr">
+      <div class="mtr-idx">${i + 1}</div>
+      <div class="mtr-meta">
+        <div class="mtr-name">${escapeHtml(t.title || "未命名")}</div>
+        <div class="mtr-sub">${escapeHtml(t.artist || "站主上传")}${t.size ? " · " + fmtMusicSize(t.size) : ""}</div>
+      </div>
+      <button class="mtr-btn" data-mact="up" data-i="${i}" aria-label="上移" ${i === 0 ? "disabled" : ""}>${ico("up")}</button>
+      <button class="mtr-btn" data-mact="down" data-i="${i}" aria-label="下移" ${i === arr.length - 1 ? "disabled" : ""}>${ico("down")}</button>
+      <button class="mtr-btn" data-mact="play" data-i="${i}" aria-label="试听这一首">${ico("play")}</button>
+      <button class="mtr-btn danger" data-mact="del" data-i="${i}" aria-label="删除这一首">${ico("trash")}</button>
+    </div>`).join("");
+}
+$("musicAdminList").onclick = e => {
+  const b = e.target.closest(".mtr-btn");
+  if (!b || b.disabled) return;
+  const i = Number(b.dataset.i);
+  const act = b.dataset.mact;
+  if (act === "play") return previewMusic(i);
+  if (act === "del") return removeMusic(i);
+  if (act === "up") return moveMusic(i, -1);
+  if (act === "down") return moveMusic(i, 1);
+};
+function previewMusic(i){
+  const t = (cachedData && cachedData.music) ? cachedData.music[i] : null;
+  if (!t) return;
+  syncMusicFromData(cachedData);
+  let idx = MUSIC_TRACKS.findIndex(x => x.src === t.src);
+  if (idx < 0) idx = i;
+  musicFloat.classList.remove("collapsed");
+  localStorage.setItem("music_collapsed", "0");
+  loadTrack(idx, true);
+  toast("正在播放：" + (t.title || "未命名"), "ok");
+}
+async function moveMusic(i, dir){
+  const j = i + dir;
+  let d;
+  try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  const arr = d.music || [];
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  try {
+    await saveData(d);
+    cachedData = d;
+    syncMusicFromData(d);
+    renderMusicAdmin();
+  } catch (e) { toast("保存失败：" + e.message, "err"); }
+}
+async function removeMusic(i){
+  let d;
+  try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  const arr = d.music || [];
+  const t = arr[i];
+  if (!t) return;
+  const ok = await confirmDialog({ title: "删除《" + (t.title || "未命名") + "》？", text: "前台列表会移除，仓库里的音频文件也一起删掉", ok: "删除", danger: true });
+  if (!ok) return;
+  const loading = toast("正在删除…", "load");
+  try {
+    arr.splice(i, 1);
+    await saveData(d);
+    cachedData = d;
+    syncMusicFromData(d);
+    const p = String(t.src || "").replace(/^\.?\//, "");
+    if (p.indexOf("music/") === 0){
+      try { await deleteRepoFile(p, "delete music"); } catch (e) { console.warn("音频文件删除失败：", e.message); }
+    }
+    loading.close();
+    renderMusicAdmin();
+    toast("已删除", "ok");
+  } catch (e) { loading.close(); toast("删除失败：" + e.message, "err"); }
+}
+function renderMusicQueue(items){
+  const box = $("musicUpQueue");
+  if (!box) return;
+  if (!items || !items.length){ box.innerHTML = ""; return; }
+  box.innerHTML = items.map(it => `
+    <div class="muq ${it.state === "失败" ? "err" : it.state === "完成" ? "ok" : ""}">
+      <div class="muq-top">
+        <span class="muq-name">${escapeHtml(it.name)}</span>
+        <span class="muq-state">${it.state === "上传中" ? it.pct + "%" : escapeHtml(it.state)}</span>
+      </div>
+      <div class="muq-bar"><i style="width:${it.pct}%"></i></div>
+      ${it.err ? `<div class="muq-err">${escapeHtml(it.err)}</div>` : ""}
+    </div>`).join("");
+}
+async function uploadMusicFiles(files){
+  if (musicUpBusy) return toast("上一批还在传，稍等一下", "err");
+  const list = Array.prototype.slice.call(files || []);
+  if (!list.length) return;
+  const good = [], bad = [];
+  list.forEach(f => {
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (MUSIC_EXT_OK.indexOf(ext) < 0) return bad.push(f.name + "（格式不支持）");
+    if (!f.size) return bad.push(f.name + "（空文件）");
+    if (f.size > MUSIC_MAX_BYTES) return bad.push(f.name + "（超过 25MB）");
+    good.push(f);
+  });
+  if (bad.length) toast(bad[0] + (bad.length > 1 ? " 等 " + bad.length + " 个文件被跳过" : ""), "err", 4000);
+  if (!good.length) return;
+
+  musicUpBusy = true;
+  $("musicPickBtn").disabled = true;
+  const q = good.map(f => ({ name: f.name, pct: 0, state: "等待", err: "" }));
+  renderMusicQueue(q);
+
+  let d, ok = 0;
+  try { d = await loadData(true); } catch (e) {
+    musicUpBusy = false; $("musicPickBtn").disabled = false;
+    renderMusicQueue([]);
+    return toast("读取数据失败：" + e.message, "err");
+  }
+  if (!Array.isArray(d.music)) d.music = [];
+
+  for (let i = 0; i < good.length; i++){
+    const f = good[i], it = q[i];
+    it.state = "上传中";
+    renderMusicQueue(q);
+    try {
+      const base64 = await readFileBase64(f);
+      const ext = (f.name.split(".").pop() || "mp3").toLowerCase();
+      const name = "m" + Date.now() + "_" + Math.random().toString(36).slice(2, 7) + "." + ext;
+      await putRepoFile("music/" + name, base64, p => {
+        it.pct = Math.max(1, Math.round(p * 100));
+        renderMusicQueue(q);
+      });
+      it.pct = 100;
+      d.music.push({
+        id: "mu_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        title: musicTitleFromFile(f.name),
+        artist: "站主上传",
+        src: "./music/" + name,
+        cover: "",
+        size: f.size,
+        addedAt: Date.now()
+      });
+      it.state = "完成";
+      ok++;
+    } catch (e) {
+      it.state = "失败";
+      it.err = e.message;
+    }
+    renderMusicQueue(q);
+  }
+
+  try {
+    if (ok){
+      await saveData(d);
+      cachedData = d;
+      syncMusicFromData(d);
+    }
+    renderMusicAdmin();
+    toast(ok ? ("上传完成 " + ok + " 首" + (ok < good.length ? "，" + (good.length - ok) + " 首失败" : "")) : "一首都没传上去", ok ? "ok" : "err", 3500);
+  } catch (e) {
+    toast("列表保存失败：" + e.message, "err", 4000);
+  }
+  musicUpBusy = false;
+  $("musicPickBtn").disabled = false;
+  setTimeout(() => { if (!musicUpBusy) renderMusicQueue([]); }, 8000);
+}
+$("musicPickBtn").onclick = () => $("musicFileInput").click();
+$("musicFileInput").onchange = e => {
+  const files = Array.prototype.slice.call(e.target.files || []);
+  e.target.value = "";
+  uploadMusicFiles(files);
+};
 
 /* ==================== QQ 音乐 · 今日推荐 ==================== */
 let qqDailyData = null;
