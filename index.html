@@ -933,6 +933,13 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .modal-wx-img{width:168px;height:168px;border-radius:12px;object-fit:cover;margin:0 auto 14px;display:block;border:1px solid var(--border);background:var(--surface-2)}
 .modal-scroll{text-align:left;font-size:13px;line-height:1.75;color:var(--text);margin:12px 0;max-height:46vh;overflow-y:auto;padding-right:4px}
 .modal-scroll p{margin-bottom:8px}
+.like-quote{
+  margin:12px 0 14px;padding:10px 12px;border-radius:12px;
+  background:rgba(28,25,23,.05);color:var(--muted);
+  font-size:13px;line-height:1.6;text-align:left;
+  max-height:76px;overflow:hidden;
+}
+html[data-dark="1"] .like-quote{background:rgba(255,255,255,.08)}
 .tab-switch{display:flex;gap:8px;margin-bottom:14px}
 .tab-switch .btn{flex:1}
 .tab-switch .btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 6px 14px -6px var(--primary)}
@@ -3420,13 +3427,29 @@ async function handlePostAction(b){
     const isAdminView = $("pageAdmin").classList.contains("active");
     const items = [];
     if (p && (uidOf(p) === (currentUser && uidOf(currentUser)))) items.push({ text:"修改重发" });
+    if (p && isAdminView) items.push({ text:"修改赞数" });
     items.push({ text:"删除", danger:true });
     const idx = await actionSheet({ items });
     if (idx === null) return;
     if (items[idx].text === "修改重发") return editPost(id);
+    if (items[idx].text === "修改赞数") return changePostLikes(id);
     if (items[idx].text === "删除") return deletePost(id);
     return;
   }
+}
+async function changePostLikes(id){
+  let d;
+  try { d = await loadData(true); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  const p = d.posts.find(x => x.id === id);
+  if (!p) return toast("投稿不存在", "err");
+  const v = await likeCountDialog(p);
+  if (v === null) return;
+  if (v === (Number(p.likes) || 0)) return toast("赞数没变");
+  p.likes = v;
+  try { await saveData(d); } catch (e) { return toast("保存失败：" + e.message, "err"); }
+  cachedData = d;
+  toast(`赞数已改为 ${v}`, "ok");
+  renderAdminManage();
 }
 async function likePost(id, btn){
   if (!currentUser){ needLogin(); return; }
@@ -3471,6 +3494,44 @@ async function followOrChat(identifier){
   cachedData = d;
   toast(target ? ("已关注 " + (target.nickname || "对方")) : "已关注", "ok");
   triggerRefresh();
+}
+/* 管理员改赞数：直接覆盖显示值，不碰用户的 likedPosts 记录 */
+function likeCountDialog(p){
+  return new Promise(resolve => {
+    const cur = Number(p.likes) || 0;
+    const text = (p.content || "").replace(/\s+/g, " ").trim();
+    const summary = text.length > 54 ? text.slice(0, 54) + "…" : (text || "（无文字内容）");
+    const ov = document.createElement("div");
+    ov.className = "modal-overlay";
+    ov.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true">
+      <div class="dialog-ico">${ico("heart")}</div>
+      <div class="modal-title">修改赞数</div>
+      <div class="modal-sub">当前 ${cur} 个赞</div>
+      <div class="like-quote">${escapeHtml(summary)}</div>
+      <div style="text-align:left">
+        <input class="input" id="__likeNum" type="number" inputmode="numeric" min="0" step="1" value="${cur}">
+        <div class="hint" style="margin-top:8px">填多少就显示多少，改成 0 就是清零。</div>
+      </div>
+      <div class="dialog-btns">
+        <button class="btn btn-ghost" data-v="">取消</button>
+        <button class="btn" data-v="1">保存</button>
+      </div></div>`;
+    document.body.appendChild(ov);
+    const input = ov.querySelector("#__likeNum");
+    setTimeout(() => { input.focus(); input.select(); }, 70);
+    const close = v => { ov.remove(); resolve(v); };
+    const submit = () => {
+      const raw = input.value.trim();
+      if (raw === ""){ input.focus(); return toast("填个数字", "err"); }
+      const v = Math.floor(Number(raw));
+      if (!Number.isFinite(v) || v < 0){ input.select(); return toast("只能是 0 或正整数", "err"); }
+      if (v > 9999999){ input.select(); return toast("数字太大了", "err"); }
+      close(v);
+    };
+    ov.querySelectorAll("button").forEach(b => b.onclick = () => { if (b.dataset.v) submit(); else close(null); });
+    ov.onclick = e => { if (e.target === ov) close(null); };
+    input.onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); submit(); } };
+  });
 }
 async function deletePost(id){
   if (!(await confirmDialog({ title:"删除这条投稿？", text:"删除后无法恢复，评论也会一起删除", ok:"删除", danger:true }))) return;
