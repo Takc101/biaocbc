@@ -6379,8 +6379,13 @@ function updateMusicUI(){
 function toggleMusic(){
   if (!MUSIC_TRACKS.length) return toast("暂时无法播放音乐", "err");
   if (bgMusic.paused){
-    if (!bgMusic.src) loadTrack(musicIndex, true);
-    else bgMusic.play().catch(() => { $("musicStatus").textContent = "播放失败，请检查网络"; });
+    /* 之前加载失败过（音源刚上传、Pages 还没发布就会这样），重新走一遍加载再试，
+       否则 <audio> 会一直停在 error 状态，点多少次都播不了 */
+    if (!bgMusic.src || bgMusic.error){
+      musicErrStreak = 0;
+      return loadTrack(musicIndex, true);
+    }
+    bgMusic.play().catch(() => { $("musicStatus").textContent = "播放失败，请检查网络"; });
   } else {
     bgMusic.pause();
   }
@@ -6542,9 +6547,10 @@ $("musicAdminList").onclick = e => {
 function previewMusic(i){
   const t = (cachedData && cachedData.music) ? cachedData.music[i] : null;
   if (!t) return;
-  syncMusicFromData(cachedData);
+  MUSIC_TRACKS = (cachedData.music || []).filter(x => x && x.src);
   let idx = MUSIC_TRACKS.findIndex(x => x.src === t.src);
   if (idx < 0) idx = i;
+  musicErrStreak = 0;
   musicFloat.classList.remove("collapsed");
   localStorage.setItem("music_collapsed", "0");
   loadTrack(idx, true);
