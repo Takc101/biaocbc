@@ -1,17 +1,13 @@
 /* 表白墙 PWA Service Worker
    策略：页面走「网络优先」保证每次都是最新代码；静态资源走「缓存优先」加速。 */
-const CACHE = "bq-shell-v2";
+const CACHE = "bq-shell-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png",
-  "./music/cover-wan-zixi.jpg",
-  "./music/cover-zoulang.jpg",
-  "./music/cover-yuluo.jpg",
-  "./music/cover-xin.jpg"
+  "./apple-touch-icon.png"
 ];
 
 self.addEventListener("install", event => {
