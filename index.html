@@ -906,6 +906,12 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .qq-track-sub{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
 .qq-track .qq-go{width:14px;height:14px;color:var(--muted);flex-shrink:0}
 .qq-note{font-size:11.5px;color:var(--muted);line-height:1.7;padding:14px 2px 4px;text-align:center}
+/* 没有音源时：控制键压暗，点了会说明原因 */
+.music-float.empty .music-controls button{opacity:.4}
+.music-float.empty .music-controls button:active{transform:none}
+.music-float.empty .music-volume{opacity:.35}
+.music-float.empty .music-disc{background:linear-gradient(150deg,#9aa1ad,#6b7280);animation:none}
+html[data-skin="mono"] .music-float.empty .music-disc{background:linear-gradient(150deg,#b4b8bf,#8b9099)!important;color:#fff!important}
 @media(max-width:380px){.music-float{right:8px;width:218px}}
 
 /* ---------- 弹窗 / 浮层 ---------- */
@@ -2099,14 +2105,14 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 </div>
 
 <!-- ============ 音乐播放器 ============ -->
-<div class="music-float" id="musicFloat">
+<div class="music-float empty" id="musicFloat">
   <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器"><span data-ico="music"></span></button>
   <div class="music-panel">
     <div class="music-top">
       <div class="music-disc"><img class="music-cover" id="musicCover" alt="" width="36" height="36"><span data-ico="music"></span></div>
       <div class="music-meta">
-        <div class="music-title" id="musicTitle">晚自习</div>
-        <div class="music-sub" id="musicStatus">轻音乐 · 1 / 4</div>
+        <div class="music-title" id="musicTitle">暂时无法播放</div>
+        <div class="music-sub" id="musicStatus">站主还没上传音乐</div>
       </div>
       <button class="music-collapse" id="musicCollapseBtn" aria-label="收起音乐播放器" data-ico="close"></button>
     </div>
@@ -6252,30 +6258,46 @@ const welcomeCheck = async () => {
   }
 };
 
-/* ==================== 背景音乐：自托管轻音乐 ==================== */
-/* 站内音源为原创合成曲，无版权限制、可离线播放；QQ 音乐只做「今日推荐」入口。 */
-const MUSIC_TRACKS = [
-  { title:"晚自习",       artist:"轻音乐", src:"./music/wan-zixi.mp3", cover:"./music/cover-wan-zixi.jpg" },
-  { title:"走廊尽头的窗", artist:"轻音乐", src:"./music/zoulang.mp3",  cover:"./music/cover-zoulang.jpg" },
-  { title:"雨落操场",     artist:"白噪音", src:"./music/yuluo.mp3",    cover:"./music/cover-yuluo.jpg" },
-  { title:"信",           artist:"轻音乐", src:"./music/xin.mp3",      cover:"./music/cover-xin.jpg" },
-];
+/* ==================== 背景音乐：音源留空，等站主自己上传 ==================== */
+/* 列表为空时播放器显示「暂时无法播放」，不做任何网络请求、不占带宽。
+   上传后在下方 MUSIC_TRACKS 里补一条即可：
+   { title:"歌名", artist:"作者", src:"./music/xxx.mp3", cover:"./music/xxx.jpg" } */
+const MUSIC_TRACKS = [];
 const bgMusic = $("bgMusic");
 const musicFloat = $("musicFloat");
 const musicPlayBtn = $("musicPlayBtn");
 const musicVolume = $("musicVolume");
-let musicIndex = Math.max(0, Math.min(MUSIC_TRACKS.length - 1, parseInt(localStorage.getItem("music_index"), 10) || 0));
+let musicIndex = 0;
 let musicAutoplayTried = false;
 
+function renderMusicEmpty(){
+  musicFloat.classList.remove("playing");
+  musicFloat.classList.add("empty");
+  $("musicTitle").textContent = "暂时无法播放";
+  $("musicStatus").textContent = "站主还没上传音乐";
+  const cover = $("musicCover");
+  cover.removeAttribute("src");
+  cover.style.display = "none";
+  musicPlayBtn.innerHTML = ico("play");
+  musicPlayBtn.setAttribute("aria-label", "暂时无法播放");
+}
 function loadTrack(i, autoplay){
+  if (!MUSIC_TRACKS.length){
+    renderMusicEmpty();
+    if (autoplay) toast("暂时无法播放音乐", "err");
+    return;
+  }
   musicIndex = ((i % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
   const track = MUSIC_TRACKS[musicIndex];
+  musicFloat.classList.remove("empty");
   localStorage.setItem("music_index", String(musicIndex));
   bgMusic.src = track.src;
   bgMusic.load();
   $("musicTitle").textContent = track.title;
-  $("musicCover").src = track.cover;
-  $("musicCover").alt = track.title + " 封面";
+  const cover = $("musicCover");
+  cover.style.display = "";
+  cover.src = track.cover;
+  cover.alt = track.title + " 封面";
   updateMusicUI();
   if (autoplay){
     bgMusic.play().catch(() => { $("musicStatus").textContent = "点一下播放键开始"; });
@@ -6290,6 +6312,7 @@ function updateMusicUI(){
   musicFloat.classList.toggle("playing", !bgMusic.paused);
 }
 function toggleMusic(){
+  if (!MUSIC_TRACKS.length) return toast("暂时无法播放音乐", "err");
   if (bgMusic.paused){
     if (!bgMusic.src) loadTrack(musicIndex, true);
     else bgMusic.play().catch(() => { $("musicStatus").textContent = "播放失败，请检查网络"; });
