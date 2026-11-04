@@ -860,6 +860,7 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
   background:var(--card-bg);color:var(--text);border:1px solid var(--card-border);border-radius:18px;
   box-shadow:var(--shadow-lg);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);
   overflow:hidden;transition:width .22s,transform .22s;
+  display:block;padding:0;
 }
 .music-float.collapsed{width:50px;height:50px;border-radius:50%}
 .music-float.collapsed .music-panel{display:none}
@@ -907,11 +908,13 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 .qq-track .qq-go{width:14px;height:14px;color:var(--muted);flex-shrink:0}
 .qq-note{font-size:11.5px;color:var(--muted);line-height:1.7;padding:14px 2px 4px;text-align:center}
 /* 没有音源时：控制键压暗，点了会说明原因 */
-.music-float.empty .music-controls button{opacity:.4}
-.music-float.empty .music-controls button:active{transform:none}
-.music-float.empty .music-volume{opacity:.35}
-.music-float.empty .music-disc{background:linear-gradient(150deg,#9aa1ad,#6b7280);animation:none}
-html[data-skin="mono"] .music-float.empty .music-disc{background:linear-gradient(150deg,#b4b8bf,#8b9099)!important;color:#fff!important}
+/* 注意：状态类必须叫 music-empty。用通用的 .empty 会被第 245 行的空态卡片样式污染
+   （padding:46px 24px + flex column），折叠球会被撑成 50×94 的椭圆气泡。 */
+.music-float.music-empty .music-controls button{opacity:.4}
+.music-float.music-empty .music-controls button:active{transform:none}
+.music-float.music-empty .music-volume{opacity:.35}
+.music-float.music-empty .music-disc{background:linear-gradient(150deg,#9aa1ad,#6b7280);animation:none}
+html[data-skin="mono"] .music-float.music-empty .music-disc{background:linear-gradient(150deg,#b4b8bf,#8b9099)!important;color:#fff!important}
 @media(max-width:380px){.music-float{right:8px;width:218px}}
 /* ---------- 后台：音乐管理 ---------- */
 .music-drop{
@@ -2159,7 +2162,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 </div>
 
 <!-- ============ 音乐播放器 ============ -->
-<div class="music-float empty" id="musicFloat">
+<div class="music-float music-empty" id="musicFloat">
   <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器"><span data-ico="music"></span></button>
   <div class="music-panel">
     <div class="music-top">
@@ -6331,7 +6334,7 @@ let musicErrStreak = 0;
 
 function renderMusicEmpty(){
   musicFloat.classList.remove("playing");
-  musicFloat.classList.add("empty");
+  musicFloat.classList.add("music-empty");
   $("musicTitle").textContent = "暂时无法播放";
   $("musicStatus").textContent = "站主还没上传音乐";
   const cover = $("musicCover");
@@ -6348,7 +6351,7 @@ function loadTrack(i, autoplay){
   }
   musicIndex = ((i % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
   const track = MUSIC_TRACKS[musicIndex];
-  musicFloat.classList.remove("empty");
+  musicFloat.classList.remove("music-empty");
   localStorage.setItem("music_index", String(musicIndex));
   bgMusic.src = track.src;
   bgMusic.load();
@@ -6424,7 +6427,7 @@ function syncMusicFromData(d){
   let target = "";
   try { target = new URL(arr[musicIndex].src, location.href).href; } catch (e) { target = arr[musicIndex].src; }
   if (cur && target && cur === target){   /* 已经在放这首了，只同步 UI，别打断 */
-    musicFloat.classList.remove("empty");
+    musicFloat.classList.remove("music-empty");
     updateMusicUI();
     return;
   }
