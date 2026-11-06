@@ -932,18 +932,38 @@ html[data-skin="mono"] .music-float.music-empty .music-disc{background:linear-gr
 .music-drop-ico .ico{width:17px;height:17px}
 .music-drop b{font-size:13.5px;font-weight:700}
 .music-drop small{font-size:11px;color:var(--muted);line-height:1.65;text-align:center}
-.music-upq{margin-top:12px;display:flex;flex-direction:column;gap:9px}
-.music-upq:empty{display:none}
-.muq{padding:9px 11px;border-radius:12px;background:var(--surface-2)}
-.muq-top{display:flex;align-items:center;gap:8px;font-size:11.5px}
-.muq-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.muq-state{flex-shrink:0;color:var(--muted);font-variant-numeric:tabular-nums}
-.muq-bar{height:3px;border-radius:2px;background:var(--border);margin-top:7px;overflow:hidden}
-.muq-bar i{display:block;height:100%;width:0;background:var(--primary);border-radius:2px;transition:width .2s}
-.muq.ok .muq-state{color:#1f9d55}
-.muq.err .muq-state{color:#c0392b}
-.muq.err .muq-bar i{background:#c0392b}
-.muq-err{font-size:10.5px;color:#c0392b;margin-top:5px;line-height:1.5}
+/* 待上传草稿：每首曲目必须配好封面，才能点亮上传按钮 */
+.music-draft{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.mdr-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;font-size:12.5px}
+.mdr-head b{font-weight:700}
+.mdr-hint{flex:1;text-align:right;font-size:11px;color:#1f9d55}
+.mdr-hint.need{color:#c0392b}
+.mdr{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)}
+.mdr:last-child{border-bottom:none}
+.mdr-cover{width:44px;height:44px;flex-shrink:0;position:relative;padding:0;border:1.5px dashed var(--border);border-radius:11px;background:var(--surface-2);color:var(--muted);cursor:pointer;overflow:hidden;display:grid;place-items:center}
+.mdr-cover:active{transform:scale(.95)}
+.mdr-cover.has-img{border-style:solid;border-color:transparent}
+.mdr-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mdr-cover-ph{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:9px;font-weight:650;line-height:1.2}
+.mdr-cover-ph .ico{width:14px;height:14px}
+.mdr-cover-edit{position:absolute;right:0;bottom:0;width:16px;height:16px;border-radius:7px 0 0 0;background:rgba(0,0,0,.56);color:#fff;display:grid;place-items:center}
+.mdr-cover-edit .ico{width:10px;height:10px}
+.mdr.need .mdr-cover{border-color:#c0392b;color:#c0392b}
+.mdr-cover:disabled,.mdr-del:disabled{opacity:.42;cursor:default}
+.mdr-meta{flex:1;min-width:0}
+.mdr-name{font-size:12.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mdr-sub{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mdr.ready .mdr-sub,.mdr.ok .mdr-sub{color:#1f9d55}
+.mdr.err .mdr-sub{color:#c0392b}
+.mdr-bar{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
+.mdr-bar i{display:block;height:100%;width:0;background:var(--primary);border-radius:2px;transition:width .2s}
+.mdr.ok .mdr-bar i{background:#1f9d55}
+.mdr.err .mdr-bar i{background:#c0392b}
+.mdr-del{width:26px;height:26px;flex-shrink:0;padding:0;border:none;border-radius:8px;background:var(--surface-2);color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.mdr-del .ico{width:12px;height:12px}
+.mdr-btns{display:flex;gap:8px;margin-top:12px}
+.mdr-btns .btn{flex:1;font-size:13px;padding:11px 12px}
+.mdr-btns #musicDraftClear{flex:0 0 76px}
 .mtr{display:flex;align-items:center;gap:7px;padding:9px 0;border-bottom:1px solid var(--border)}
 .mtr:last-child{border-bottom:none}
 /* 列表左侧就是封面缩略图，点一下可换图；序号挪进副标题 */
@@ -956,6 +976,7 @@ html[data-skin="mono"] .music-float.music-empty .music-disc{background:linear-gr
 .mtr-meta{flex:1;min-width:0}
 .mtr-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mtr-sub{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtr-sub.need-cover{color:#c0392b}
 .mtr-btn{width:29px;height:29px;flex-shrink:0;padding:0;border:none;border-radius:9px;background:var(--surface-2);color:var(--text);cursor:pointer;display:grid;place-items:center}
 .mtr-btn .ico{width:13px;height:13px}
 .mtr-btn:active{transform:scale(.92)}
@@ -1668,17 +1689,25 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
             <div class="section-head"><h2>背景音乐</h2><span class="section-sub">前台右下角播放器</span></div>
             <div class="card">
               <input type="file" id="musicFileInput" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+              <input type="file" id="musicCoverInput" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
               <button class="music-drop" id="musicPickBtn" type="button">
                 <span class="music-drop-ico" data-ico="plus"></span>
                 <b>选择音频文件</b>
-                <small>mp3 / m4a / wav / ogg，可一次选多首<br>单首不超过 25MB</small>
+                <small>mp3 / m4a / wav / ogg，可一次选多首<br>单首不超过 25MB · 每首都要配一张封面才能上传</small>
               </button>
-              <div class="music-upq" id="musicUpQueue"></div>
-              <div class="hint" style="margin-top:10px">文件直接传到仓库 <b>music/</b> 目录，传完自动进列表。GitHub Pages 发布新文件要 1–2 分钟，这之前前台会提示「音源加载失败」，等一下刷新就好。</div>
+              <div class="music-draft" id="musicDraft" hidden>
+                <div class="mdr-head"><b>待上传 <span id="musicDraftCount"></span></b><span class="mdr-hint" id="musicDraftHint"></span></div>
+                <div id="musicDraftList"></div>
+                <div class="mdr-btns">
+                  <button class="btn btn-ghost" id="musicDraftClear" type="button">清空</button>
+                  <button class="btn" id="musicDraftUpload" type="button" disabled>配好封面后上传</button>
+                </div>
+              </div>
+              <div class="hint" style="margin-top:10px">音频传到仓库 <b>music/</b>，封面传到 <b>music/covers/</b>，传完自动进列表。没配封面的曲目不会上传。GitHub Pages 发布新文件要 1–2 分钟，这之前前台会提示「音源加载失败」，等一下刷新就好。</div>
             </div>
             <div class="section-head"><h2>曲目列表</h2><span class="section-sub" id="musicListCount">还没有音乐</span></div>
             <div class="card"><div id="musicAdminList"></div></div>
-            <div class="hint">列表顺序就是播放顺序，前台会从第 1 首开始放。点左侧封面缩略图可以换图（不传就自动生成一张）。删掉一首，音频和封面文件都会一起删掉。</div>
+            <div class="hint">列表顺序就是播放顺序，前台会从第 1 首开始放。点左侧封面缩略图可以换图。删掉一首，音频和封面文件都会一起删掉。</div>
           </div>
           <div class="admin-pane" data-pane="settings" hidden>
             <div class="section-head"><h2>GitHub Token</h2><span class="section-sub">数据读写凭据</span></div>
@@ -6524,8 +6553,12 @@ window.addEventListener("beforeunload", () => { localStorage.setItem("music_paus
 
 /* ==================== 后台：音乐管理 ==================== */
 const MUSIC_MAX_BYTES = 25 * 1024 * 1024;
+const MUSIC_COVER_MAX_BYTES = 2 * 1024 * 1024;
 const MUSIC_EXT_OK = ["mp3", "m4a", "aac", "wav", "ogg", "oga", "flac", "weba"];
 let musicUpBusy = false;
+/* 选完音频先进草稿，每首都配上封面才允许上传 */
+let musicDraft = [];
+let musicCoverTarget = -1;
 
 function fmtMusicSize(n){
   if (!n) return "";
@@ -6600,14 +6633,14 @@ function renderMusicAdmin(){
   }
   box.innerHTML = arr.map((t, i) => `
     <div class="mtr">
-      <button class="mtr-cover" data-mact="cover" data-i="${i}" aria-label="更换《${escapeHtml(t.title || "未命名")}》的封面" title="点击更换封面">
+      <button class="mtr-cover" data-mact="cover" data-i="${i}" aria-label="${t.cover ? "更换" : "上传"}《${escapeHtml(t.title || "未命名")}》的封面" title="${t.cover ? "点击更换封面" : "点这里补一张封面"}">
         <span class="mtr-cover-ph">♪</span>
         <img src="${escapeHtml(trackCoverUrl(t))}" alt="" onerror="this.style.display='none'">
         <span class="mtr-cover-edit">${ico("image")}</span>
       </button>
       <div class="mtr-meta">
         <div class="mtr-name">${escapeHtml(t.title || "未命名")}</div>
-        <div class="mtr-sub">${i + 1}. ${escapeHtml(t.artist || "站主上传")}${t.size ? " · " + fmtMusicSize(t.size) : ""}</div>
+        <div class="mtr-sub${t.cover ? "" : " need-cover"}">${i + 1}. ${escapeHtml(t.artist || "站主上传")}${t.size ? " · " + fmtMusicSize(t.size) : ""}${t.cover ? "" : " · 缺封面，点左侧补一张"}</div>
       </div>
       <button class="mtr-btn" data-mact="up" data-i="${i}" aria-label="上移" ${i === 0 ? "disabled" : ""}>${ico("up")}</button>
       <button class="mtr-btn" data-mact="down" data-i="${i}" aria-label="下移" ${i === arr.length - 1 ? "disabled" : ""}>${ico("down")}</button>
@@ -6732,100 +6765,188 @@ async function removeMusic(i){
     try { await deleteRepoFile(cp, "delete music cover"); } catch (e) { console.warn("封面删除失败：", e.message); }
   }
 }
-function renderMusicQueue(items){
-  const box = $("musicUpQueue");
-  if (!box) return;
-  if (!items || !items.length){ box.innerHTML = ""; return; }
-  box.innerHTML = items.map(it => `
-    <div class="muq ${it.state === "失败" ? "err" : it.state === "完成" ? "ok" : ""}">
-      <div class="muq-top">
-        <span class="muq-name">${escapeHtml(it.name)}</span>
-        <span class="muq-state">${it.state === "上传中" ? it.pct + "%" : escapeHtml(it.state)}</span>
-      </div>
-      <div class="muq-bar"><i style="width:${it.pct}%"></i></div>
-      ${it.err ? `<div class="muq-err">${escapeHtml(it.err)}</div>` : ""}
-    </div>`).join("");
+/* ==================== 草稿：选音频 → 配封面 → 才能上传 ==================== */
+function draftStateText(it){
+  return (it.state === "上传中" ? it.pct + "%" : it.state) + (it.err ? " · " + it.err : "");
 }
-async function uploadMusicFiles(files){
-  if (musicUpBusy) return toast("上一批还在传，稍等一下", "err");
+function renderMusicDraft(){
+  const box = $("musicDraft"), list = $("musicDraftList"), upBtn = $("musicDraftUpload");
+  if (!box || !list || !upBtn) return;
+  const need = musicDraft.filter(it => !it.coverFile).length;
+  const retry = musicDraft.some(it => it.state === "失败");
+  box.hidden = !musicDraft.length;
+  list.innerHTML = musicDraft.map((it, i) => {
+    const cls = it.state === "失败" ? "err" : it.state === "完成" ? "ok" : it.coverFile ? "ready" : "need";
+    return `
+    <div class="mdr ${cls}">
+      <button class="mdr-cover${it.coverUrl ? " has-img" : ""}" data-dact="cover" data-i="${i}" aria-label="给《${escapeHtml(it.name)}》选封面" ${musicUpBusy ? "disabled" : ""}>
+        ${it.coverUrl ? `<img src="${escapeHtml(it.coverUrl)}" alt=""><span class="mdr-cover-edit">${ico("image")}</span>` : `<span class="mdr-cover-ph">${ico("image")}<b>加封面</b></span>`}
+      </button>
+      <div class="mdr-meta">
+        <div class="mdr-name">${escapeHtml(it.name)}</div>
+        <div class="mdr-sub">${fmtMusicSize(it.size)} · ${escapeHtml(draftStateText(it))}</div>
+        <div class="mdr-bar"><i style="width:${it.pct}%"></i></div>
+      </div>
+      <button class="mdr-del" data-dact="del" data-i="${i}" aria-label="移除这一首" ${musicUpBusy ? "disabled" : ""}>${ico("close")}</button>
+    </div>`;
+  }).join("");
+  $("musicDraftCount").textContent = musicDraft.length ? musicDraft.length + " 首" : "";
+  const hint = $("musicDraftHint");
+  hint.textContent = need ? "还有 " + need + " 首没配封面" : (musicDraft.length ? "封面都配好了" : "");
+  hint.className = need ? "mdr-hint need" : "mdr-hint";
+  upBtn.disabled = musicUpBusy || !musicDraft.length || need > 0;
+  upBtn.textContent = musicUpBusy ? "正在上传…" : need ? "还有 " + need + " 首没配封面" : (retry ? "重试上传 " : "开始上传 ") + musicDraft.length + " 首";
+  $("musicDraftClear").disabled = musicUpBusy || !musicDraft.length;
+  $("musicPickBtn").disabled = musicUpBusy;
+}
+/* 进度回调很密，只改数字和进度条，别整块重建 DOM */
+function paintDraftProgress(){
+  const rows = $("musicDraftList").children;
+  for (let i = 0; i < musicDraft.length && i < rows.length; i++){
+    const it = musicDraft[i], row = rows[i];
+    const bar = row.querySelector(".mdr-bar i");
+    if (bar) bar.style.width = it.pct + "%";
+    const sub = row.querySelector(".mdr-sub");
+    if (sub) sub.textContent = fmtMusicSize(it.size) + " · " + draftStateText(it);
+  }
+}
+function revokeDraftCovers(items){
+  items.forEach(it => { if (it.coverUrl){ try { URL.revokeObjectURL(it.coverUrl); } catch (e) {} } });
+}
+function addMusicFiles(files){
+  if (musicUpBusy) return toast("正在上传，传完再选", "err");
   const list = Array.prototype.slice.call(files || []);
   if (!list.length) return;
-  const good = [], bad = [];
+  const bad = [];
   list.forEach(f => {
     const ext = (f.name.split(".").pop() || "").toLowerCase();
     if (MUSIC_EXT_OK.indexOf(ext) < 0) return bad.push(f.name + "（格式不支持）");
     if (!f.size) return bad.push(f.name + "（空文件）");
     if (f.size > MUSIC_MAX_BYTES) return bad.push(f.name + "（超过 25MB）");
-    good.push(f);
+    musicDraft.push({ file: f, name: f.name, size: f.size, ext,
+      coverFile: null, coverUrl: "", state: "待配封面", pct: 0, err: "" });
   });
   if (bad.length) toast(bad[0] + (bad.length > 1 ? " 等 " + bad.length + " 个文件被跳过" : ""), "err", 4000);
-  if (!good.length) return;
+  renderMusicDraft();
+}
+function pickDraftCover(i){
+  if (musicUpBusy) return;
+  musicCoverTarget = i;
+  const inp = $("musicCoverInput");
+  inp.value = "";
+  inp.click();
+}
+$("musicCoverInput").onchange = e => {
+  const f = e.target.files && e.target.files[0];
+  const i = musicCoverTarget;
+  musicCoverTarget = -1;
+  e.target.value = "";
+  if (!f || i < 0 || !musicDraft[i]) return;
+  if (!/^image\//.test(f.type)) return toast("请选择图片文件", "err");
+  if (f.size > MUSIC_COVER_MAX_BYTES) return toast("封面别超过 2MB", "err");
+  const it = musicDraft[i];
+  if (it.coverUrl){ try { URL.revokeObjectURL(it.coverUrl); } catch (err) {} }
+  it.coverFile = f;
+  it.coverUrl = URL.createObjectURL(f);
+  it.state = "待上传";
+  it.err = "";
+  renderMusicDraft();
+};
+function removeDraft(i){
+  const it = musicDraft[i];
+  if (!it) return;
+  revokeDraftCovers([it]);
+  musicDraft.splice(i, 1);
+  renderMusicDraft();
+}
+function clearMusicDraft(){
+  revokeDraftCovers(musicDraft);
+  musicDraft = [];
+  renderMusicDraft();
+}
+$("musicDraftList").onclick = e => {
+  const b = e.target.closest("[data-dact]");
+  if (!b || b.disabled) return;
+  const i = Number(b.dataset.i);
+  if (b.dataset.dact === "cover") return pickDraftCover(i);
+  if (b.dataset.dact === "del") return removeDraft(i);
+};
+$("musicDraftClear").onclick = clearMusicDraft;
+$("musicDraftUpload").onclick = startMusicUpload;
 
+async function startMusicUpload(){
+  if (musicUpBusy) return;
+  const missing = musicDraft.filter(it => !it.coverFile).length;
+  if (missing) return toast("还有 " + missing + " 首没配封面，点封面框选一张图", "err", 3500);
+  if (!musicDraft.length) return;
   musicUpBusy = true;
-  $("musicPickBtn").disabled = true;
-  const q = good.map(f => ({ name: f.name, pct: 0, state: "等待", err: "" }));
-  renderMusicQueue(q);
-
+  renderMusicDraft();
   let d, ok = 0;
   try { d = await musicDataForWrite(); } catch (e) {
-    musicUpBusy = false; $("musicPickBtn").disabled = false;
-    renderMusicQueue([]);
+    musicUpBusy = false;
+    renderMusicDraft();
     return toast("读取数据失败：" + e.message, "err");
   }
   if (!Array.isArray(d.music)) d.music = [];
-
-  for (let i = 0; i < good.length; i++){
-    const f = good[i], it = q[i];
-    it.state = "上传中";
-    renderMusicQueue(q);
+  const batch = musicDraft.slice();
+  for (let i = 0; i < batch.length; i++){
+    const it = batch[i];
+    it.state = "上传中"; it.pct = 2; it.err = "";
+    renderMusicDraft();
+    let coverPath = "", audioPath = "";
     try {
-      const base64 = await readFileBase64(f);
-      const ext = (f.name.split(".").pop() || "mp3").toLowerCase();
-      const name = "m" + Date.now() + "_" + Math.random().toString(36).slice(2, 7) + "." + ext;
-      await putRepoFile("music/" + name, base64, p => {
-        it.pct = Math.max(1, Math.round(p * 100));
-        renderMusicQueue(q);
+      const cext = (it.coverFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "png";
+      coverPath = "music/covers/c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + "." + cext;
+      await putRepoFile(coverPath, await readFileBase64(it.coverFile));
+      it.pct = 15; paintDraftProgress();
+      const name = "m" + Date.now() + "_" + Math.random().toString(36).slice(2, 7) + "." + it.ext;
+      audioPath = "music/" + name;
+      await putRepoFile(audioPath, await readFileBase64(it.file), p => {
+        it.pct = 15 + Math.round(p * 84);
+        paintDraftProgress();
       });
       it.pct = 100;
       d.music.push({
         id: "mu_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-        title: musicTitleFromFile(f.name),
+        title: musicTitleFromFile(it.name),
         artist: "站主上传",
-        src: "./music/" + name,
-        cover: "",
-        size: f.size,
+        src: "./" + audioPath,
+        cover: "./" + coverPath,
+        size: it.size,
         addedAt: Date.now()
       });
+      /* 每首单独落库：整批结束才写的话，中途失败会把前面传好的曲目全丢了 */
+      await saveData(d);
       it.state = "完成";
       ok++;
     } catch (e) {
       it.state = "失败";
       it.err = e.message;
+      if (d.music.length && d.music[d.music.length - 1].src === "./" + audioPath) d.music.pop();
+      [coverPath, audioPath].filter(Boolean).forEach(p => deleteRepoFile(p, "delete orphan upload").catch(() => {}));
     }
-    renderMusicQueue(q);
+    renderMusicDraft();
   }
-
-  try {
-    if (ok){
-      await saveData(d);
-      cachedData = d;
-      syncMusicFromData(d);
-    }
+  if (ok){
+    cachedData = d;
+    syncMusicFromData(d);
     renderMusicAdmin();
-    toast(ok ? ("上传完成 " + ok + " 首" + (ok < good.length ? "，" + (good.length - ok) + " 首失败" : "")) : "一首都没传上去", ok ? "ok" : "err", 3500);
-  } catch (e) {
-    toast("列表保存失败：" + e.message, "err", 4000);
   }
+  toast(ok ? ("上传完成 " + ok + " 首" + (ok < batch.length ? "，" + (batch.length - ok) + " 首失败，留在列表里可重试" : "")) : "一首都没传上去", ok ? "ok" : "err", 3500);
+  /* 传成功的移出草稿，失败的留着直接重试 */
+  const done = batch.filter(it => it.state === "完成");
+  revokeDraftCovers(done);
+  musicDraft = musicDraft.filter(it => it.state !== "完成");
   musicUpBusy = false;
-  $("musicPickBtn").disabled = false;
-  setTimeout(() => { if (!musicUpBusy) renderMusicQueue([]); }, 8000);
+  renderMusicDraft();
 }
 $("musicPickBtn").onclick = () => $("musicFileInput").click();
 $("musicFileInput").onchange = e => {
   const files = Array.prototype.slice.call(e.target.files || []);
   e.target.value = "";
-  uploadMusicFiles(files);
+  addMusicFiles(files);
 };
+renderMusicDraft();
 
 /* ==================== QQ 音乐 · 今日推荐 ==================== */
 let qqDailyData = null;
