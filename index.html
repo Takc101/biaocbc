@@ -864,9 +864,13 @@ input[type="range"]{width:150px;padding:0;margin:0;background:transparent;border
 }
 .music-float.collapsed{width:50px;height:50px;border-radius:50%}
 .music-float.collapsed .music-panel{display:none}
-.music-toggle{width:50px;height:50px;border-radius:50%;padding:0;display:none;align-items:center;justify-content:center;font-size:20px;background:var(--primary);color:#fff;border:none;cursor:pointer}
+.music-toggle{position:relative;overflow:hidden;flex-shrink:0;width:50px;height:50px;border-radius:50%;padding:0;display:none;align-items:center;justify-content:center;font-size:20px;background:var(--primary);color:#fff;border:none;cursor:pointer}
 .music-float.collapsed .music-toggle{display:flex}
 .music-toggle .ico{width:20px;height:20px;fill:currentColor;stroke:currentColor}
+/* 折叠球沿用原来的圆，只是把里面的音符换成当前曲目的封面 */
+.music-toggle-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;display:none}
+.music-toggle.has-cover .music-toggle-cover{display:block}
+.music-toggle.has-cover .music-toggle-ico{display:none}
 .music-panel{padding:11px 12px}
 .music-top{display:flex;align-items:center;gap:9px}
 .music-disc{
@@ -942,7 +946,13 @@ html[data-skin="mono"] .music-float.music-empty .music-disc{background:linear-gr
 .muq-err{font-size:10.5px;color:#c0392b;margin-top:5px;line-height:1.5}
 .mtr{display:flex;align-items:center;gap:7px;padding:9px 0;border-bottom:1px solid var(--border)}
 .mtr:last-child{border-bottom:none}
-.mtr-idx{width:18px;flex-shrink:0;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:center}
+/* 列表左侧就是封面缩略图，点一下可换图；序号挪进副标题 */
+.mtr-cover{width:34px;height:34px;flex-shrink:0;position:relative;padding:0;border:none;border-radius:10px;overflow:hidden;background:var(--surface-2);cursor:pointer;display:grid;place-items:center;color:var(--muted)}
+.mtr-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mtr-cover-ph{font-size:15px;line-height:1}
+.mtr-cover-edit{position:absolute;right:0;bottom:0;width:15px;height:15px;border-radius:6px 0 0 0;background:rgba(0,0,0,.56);color:#fff;display:grid;place-items:center}
+.mtr-cover-edit .ico{width:9px;height:9px;fill:currentColor;stroke:currentColor}
+.mtr-cover:active{transform:scale(.94)}
 .mtr-meta{flex:1;min-width:0}
 .mtr-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mtr-sub{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1668,7 +1678,7 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
             </div>
             <div class="section-head"><h2>曲目列表</h2><span class="section-sub" id="musicListCount">还没有音乐</span></div>
             <div class="card"><div id="musicAdminList"></div></div>
-            <div class="hint">列表顺序就是播放顺序，前台会从第 1 首开始放。删掉一首，仓库里的音频文件也会一起删掉。</div>
+            <div class="hint">列表顺序就是播放顺序，前台会从第 1 首开始放。点左侧封面缩略图可以换图（不传就自动生成一张）。删掉一首，音频和封面文件都会一起删掉。</div>
           </div>
           <div class="admin-pane" data-pane="settings" hidden>
             <div class="section-head"><h2>GitHub Token</h2><span class="section-sub">数据读写凭据</span></div>
@@ -2163,7 +2173,10 @@ html[data-skin="glass"] .dock-item .ico-box{transition:transform .32s cubic-bezi
 
 <!-- ============ 音乐播放器 ============ -->
 <div class="music-float music-empty" id="musicFloat">
-  <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器"><span data-ico="music"></span></button>
+  <button class="music-toggle" id="musicExpandBtn" aria-label="打开音乐播放器">
+    <img class="music-toggle-cover" id="musicToggleCover" alt="">
+    <span class="music-toggle-ico" data-ico="music"></span>
+  </button>
   <div class="music-panel">
     <div class="music-top">
       <div class="music-disc"><img class="music-cover" id="musicCover" alt="" width="36" height="36"><span data-ico="music"></span></div>
@@ -6332,14 +6345,82 @@ let musicIndex = Math.max(0, parseInt(localStorage.getItem("music_index"), 10) |
 let musicAutoplayTried = false;
 let musicErrStreak = 0;
 
+/* 封面：优先后台上传的图，没传就按曲目生成一张渐变默认封面（一首一色，带音符）。
+   折叠球和展开碟片共用同一来源，切歌时一起换。 */
+const musicCoverCache = new Map();
+function defaultMusicCover(track){
+  const key = String((track && (track.id || track.src || track.title)) || "music");
+  if (musicCoverCache.has(key)) return musicCoverCache.get(key);
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++){ h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+  h = h >>> 0;
+  const hue = h % 360, hue2 = (hue + 42) % 360;
+  let url = "";
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 128;
+    const x = c.getContext("2d");
+    const g = x.createLinearGradient(0, 0, 128, 128);
+    g.addColorStop(0, "hsl(" + hue + " 62% 63%)");
+    g.addColorStop(1, "hsl(" + hue2 + " 56% 45%)");
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    x.fillStyle = "rgba(255,255,255,.94)";
+    /* 用歌名首字当封面主体：每首颜色、字都不同，一眼认得出当前是哪首 */
+    const label = Array.from(String((track && track.title) || "").trim())[0] || "♪";
+    x.font = "bold " + (/[A-Za-z0-9]/.test(label) ? 72 : 64) + "px system-ui, -apple-system, 'Noto Sans CJK SC', sans-serif";
+    x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillText(label, 64, 68);
+    url = c.toDataURL("image/png");
+  } catch (e) { url = ""; }
+  musicCoverCache.set(key, url);
+  return url;
+}
+function trackCoverUrl(track){
+  return (track && track.cover) ? track.cover : defaultMusicCover(track || {});
+}
+/* 封面同时铺到折叠球和展开碟片；图挂了（刚上传、Pages 还没发布）就退回默认封面 */
+function applyMusicCover(track){
+  const btn = $("musicExpandBtn"), small = $("musicToggleCover"), big = $("musicCover");
+  const url = trackCoverUrl(track), fallback = defaultMusicCover(track);
+  const fill = (img) => {
+    if (!img) return;
+    img.onerror = () => {
+      if (fallback && img.getAttribute("src") !== fallback){
+        img.onerror = null;
+        img.setAttribute("src", fallback);
+      } else {
+        img.style.display = "none";
+        btn.classList.remove("has-cover");
+      }
+    };
+    img.alt = (track.title || "曲目") + " 封面";
+    img.style.display = "";
+    img.setAttribute("src", url || fallback);
+  };
+  if (url){
+    fill(small); fill(big);
+    btn.classList.add("has-cover");
+  } else {
+    [small, big].forEach(img => { if (img){ img.onerror = null; img.removeAttribute("src"); img.style.display = "none"; } });
+    btn.classList.remove("has-cover");
+  }
+}
+function clearMusicCover(){
+  const btn = $("musicExpandBtn");
+  ["musicToggleCover", "musicCover"].forEach(id => {
+    const img = $(id);
+    if (img){ img.onerror = null; img.removeAttribute("src"); img.style.display = "none"; img.alt = ""; }
+  });
+  btn.classList.remove("has-cover");
+  btn.setAttribute("aria-label", "打开音乐播放器");
+}
+
 function renderMusicEmpty(){
   musicFloat.classList.remove("playing");
   musicFloat.classList.add("music-empty");
   $("musicTitle").textContent = "暂时无法播放";
   $("musicStatus").textContent = "站主还没上传音乐";
-  const cover = $("musicCover");
-  cover.removeAttribute("src");
-  cover.style.display = "none";
+  clearMusicCover();
   musicPlayBtn.innerHTML = ico("play");
   musicPlayBtn.setAttribute("aria-label", "暂时无法播放");
 }
@@ -6356,16 +6437,8 @@ function loadTrack(i, autoplay){
   bgMusic.src = track.src;
   bgMusic.load();
   $("musicTitle").textContent = track.title;
-  const cover = $("musicCover");
-  if (track.cover){
-    cover.style.display = "";
-    cover.src = track.cover;
-    cover.alt = track.title + " 封面";
-  } else {
-    cover.removeAttribute("src");
-    cover.style.display = "none";
-    cover.alt = "";
-  }
+  applyMusicCover(track);
+  $("musicExpandBtn").setAttribute("aria-label", "打开音乐播放器 · " + (track.title || "当前曲目"));
   updateMusicUI();
   if (autoplay){
     bgMusic.play().catch(() => { $("musicStatus").textContent = "点一下播放键开始"; });
@@ -6428,6 +6501,7 @@ function syncMusicFromData(d){
   try { target = new URL(arr[musicIndex].src, location.href).href; } catch (e) { target = arr[musicIndex].src; }
   if (cur && target && cur === target){   /* 已经在放这首了，只同步 UI，别打断 */
     musicFloat.classList.remove("music-empty");
+    applyMusicCover(arr[musicIndex]);   /* 后台刚换了封面，这里也要跟着换，别等刷新 */
     updateMusicUI();
     return;
   }
@@ -6526,10 +6600,14 @@ function renderMusicAdmin(){
   }
   box.innerHTML = arr.map((t, i) => `
     <div class="mtr">
-      <div class="mtr-idx">${i + 1}</div>
+      <button class="mtr-cover" data-mact="cover" data-i="${i}" aria-label="更换《${escapeHtml(t.title || "未命名")}》的封面" title="点击更换封面">
+        <span class="mtr-cover-ph">♪</span>
+        <img src="${escapeHtml(trackCoverUrl(t))}" alt="" onerror="this.style.display='none'">
+        <span class="mtr-cover-edit">${ico("image")}</span>
+      </button>
       <div class="mtr-meta">
         <div class="mtr-name">${escapeHtml(t.title || "未命名")}</div>
-        <div class="mtr-sub">${escapeHtml(t.artist || "站主上传")}${t.size ? " · " + fmtMusicSize(t.size) : ""}</div>
+        <div class="mtr-sub">${i + 1}. ${escapeHtml(t.artist || "站主上传")}${t.size ? " · " + fmtMusicSize(t.size) : ""}</div>
       </div>
       <button class="mtr-btn" data-mact="up" data-i="${i}" aria-label="上移" ${i === 0 ? "disabled" : ""}>${ico("up")}</button>
       <button class="mtr-btn" data-mact="down" data-i="${i}" aria-label="下移" ${i === arr.length - 1 ? "disabled" : ""}>${ico("down")}</button>
@@ -6538,15 +6616,68 @@ function renderMusicAdmin(){
     </div>`).join("");
 }
 $("musicAdminList").onclick = e => {
-  const b = e.target.closest(".mtr-btn");
+  const b = e.target.closest("[data-mact]");
   if (!b || b.disabled) return;
   const i = Number(b.dataset.i);
   const act = b.dataset.mact;
   if (act === "play") return previewMusic(i);
+  if (act === "cover") return pickMusicCover(i);
   if (act === "del") return removeMusic(i);
   if (act === "up") return moveMusic(i, -1);
   if (act === "down") return moveMusic(i, 1);
 };
+/* 点列表左侧的封面缩略图：换一张，或恢复默认 */
+async function pickMusicCover(i){
+  let d;
+  try { d = await musicDataForWrite(); } catch (e) { return toast("网络错误：" + e.message, "err"); }
+  const t = d.music && d.music[i];
+  if (!t) return;
+  const items = [{ text: "上传封面图片" }];
+  if (t.cover) items.push({ text: "恢复默认封面", danger: true });
+  const idx = await actionSheet({ title: "《" + (t.title || "未命名") + "》的封面", items });
+  if (idx === null) return;
+  if (idx === 1){
+    const old = String(t.cover || "");
+    t.cover = "";
+    try {
+      await saveData(d);
+      cachedData = d;
+      syncMusicFromData(d);
+      renderMusicAdmin();
+      toast("已恢复默认封面", "ok");
+    } catch (e) { return toast("保存失败：" + e.message, "err"); }
+    if (old.indexOf("music/covers/") >= 0) deleteRepoFile(old.replace(/^\.?\//, ""), "delete cover").catch(() => {});
+    return;
+  }
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/png,image/jpeg,image/webp,image/gif";
+  input.style.display = "none";
+  document.body.appendChild(input);
+  input.onchange = async () => {
+    input.remove();
+    const f = input.files && input.files[0];
+    if (!f) return;
+    if (!/^image\//.test(f.type)) return toast("请选择图片文件", "err");
+    if (f.size > 2 * 1024 * 1024) return toast("封面别超过 2MB", "err");
+    const loading = toast("正在上传封面…", "load");
+    try {
+      const ext = (f.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "png";
+      const path = "music/covers/c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + "." + ext;
+      await putRepoFile(path, await readFileBase64(f));
+      const old = String(t.cover || "");
+      t.cover = "./" + path;
+      await saveData(d);
+      cachedData = d;
+      syncMusicFromData(d);
+      renderMusicAdmin();
+      loading.close();
+      toast("封面已更新", "ok");
+      if (old.indexOf("music/covers/") >= 0) deleteRepoFile(old.replace(/^\.?\//, ""), "delete old cover").catch(() => {});
+    } catch (e) { loading.close(); toast("上传失败：" + e.message, "err"); }
+  };
+  input.click();
+}
 function previewMusic(i){
   const t = (cachedData && cachedData.music) ? cachedData.music[i] : null;
   if (!t) return;
@@ -6595,6 +6726,10 @@ async function removeMusic(i){
   const p = String(t.src || "").replace(/^\.?\//, "");
   if (p.indexOf("music/") === 0){
     try { await deleteRepoFile(p, "delete music"); } catch (e) { console.warn("音频文件删除失败：", e.message); }
+  }
+  const cp = String(t.cover || "").replace(/^\.?\//, "");
+  if (cp.indexOf("music/covers/") === 0){
+    try { await deleteRepoFile(cp, "delete music cover"); } catch (e) { console.warn("封面删除失败：", e.message); }
   }
 }
 function renderMusicQueue(items){
