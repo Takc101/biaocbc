@@ -6795,7 +6795,7 @@ function renderMusicDraft(){
   hint.textContent = need ? "还有 " + need + " 首没配封面" : (musicDraft.length ? "封面都配好了" : "");
   hint.className = need ? "mdr-hint need" : "mdr-hint";
   upBtn.disabled = musicUpBusy || !musicDraft.length || need > 0;
-  upBtn.textContent = musicUpBusy ? "正在上传…" : need ? "还有 " + need + " 首没配封面" : (retry ? "重试上传 " : "开始上传 ") + musicDraft.length + " 首";
+  upBtn.textContent = musicUpBusy ? "正在上传…" : !musicDraft.length ? "配好封面后上传" : need ? "还有 " + need + " 首没配封面" : (retry ? "重试上传 " : "开始上传 ") + musicDraft.length + " 首";
   $("musicDraftClear").disabled = musicUpBusy || !musicDraft.length;
   $("musicPickBtn").disabled = musicUpBusy;
 }
