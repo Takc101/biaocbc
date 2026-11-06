@@ -1,6 +1,6 @@
 /* 表白墙 PWA Service Worker
    策略：页面走「网络优先」保证每次都是最新代码；静态资源走「缓存优先」加速。 */
-const CACHE = "bq-shell-v5";
+const CACHE = "bq-shell-v6";
 const ASSETS = [
   "./",
   "./index.html",
