@@ -7136,9 +7136,23 @@ if ($("installAppRow")){
     '<span>' + how + '。全屏运行、有独立图标，断网也能打开。</span>' +
     '<button class="bqA2hs-ok" type="button">知道了，不再提示</button></div>' +
     '<button class="bqA2hs-x" type="button" aria-label="关闭">&times;</button>';
+  // 别和免责声明 / 欢迎弹窗叠在一起：有全屏遮罩就先藏，遮罩关了再出现
+  const openOverlays = () => Array.prototype.filter.call(
+    document.querySelectorAll(".modal-overlay"),
+    el => getComputedStyle(el).display !== "none"
+  );
   document.body.appendChild(box);
+  let dismissed = false;
+  const syncVisibility = () => {
+    if (dismissed) return;
+    box.style.display = openOverlays().length ? "none" : "flex";
+  };
+  syncVisibility();
+  const visTimer = setInterval(syncVisibility, 400);
 
   function close(){
+    dismissed = true;
+    clearInterval(visTimer);
     box.classList.add("bqA2hs-hide");
     setTimeout(() => box.remove(), 260);
     try { localStorage.setItem(K, "done"); } catch (e) {}
