@@ -7076,6 +7076,77 @@ if ($("installAppRow")){
     else toast("浏览器菜单里选「安装应用 / 添加到主屏幕」", "ok", 4600);
   };
 }
+/* ==================== iOS：首次用 Safari 打开时，引导装到桌面 ==================== */
+(function(){
+  const K = "bq_a2hs_v1";
+  try { if (localStorage.getItem(K) === "done") return; } catch (e) {}
+
+  // 原生 iOS 壳里本来就有桌面图标，别在这里再弹一次
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bqTheme) return;
+
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPad|iPhone|iPod/i.test(ua) ||
+                (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
+  if (!isIOS) return;
+  // 微信 / QQ / 抖音等内置浏览器没有「添加到主屏幕」，别给无效指引
+  if (/MicroMessenger|QQ\/|Weibo|DingTalk|Alipay|baiduboxapp|douyin|aweme|UCBrowser|Quark|baidubrowser/i.test(ua)) return;
+  const standalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  if (standalone) return;
+  if (!/Safari/i.test(ua)) return;
+
+  const otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+  const how = otherBrowser ? "在这个浏览器的菜单里选「添加到主屏幕」" : "点 Safari 底部「分享」→「添加到主屏幕」";
+
+  const css = `
+.bqA2hs{position:fixed;top:calc(58px + env(safe-area-inset-top));left:12px;right:12px;z-index:300;
+  display:flex;align-items:flex-start;gap:11px;padding:13px 12px 12px;
+  background:var(--card,#fff);color:var(--text,#1c1917);
+  border:1px solid var(--border,rgba(0,0,0,.09));border-radius:16px;
+  box-shadow:0 12px 34px rgba(28,25,23,.16);
+  animation:bqA2hsIn .32s cubic-bezier(.2,.9,.3,1) both}
+@keyframes bqA2hsIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.bqA2hs.bqA2hs-hide{animation:bqA2hsOut .24s ease forwards}
+@keyframes bqA2hsOut{to{opacity:0;transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){.bqA2hs,.bqA2hs.bqA2hs-hide{animation:none}}
+.bqA2hs-ico{flex:none;width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(140deg,#5a6af4,#7c60f0);display:flex;align-items:center;justify-content:center;color:#fff}
+.bqA2hs-ico svg{width:21px;height:21px}
+.bqA2hs-body{flex:1;min-width:0;padding-top:1px}
+.bqA2hs-body b{display:block;font-size:13.5px;font-weight:700;line-height:1.4}
+.bqA2hs-body span{display:block;font-size:11.5px;line-height:1.55;color:var(--muted,#8a8178);margin-top:3px}
+.bqA2hs-x{flex:none;border:0;background:transparent;color:var(--muted,#8a8178);
+  font-size:19px;line-height:1;padding:2px 4px;cursor:pointer}
+.bqA2hs-ok{display:block;width:100%;margin-top:10px;border:0;border-radius:10px;
+  background:var(--surface-2,rgba(0,0,0,.05));color:var(--text,#1c1917);
+  font:inherit;font-size:12px;font-weight:600;padding:9px;cursor:pointer}
+.bqA2hs-ok:focus-visible,.bqA2hs-x:focus-visible{outline:2px solid #5a6af4;outline-offset:2px}`;
+  const st = document.createElement("style");
+  st.textContent = css;
+  document.head.appendChild(st);
+
+  const box = document.createElement("div");
+  box.className = "bqA2hs";
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-label", "把表白墙装到桌面");
+  box.innerHTML =
+    '<div class="bqA2hs-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M12 15V3"/><path d="M8.5 6.5 12 3l3.5 3.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>' +
+    '<div class="bqA2hs-body"><b>把表白墙装到桌面</b>' +
+    '<span>' + how + '。全屏运行、有独立图标，断网也能打开。</span>' +
+    '<button class="bqA2hs-ok" type="button">知道了，不再提示</button></div>' +
+    '<button class="bqA2hs-x" type="button" aria-label="关闭">&times;</button>';
+  document.body.appendChild(box);
+
+  function close(){
+    box.classList.add("bqA2hs-hide");
+    setTimeout(() => box.remove(), 260);
+    try { localStorage.setItem(K, "done"); } catch (e) {}
+  }
+  box.querySelector(".bqA2hs-x").onclick = close;
+  box.querySelector(".bqA2hs-ok").onclick = close;
+})();
+
 if ("serviceWorker" in navigator && location.protocol === "https:"){
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
